@@ -1,0 +1,2191 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord Assistant · Safe Escalation Interactive Prototype</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       DISCORD AUTHENTIC DESIGN TOKENS & RESET
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Discord Official Dark Palette */
+      --discord-server-bg: #1E1F22;
+      --discord-sidebar-bg: #2B2D31;
+      --discord-chat-bg: #313338;
+      --discord-card-bg: #2B2D31;
+      --discord-hover-bg: #35373C;
+      --discord-input-bg: #383A40;
+      --discord-border: #3F4147;
+      
+      /* Discord Text Colors */
+      --text-header: #F2F3F5;
+      --text-normal: #DBDEE1;
+      --text-muted: #949BA4;
+      --text-interactive: #B5BAC1;
+
+      /* Discord Accents */
+      --blurple: #5865F2;
+      --blurple-hover: #4752C4;
+      --blurple-bg: rgba(88, 101, 242, 0.15);
+      --blurple-border: rgba(88, 101, 242, 0.4);
+
+      --green: #23A55A;
+      --green-bg: rgba(35, 165, 90, 0.15);
+      --green-border: rgba(35, 165, 90, 0.4);
+
+      --yellow: #F0B232;
+      --yellow-bg: rgba(240, 178, 50, 0.15);
+      --yellow-border: rgba(240, 178, 50, 0.4);
+
+      --red: #F23F43;
+      --red-bg: rgba(242, 63, 67, 0.15);
+      --red-border: rgba(242, 63, 67, 0.4);
+
+      --font-discord: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    html, body {
+      background-color: #111214;
+      color: var(--text-normal);
+      font-family: var(--font-discord);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.4;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Outer Presentation Container */
+    .app-viewport {
+      max-width: 1780px;
+      margin: 0 auto;
+      padding: 10px 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 100vh;
+      justify-content: space-between;
+    }
+
+    /* ==========================================================================
+       TOP PRESENTATION HEADER (Hackathon CP2 Banner)
+       ========================================================================== */
+    .pitch-header {
+      background-color: var(--discord-sidebar-bg);
+      border: 1px solid var(--discord-border);
+      border-radius: 12px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .pitch-title-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hackathon-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #FFFFFF;
+      background-color: var(--blurple);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .hackathon-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #FFFFFF;
+    }
+
+    .pitch-headings h1 {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-header);
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pitch-headings p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .pitch-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-action-run {
+      background-color: var(--blurple);
+      color: #FFFFFF;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 8px rgba(88, 101, 242, 0.4);
+    }
+
+    .btn-action-run:hover:not(:disabled) {
+      background-color: var(--blurple-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-action-run:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-action-reset {
+      background-color: var(--discord-input-bg);
+      color: var(--text-normal);
+      border: 1px solid var(--discord-border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-action-reset:hover {
+      background-color: var(--discord-hover-bg);
+      color: #FFFFFF;
+    }
+
+    /* ==========================================================================
+       MAIN WORKSPACE (LEFT: DISCORD REAL CLIENT, RIGHT: AI PIPELINE & HANDOFF)
+       ========================================================================== */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 58% 42%;
+      gap: 12px;
+      flex-grow: 1;
+      align-items: stretch;
+    }
+
+    /* ==========================================================================
+       DISCORD CLIENT WINDOW (AUTHENTIC DISCORD DARK THEME)
+       ========================================================================== */
+    .discord-app-window {
+      background-color: var(--discord-chat-bg);
+      border: 1px solid var(--discord-border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+    }
+
+    /* 1. Server Rail (Far Left) */
+    .discord-server-rail {
+      width: 58px;
+      background-color: var(--discord-server-bg);
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      border-right: 1px solid #141517;
+      flex-shrink: 0;
+    }
+
+    .server-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background-color: var(--discord-sidebar-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-normal);
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .server-icon.active {
+      border-radius: 14px;
+      background-color: var(--blurple);
+      color: #FFFFFF;
+    }
+
+    .server-icon.active::before {
+      content: "";
+      position: absolute;
+      left: -8px;
+      width: 4px;
+      height: 36px;
+      border-radius: 0 4px 4px 0;
+      background-color: #FFFFFF;
+    }
+
+    .server-divider {
+      width: 30px;
+      height: 2px;
+      background-color: var(--discord-border);
+      border-radius: 1px;
+    }
+
+    /* 2. Channels Sidebar */
+    .discord-channel-sidebar {
+      width: 210px;
+      background-color: var(--discord-sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #202225;
+      flex-shrink: 0;
+    }
+
+    .server-header-dropdown {
+      height: 46px;
+      padding: 0 14px;
+      border-bottom: 1px solid #1F2023;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--text-header);
+      cursor: pointer;
+    }
+
+    .server-header-dropdown:hover {
+      background-color: var(--discord-hover-bg);
+    }
+
+    .channel-list {
+      padding: 8px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .channel-category-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 6px 8px 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .channel-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+
+    .channel-item:hover {
+      background-color: var(--discord-hover-bg);
+      color: var(--text-interactive);
+    }
+
+    .channel-item.active {
+      background-color: #35373C;
+      color: var(--text-header);
+    }
+
+    .channel-item .channel-hash {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .channel-item.active .channel-hash {
+      color: var(--text-header);
+    }
+
+    /* Bottom User Profile Bar */
+    .user-profile-bar {
+      height: 48px;
+      background-color: #232428;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .user-avatar-mini {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-avatar-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #4BAE91;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .online-indicator {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background-color: var(--green);
+      border: 2px solid #232428;
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+    }
+
+    .user-name-box {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .user-name-box .name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-header);
+    }
+
+    .user-name-box .status {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .user-icons {
+      display: flex;
+      gap: 4px;
+      color: var(--text-interactive);
+      font-size: 13px;
+    }
+
+    /* 3. Main Chat View (Authentic Discord Chat Feed) */
+    .discord-chat-main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--discord-chat-bg);
+      overflow: hidden;
+    }
+
+    /* Discord Channel Header */
+    .chat-header {
+      height: 46px;
+      padding: 0 14px;
+      border-bottom: 1px solid #202225;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .chat-header-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text-header);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chat-header-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      border-left: 1px solid var(--discord-border);
+      padding-left: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 320px;
+    }
+
+    .chat-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-interactive);
+      font-size: 14px;
+    }
+
+    .search-mock {
+      background-color: #1E1F22;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ==========================================================================
+       NEW: TEST CASES SELECTION TOOLBAR
+       ========================================================================== */
+    .test-cases-toolbar {
+      background-color: #232428;
+      border-bottom: 1px solid #1F2023;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+
+    .test-cases-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #B5BAC1;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: 4px;
+    }
+
+    .case-tab-btn {
+      background-color: #2B2D31;
+      border: 1px solid #3F4147;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .case-tab-btn:hover {
+      background-color: #35373C;
+      color: var(--text-header);
+      border-color: #4E5058;
+    }
+
+    .case-tab-btn.active {
+      background-color: var(--blurple);
+      color: #FFFFFF;
+      border-color: var(--blurple);
+      box-shadow: 0 2px 8px rgba(88, 101, 242, 0.35);
+    }
+
+    .case-type-tag {
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .tag-type-esc {
+      background-color: rgba(242, 63, 67, 0.2);
+      color: #FA777C;
+    }
+
+    .case-tab-btn.active .tag-type-esc {
+      background-color: rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+    }
+
+    .tag-type-ans {
+      background-color: rgba(35, 165, 90, 0.2);
+      color: #57F287;
+    }
+
+    .case-tab-btn.active .tag-type-ans {
+      background-color: rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+    }
+
+    .tag-type-cla {
+      background-color: rgba(240, 178, 50, 0.2);
+      color: #F0B232;
+    }
+
+    .case-tab-btn.active .tag-type-cla {
+      background-color: rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+    }
+
+    /* Chat Stream Area */
+    .chat-stream-area {
+      flex-grow: 1;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+    }
+
+    /* Discord Message Row */
+    .discord-msg-row {
+      display: flex;
+      gap: 12px;
+      position: relative;
+    }
+
+    .msg-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .msg-main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .msg-meta-line {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .author-username {
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .author-username:hover {
+      text-decoration: underline;
+    }
+
+    .name-student { color: #57F287; }
+    .name-bot { color: #FFFFFF; }
+    .name-ta { color: #F0B232; }
+
+    /* Discord APP / BOT badge */
+    .app-badge-discord {
+      background-color: var(--blurple);
+      color: #FFFFFF;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 3px;
+      letter-spacing: 0.04em;
+    }
+
+    .ta-badge-discord {
+      background-color: var(--yellow);
+      color: #111214;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .msg-timestamp {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .msg-text-content {
+      font-size: 14px;
+      color: var(--text-normal);
+      line-height: 1.45;
+    }
+
+    /* Discord Mention pill */
+    .discord-mention {
+      background-color: rgba(88, 101, 242, 0.25);
+      color: #C9CDFB;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .discord-mention:hover {
+      background-color: var(--blurple);
+      color: #FFFFFF;
+    }
+
+    /* Discord Curved Reply Line */
+    .discord-reply-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .discord-reply-spine {
+      width: 20px;
+      height: 9px;
+      border-left: 2px solid #4E5058;
+      border-top: 2px solid #4E5058;
+      border-top-left-radius: 6px;
+      margin-left: 17px;
+      margin-bottom: -4px;
+    }
+
+    .reply-user-tag {
+      color: var(--text-interactive);
+      font-weight: 600;
+    }
+
+    /* Discord Typing / Detection Bar */
+    .typing-status-row {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background-color: rgba(88, 101, 242, 0.08);
+      border: 1px dashed var(--blurple-border);
+      border-radius: 8px;
+      font-size: 12.5px;
+      color: #C9CDFB;
+      font-weight: 600;
+    }
+
+    .typing-dots {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .typing-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: #C9CDFB;
+      animation: discordPulse 1.2s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes discordPulse {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .personal-data-chip {
+      background-color: var(--blurple);
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-left: auto;
+    }
+
+    /* Badges below Bot Reply */
+    .bot-assurance-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .assurance-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tag-no-guess {
+      background-color: var(--green-bg);
+      color: #57F287;
+      border: 1px solid var(--green-border);
+    }
+
+    .tag-handoff {
+      background-color: var(--blurple-bg);
+      color: #C9CDFB;
+      border: 1px solid var(--blurple-border);
+    }
+
+    .discord-sys-event {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 4px;
+      padding-left: 2px;
+    }
+
+    .discord-sys-event-ta {
+      color: #57F287;
+      font-style: normal;
+      font-weight: 600;
+      background-color: rgba(35, 165, 90, 0.1);
+      padding: 4px 10px;
+      border-radius: 4px;
+      border-left: 3px solid var(--green);
+      font-size: 12.5px;
+    }
+
+    /* Bottom Chat Input Bar */
+    .chat-input-wrapper {
+      padding: 0 14px 14px;
+      flex-shrink: 0;
+    }
+
+    .chat-input-pill {
+      background-color: var(--discord-input-bg);
+      border-radius: 8px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+      font-size: 13.5px;
+    }
+
+    .input-plus-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background-color: #4E5058;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .input-text-field {
+      flex-grow: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-header);
+      font-family: inherit;
+      font-size: 13.5px;
+    }
+
+    .input-text-field::placeholder {
+      color: #6D6F78;
+    }
+
+    .input-send-btn {
+      background-color: var(--blurple);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 4px;
+      padding: 3px 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .input-action-icons {
+      display: flex;
+      gap: 8px;
+      color: #B5BAC1;
+      font-size: 15px;
+    }
+
+    /* Dynamic Messages Hidden by Default */
+    #msg-bot-block, #msg-ta-block, #sys-ta-accepted-block {
+      display: none;
+    }
+
+    /* ==========================================================================
+       RIGHT PANEL: AI DECISION PIPELINE & TA HANDOFF
+       ========================================================================== */
+    .ai-inspector-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* AI Decision Card */
+    .ai-decision-card {
+      background-color: var(--discord-sidebar-bg);
+      border: 1px solid var(--discord-border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .panel-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-topbar h2 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-header);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-pill-header {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background-color: #1E1F22;
+      color: var(--text-muted);
+    }
+
+    /* Workflow Pipeline Steps */
+    .pipeline-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .pipe-step {
+      background-color: #1E1F22;
+      border: 1px solid #35373C;
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: all 0.25s ease;
+    }
+
+    .pipe-step.active {
+      border-color: var(--blurple);
+      background-color: rgba(88, 101, 242, 0.08);
+    }
+
+    .pipe-step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pipe-step-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .pipe-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .badge-detected {
+      background-color: var(--green-bg);
+      color: #57F287;
+      border: 1px solid var(--green-border);
+    }
+
+    .badge-no-access {
+      background-color: var(--red-bg);
+      color: #FA777C;
+      border: 1px solid var(--red-border);
+    }
+
+    .pipe-step-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-header);
+    }
+
+    /* 3 Action Cards */
+    .action-cards-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .action-choice-pill {
+      background-color: #232428;
+      border: 1.5px solid #35373C;
+      border-radius: 6px;
+      padding: 6px 4px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: #6D6F78;
+      transition: all 0.2s ease;
+    }
+
+    .action-choice-pill.faded {
+      opacity: 0.4;
+      text-decoration: line-through;
+    }
+
+    .action-choice-pill.active {
+      opacity: 1;
+      text-decoration: none;
+      box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
+    }
+
+    .action-choice-pill.pill-escalate.active {
+      background-color: var(--blurple-bg);
+      color: #C9CDFB;
+      border-color: var(--blurple);
+    }
+
+    .action-choice-pill.pill-answer.active {
+      background-color: var(--green-bg);
+      color: #57F287;
+      border-color: var(--green);
+    }
+
+    .action-choice-pill.pill-clarify.active {
+      background-color: var(--yellow-bg);
+      color: #F0B232;
+      border-color: var(--yellow);
+    }
+
+    .escalate-reason-box {
+      font-size: 12px;
+      line-height: 1.4;
+      background-color: rgba(88, 101, 242, 0.1);
+      border-left: 3px solid var(--blurple);
+      padding: 6px 10px;
+      border-radius: 0 6px 6px 0;
+      color: var(--text-normal);
+    }
+
+    .escalate-reason-box strong {
+      color: #C9CDFB;
+    }
+
+    /* TA Handoff Card */
+    .ta-handoff-box {
+      background-color: var(--discord-sidebar-bg);
+      border: 1px solid var(--discord-border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+      transition: all 0.3s ease;
+    }
+
+    .handoff-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .handoff-header-row h3 {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--text-header);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-auto-summary {
+      background-color: var(--yellow-bg);
+      color: #F0B232;
+      border: 1px solid var(--yellow-border);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .status-tag-waiting {
+      background-color: rgba(240, 178, 50, 0.15);
+      color: #F0B232;
+      border: 1px solid var(--yellow-border);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+
+    .status-tag-accepted {
+      background-color: var(--green-bg);
+      color: #57F287;
+      border: 1px solid var(--green-border);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+
+    .ticket-content-discord {
+      background-color: #1E1F22;
+      border: 1px solid #35373C;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+
+    .t-row {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .t-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .t-value {
+      font-weight: 600;
+      color: var(--text-header);
+    }
+
+    .t-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px dashed #35373C;
+      padding-top: 5px;
+      margin-top: 2px;
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    .btn-ta-accept-discord {
+      background-color: #F0B232;
+      color: #111214;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 10px rgba(240, 178, 50, 0.25);
+    }
+
+    .btn-ta-accept-discord:hover:not(:disabled) {
+      background-color: #d89e26;
+      transform: translateY(-1px);
+    }
+
+    .btn-ta-accept-discord:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* ==========================================================================
+       BOTTOM SECTION: SAFETY RULE & BEFORE vs AFTER
+       ========================================================================== */
+    .bottom-insights {
+      display: grid;
+      grid-template-columns: 28% 72%;
+      gap: 10px;
+    }
+
+    .safety-rule-card {
+      background-color: var(--discord-sidebar-bg);
+      border: 1px solid var(--blurple-border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .safety-tag-title {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #C9CDFB;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .safety-core-rule {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-header);
+    }
+
+    .safety-sub-rule {
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .safety-sub-rule strong {
+      color: #C9CDFB;
+      background-color: rgba(88, 101, 242, 0.2);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* Before vs After */
+    .value-cards-bar {
+      background-color: var(--discord-sidebar-bg);
+      border: 1px solid var(--discord-border);
+      border-radius: 10px;
+      padding: 8px 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .val-block {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .val-head {
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .val-head.before { color: #FA777C; }
+    .val-head.after { color: #57F287; }
+
+    .val-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 11.5px;
+      color: var(--text-normal);
+    }
+
+    .val-bullets li {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .val-block.before li::before { content: "✕"; color: #F23F43; font-weight: 800; }
+    .val-block.after li::before { content: "✓"; color: #23A55A; font-weight: 800; }
+
+    /* Footer Quote */
+    .pitch-footer-quote {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-header);
+      padding: 2px;
+      letter-spacing: 0.02em;
+    }
+
+    .pitch-footer-quote span {
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-left: 6px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .workspace-grid { grid-template-columns: 1fr; }
+      .bottom-insights { grid-template-columns: 1fr; }
+      .pitch-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .discord-channel-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-viewport">
+
+    <!-- ==================== 1. TOP HEADER ==================== -->
+    <header class="pitch-header">
+      <div class="pitch-title-area">
+        <div class="hackathon-badge">
+          <span class="dot"></span>
+          MINI HACKATHON AI · TRACK B
+        </div>
+        <div class="pitch-headings">
+          <h1>
+            Safe Escalation for Personal Data
+            <span style="font-size: 11.5px; font-weight: 600; color: var(--text-muted); background: #1E1F22; padding: 2px 7px; border-radius: 4px;">
+              Nhóm GICUNGDCZ · E403
+            </span>
+          </h1>
+          <p>Trợ lý Discord — không đoán dữ liệu cá nhân, tự động chuyển TA kèm context (Dataset 1.092 tin thật)</p>
+        </div>
+      </div>
+
+      <div class="pitch-controls">
+        <button id="btn-run" class="btn-action-run" onclick="runAIDecision()">
+          <span>▶ Run AI Decision</span>
+        </button>
+        <button id="btn-reset" class="btn-action-reset" onclick="resetDemo()">
+          <span>↻ Reset Demo</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ==================== 2. MAIN WORKSPACE (DISCORD + AI INSPECTOR) ==================== -->
+    <main class="workspace-grid">
+
+      <!-- ==================== LEFT: AUTHENTIC DISCORD CLIENT ==================== -->
+      <section class="discord-app-window">
+        
+        <!-- Rail 1: Discord Server List -->
+        <aside class="discord-server-rail">
+          <div class="server-icon active" title="AI20K Build Phase">AI</div>
+          <div class="server-divider"></div>
+          <div class="server-icon" title="Discord Community">💬</div>
+          <div class="server-icon" title="CodeLab">⚡</div>
+        </aside>
+
+        <!-- Rail 2: Discord Channels List -->
+        <nav class="discord-channel-sidebar">
+          <div class="server-header-dropdown">
+            <span>[L3-L4] AI20K Build Pha...</span>
+            <span style="font-size: 11px;">▼</span>
+          </div>
+
+          <div class="channel-list">
+            <div class="channel-category-label">
+              <span>▼ KÊNH HỌC TẬP</span>
+            </div>
+            <div class="channel-item">
+              <span class="channel-hash">#</span>
+              <span>3a-lab-e403</span>
+            </div>
+            <div class="channel-item">
+              <span class="channel-hash">#</span>
+              <span>3a-lab-e402</span>
+            </div>
+
+            <div class="channel-category-label" style="margin-top: 6px;">
+              <span>▼ BOT & TIỆN ÍCH</span>
+            </div>
+            <div class="channel-item">
+              <span class="channel-hash">#</span>
+              <span>activity</span>
+            </div>
+            <div class="channel-item active">
+              <span class="channel-hash">#</span>
+              <span>?-hỏi-trợ-lý-kute</span>
+            </div>
+
+            <div class="channel-category-label" style="margin-top: 6px;">
+              <span>▼ CỘNG ĐỒNG</span>
+            </div>
+            <div class="channel-item">
+              <span class="channel-hash">#</span>
+              <span>chung</span>
+            </div>
+            <div class="channel-item">
+              <span class="channel-hash">#</span>
+              <span>hỏi-đáp</span>
+            </div>
+          </div>
+
+          <!-- Current User Profile Bar -->
+          <div class="user-profile-bar">
+            <div class="user-avatar-mini">
+              <div id="side-user-avatar" class="user-avatar-circle">
+                NM
+                <span class="online-indicator"></span>
+              </div>
+              <div class="user-name-box">
+                <span id="side-user-name" class="name">Nguyễn Minh</span>
+                <span class="status">Trực tuyến</span>
+              </div>
+            </div>
+            <div class="user-icons">
+              <span>🎙</span>
+              <span>🎧</span>
+              <span>⚙</span>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Main View: Discord Chat Feed -->
+        <div class="discord-chat-main">
+          
+          <!-- Channel Header -->
+          <div class="chat-header">
+            <div class="chat-header-left">
+              <div class="chat-header-title">
+                <span style="color: var(--text-muted); font-size: 18px;">#</span>
+                <span>?-hỏi-trợ-lý-kute</span>
+              </div>
+              <div class="chat-header-desc">
+                Kênh để tương tác / commands hỏi đáp Trợ lý Kute @Trợ lý Kute
+              </div>
+            </div>
+            <div class="chat-header-right">
+              <span>🔔</span>
+              <span>📌</span>
+              <span>👥</span>
+              <div class="search-mock">
+                <span>Tìm kiếm</span>
+                <span style="font-size: 10px;">🔍</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- MULTI TEST CASES SELECTOR TOOLBAR -->
+          <div class="test-cases-toolbar">
+            <span class="test-cases-title">🎯 TEST DATA:</span>
+            <button id="tab-case-1" class="case-tab-btn active" onclick="selectTestCase(1)">
+              <span>1. Vắng 12/9</span>
+              <span class="case-type-tag tag-type-esc">ESCALATE</span>
+            </button>
+            <button id="tab-case-2" class="case-tab-btn" onclick="selectTestCase(2)">
+              <span>2. M45740 Zoom</span>
+              <span class="case-type-tag tag-type-esc">ESCALATE</span>
+            </button>
+            <button id="tab-case-3" class="case-tab-btn" onclick="selectTestCase(3)">
+              <span>3. M84993 CodeLab</span>
+              <span class="case-type-tag tag-type-esc">ESCALATE</span>
+            </button>
+            <button id="tab-case-4" class="case-tab-btn" onclick="selectTestCase(4)">
+              <span>4. Repo Private/Public</span>
+              <span class="case-type-tag tag-type-ans">ANSWER</span>
+            </button>
+            <button id="tab-case-5" class="case-tab-btn" onclick="selectTestCase(5)">
+              <span>5. M55443 Mơ hồ</span>
+              <span class="case-type-tag tag-type-cla">CLARIFY</span>
+            </button>
+          </div>
+
+          <!-- Chat Stream Area -->
+          <div class="chat-stream-area">
+
+            <!-- 1. STUDENT MESSAGE (DYNAMIC ACCORDING TO TEST CASE) -->
+            <div class="discord-msg-row">
+              <div id="msg-student-avatar" class="msg-avatar" style="background: linear-gradient(135deg, #2D7A64, #4BAE91);">NM</div>
+              <div class="msg-main">
+                <div class="msg-meta-line">
+                  <span id="msg-student-author" class="author-username name-student">T048-NGUYỄN ĐỨC MINH-02891</span>
+                  <span id="msg-student-time" class="msg-timestamp">Hôm nay lúc 20:14</span>
+                </div>
+                <div id="msg-student-text" class="msg-text-content">
+                  <span class="discord-mention">@Trợ lý Kute</span> em có bị vắng buổi 12/9 không?
+                </div>
+                <div style="margin-top: 4px;">
+                  <span id="msg-student-tag" style="font-size: 11px; background: rgba(88, 101, 242, 0.15); color: #C9CDFB; padding: 2px 7px; border-radius: 4px; font-weight: 600;">
+                    🔒 Personal attendance query · Điểm danh
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. TYPING / CLASSIFICATION STATUS BANNER -->
+            <div id="typing-box" class="typing-status-row">
+              <div id="typing-spinner" class="typing-dots">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+              </div>
+              <span id="typing-label">Trợ lý Kute đang xác định loại yêu cầu...</span>
+              <span id="chip-personal-data" class="personal-data-chip" style="display: none;">
+                PERSONAL DATA DETECTED
+              </span>
+            </div>
+
+            <!-- 3. BOT RESPONSE MESSAGE (DYNAMIC) -->
+            <div id="msg-bot-block" class="discord-msg-row">
+              <!-- Reply Spine -->
+              <div style="display: flex; flex-direction: column; width: 38px; align-items: flex-end;">
+                <div class="discord-reply-spine"></div>
+                <div class="msg-avatar" style="background: linear-gradient(135deg, #5865F2, #3942B0);">🤖</div>
+              </div>
+
+              <div class="msg-main">
+                <!-- Reply header reference -->
+                <div class="discord-reply-header">
+                  <span>trả lời</span>
+                  <span id="reply-to-user" class="reply-user-tag">@T048-NGUYỄN ĐỨC MINH-02891</span>
+                  <span id="reply-to-snippet" style="color: var(--text-muted); max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    em có bị vắng buổi 12/9 không?
+                  </span>
+                </div>
+
+                <div class="msg-meta-line">
+                  <span class="author-username name-bot">Trợ lý Kute</span>
+                  <span class="app-badge-discord">APP</span>
+                  <span class="msg-timestamp">Hôm nay lúc 20:14</span>
+                </div>
+
+                <div id="bot-response-content" class="msg-text-content" style="color: #DBDEE1;">
+                  Mình không thể kiểm tra trạng thái điểm danh cá nhân của bạn vì mình không có quyền truy cập dữ liệu điểm danh.<br><br>
+                  Mình sẽ chuyển câu hỏi này cho TA để kiểm tra giúp bạn. Mình sẽ gửi kèm thông tin cần thiết để TA xử lý nhanh hơn.
+                </div>
+
+                <div id="bot-tags-container" class="bot-assurance-tags">
+                  <span class="assurance-tag tag-no-guess">✓ Không suy đoán</span>
+                  <span class="assurance-tag tag-handoff">✓ Chuyển đúng người</span>
+                </div>
+
+                <div id="bot-system-event" class="discord-sys-event">
+                  ↳ Trợ lý Kute đã tag @TA-Support
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. TA SYSTEM ACCEPT NOTICE (DYNAMIC) -->
+            <div id="sys-ta-accepted-block" class="discord-sys-event-ta">
+              ✓ TA-Support đã tiếp nhận yêu cầu kiểm tra điểm danh ngày 12/9.
+            </div>
+
+            <!-- 5. TA RESPONSE MESSAGE (DYNAMIC) -->
+            <div id="msg-ta-block" class="discord-msg-row">
+              <div class="msg-avatar" style="background: linear-gradient(135deg, #E79B39, #B87319);">TA</div>
+              <div class="msg-main">
+                <div class="msg-meta-line">
+                  <span class="author-username name-ta">TA-Support</span>
+                  <span class="ta-badge-discord">TA</span>
+                  <span class="msg-timestamp">Hôm nay lúc 20:15</span>
+                </div>
+                <div id="ta-response-content" class="msg-text-content">
+                  Chào bạn Nguyễn Minh, mình đã nhận được yêu cầu. Mình sẽ kiểm tra thông tin điểm danh ngày 12/9 cho bạn.
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Chat Input Bar -->
+          <div class="chat-input-wrapper">
+            <div class="chat-input-pill">
+              <div class="input-plus-circle">+</div>
+              <input type="text" id="chat-user-input" class="input-text-field" placeholder="Nhập câu hỏi hoặc chọn test case ở trên..." onkeydown="handleInputKey(event)">
+              <button class="input-send-btn" onclick="sendCustomMessage()">Gửi ↵</button>
+              <div class="input-action-icons">
+                <span>🎁</span>
+                <span>GIF</span>
+                <span>🙂</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== RIGHT: AI INSPECTOR & TA HANDOFF ==================== -->
+      <section class="ai-inspector-panel">
+
+        <!-- CARD 1: AI DECISION WORKFLOW -->
+        <div class="ai-decision-card">
+          <div class="panel-topbar">
+            <h2>
+              <span>⚡ AI Decision Pipeline</span>
+            </h2>
+            <span id="badge-ai-flow-status" class="status-pill-header">
+              Chờ phân tích
+            </span>
+          </div>
+
+          <div class="pipeline-steps">
+            <!-- Step 1 -->
+            <div id="p-step-1" class="pipe-step">
+              <div class="pipe-step-header">
+                <span class="pipe-step-label">01 · INTENT DETECTION</span>
+                <span id="badge-p-1" class="pipe-badge badge-detected" style="display: none;">Detected</span>
+              </div>
+              <div id="val-p-1" class="pipe-step-value">Kiểm tra trạng thái điểm danh cá nhân</div>
+            </div>
+
+            <!-- Step 2 -->
+            <div id="p-step-2" class="pipe-step">
+              <div class="pipe-step-header">
+                <span class="pipe-step-label">02 · DATA REQUIRED</span>
+              </div>
+              <div id="val-p-2" class="pipe-step-value">Dữ liệu điểm danh của học viên ngày 12/9</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div id="p-step-3" class="pipe-step">
+              <div class="pipe-step-header">
+                <span class="pipe-step-label">03 · ACCESS CHECK</span>
+                <span id="badge-p-3" class="pipe-badge badge-no-access" style="display: none;">NO ACCESS</span>
+              </div>
+              <div class="pipe-step-value" id="val-p-3">Bot có quyền truy cập? —</div>
+            </div>
+
+            <!-- Step 4 -->
+            <div id="p-step-4" class="pipe-step">
+              <div class="pipe-step-header">
+                <span class="pipe-step-label">04 · DECISION LOGIC</span>
+              </div>
+
+              <!-- 3 Pill Choices -->
+              <div class="action-cards-row">
+                <div id="pill-ans" class="action-choice-pill pill-answer faded">ANSWER</div>
+                <div id="pill-cla" class="action-choice-pill pill-clarify faded">CLARIFY</div>
+                <div id="pill-esc" class="action-choice-pill pill-escalate">ESCALATE</div>
+              </div>
+
+              <!-- Selected Reason -->
+              <div id="box-esc-reason" class="escalate-reason-box" style="display: none;">
+                <strong id="box-esc-title">Selected: ESCALATE</strong><br>
+                <span id="box-esc-desc">Yêu cầu cần dữ liệu cá nhân mà bot không được phép truy cập.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: TA HANDOFF CARD -->
+        <div id="card-ta-handoff" class="ta-handoff-box" style="opacity: 0.55; pointer-events: none;">
+          <div class="handoff-header-row">
+            <h3>
+              <span>📋 TA Handoff Ticket</span>
+              <span class="badge-auto-summary">AUTO SUMMARY</span>
+            </h3>
+            <span id="ta-ticket-status" class="status-tag-waiting">Waiting for TA</span>
+          </div>
+
+          <div class="ticket-content-discord">
+            <div class="t-row">
+              <span class="t-label">Target Recipient:</span>
+              <span id="ticket-recipient" class="t-value" style="color: #C9CDFB;">@TA-Support</span>
+            </div>
+            <div class="t-row">
+              <span class="t-label">Student:</span>
+              <span id="ticket-student" class="t-value">Nguyễn Minh (ID: T048-02891)</span>
+            </div>
+            <div class="t-row">
+              <span class="t-label">Request:</span>
+              <span id="ticket-request" class="t-value">Kiểm tra xem học viên có bị ghi vắng trong buổi ngày 12/9 hay không.</span>
+            </div>
+            <div class="t-row">
+              <span class="t-label">Reason for escalation:</span>
+              <span id="ticket-reason" class="t-value" style="color: #FA777C;">Đây là dữ liệu điểm danh cá nhân. Bot không có quyền truy cập và không thể xác minh.</span>
+            </div>
+            <div class="t-row">
+              <span class="t-label">Requested action:</span>
+              <span id="ticket-action" class="t-value">Vui lòng kiểm tra attendance record và phản hồi trực tiếp cho học viên.</span>
+            </div>
+            <div class="t-footer">
+              <span>Context packaged automatically</span>
+              <span id="ticket-time">Generated by AI · 20:14</span>
+            </div>
+          </div>
+
+          <!-- TA Button -->
+          <button id="btn-ta-action" class="btn-ta-accept-discord" disabled onclick="acceptTARequest()">
+            <span id="btn-ta-text">TA tiếp nhận yêu cầu</span>
+          </button>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- ==================== 3. BOTTOM SECTION: SAFETY & VALUE ==================== -->
+    <section class="bottom-insights">
+      
+      <!-- Safety Rule Bar -->
+      <div class="safety-rule-card">
+        <div class="safety-tag-title">
+          <span>🛡 AI Safety Rule</span>
+        </div>
+        <div class="safety-core-rule">
+          Không có quyền truy cập ≠ không biết thì đoán.
+        </div>
+        <div class="safety-sub-rule">
+          If the answer requires private data the AI cannot access → <strong>ESCALATE</strong>
+        </div>
+      </div>
+
+      <!-- Before vs After -->
+      <div class="value-cards-bar">
+        <div class="val-block before">
+          <div class="val-head before">
+            <span>BEFORE · Bot cố trả lời</span>
+            <span style="font-size: 11px;">Rủi ro Hallucination</span>
+          </div>
+          <ul class="val-bullets">
+            <li>Không có quyền truy cập dữ liệu cá nhân</li>
+            <li>Có nguy cơ đoán sai ("chắc bạn không vắng đâu")</li>
+            <li>TA phải lội toàn bộ chatlog để hiểu học viên cần gì</li>
+          </ul>
+        </div>
+
+        <div class="val-block after">
+          <div class="val-head after">
+            <span>AFTER · Bot biết giới hạn</span>
+            <span style="font-size: 11px; background: rgba(35, 165, 90, 0.2); padding: 1px 6px; border-radius: 4px;">Safe & Grounded</span>
+          </div>
+          <ul class="val-bullets">
+            <li>Nhận diện chính xác yêu cầu hồ sơ cá nhân</li>
+            <li>Tuyệt đối không suy đoán kết quả</li>
+            <li>Đóng gói sẵn context để TA xử lý ngay lập tức</li>
+          </ul>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== 4. FOOTER QUOTE ==================== -->
+    <footer class="pitch-footer-quote">
+      “AI tốt không phải lúc nào cũng trả lời. AI tốt phải biết khi nào cần chuyển cho con người.”
+      <span>— 1 user · 1 job · 1 AI decision · 1 measurable outcome</span>
+    </footer>
+
+  </div>
+
+  <!-- ==========================================================================
+       INTERACTIVE JAVASCRIPT & 5 RICH TEST CASES FROM DISCORD DATASET
+       ========================================================================== -->
+  <script>
+    // 5 TEST CASES GROUNDED IN DATASET & SPEC
+    const testCases = {
+      1: {
+        id: "M_ATTENDANCE_12_9",
+        studentName: "T048-NGUYỄN ĐỨC MINH-02891",
+        studentAvatar: "NM",
+        avatarBg: "linear-gradient(135deg, #2D7A64, #4BAE91)",
+        time: "Hôm nay lúc 20:14",
+        question: "@Trợ lý Kute em có bị vắng buổi 12/9 không?",
+        tag: "🔒 Personal attendance query · Điểm danh",
+        intent: "Kiểm tra trạng thái điểm danh cá nhân",
+        dataRequired: "Dữ liệu điểm danh của học viên ngày 12/9",
+        accessCheckText: "Bot có quyền truy cập? <strong style='color: #FA777C;'>NO</strong>",
+        accessBadge: "NO ACCESS",
+        accessBadgeClass: "badge-no-access",
+        decision: "ESCALATE",
+        reason: "Yêu cầu cần dữ liệu cá nhân mà bot không được phép truy cập.",
+        typingText: "Phát hiện câu hỏi về dữ liệu điểm danh cá nhân",
+        chipText: "PERSONAL DATA DETECTED",
+        botReply: "Mình không thể kiểm tra trạng thái điểm danh cá nhân của bạn vì mình không có quyền truy cập dữ liệu điểm danh.<br><br>Mình sẽ chuyển câu hỏi này cho TA để kiểm tra giúp bạn. Mình sẽ gửi kèm thông tin cần thiết để TA xử lý nhanh hơn.",
+        assurances: [
+          { text: "✓ Không suy đoán", class: "tag-no-guess" },
+          { text: "✓ Chuyển đúng người", class: "tag-handoff" }
+        ],
+        sysEvent: "↳ Trợ lý Kute đã tag @TA-Support",
+        handoffTicket: {
+          recipient: "@TA-Support",
+          student: "Nguyễn Minh (ID: T048-02891)",
+          request: "Kiểm tra xem học viên có bị ghi vắng trong buổi ngày 12/9 hay không.",
+          reason: "Đây là dữ liệu điểm danh cá nhân. Bot không có quyền truy cập và không thể xác minh.",
+          action: "Vui lòng kiểm tra attendance record và phản hồi trực tiếp cho học viên."
+        },
+        taSysMsg: "✓ TA-Support đã tiếp nhận yêu cầu kiểm tra điểm danh ngày 12/9.",
+        taReply: "Chào bạn Nguyễn Minh, mình đã nhận được yêu cầu. Mình sẽ kiểm tra thông tin điểm danh ngày 12/9 cho bạn."
+      },
+      2: {
+        id: "M45740",
+        studentName: "T029-LÊ VĂN VIỆT-02504",
+        studentAvatar: "LV",
+        avatarBg: "linear-gradient(135deg, #1E5C85, #469BD2)",
+        time: "Hôm nay lúc 14:32",
+        question: "@Trợ lý Kute mình đặt sai cú pháp khi tham gia zoom workshop nên không được ghi nhận, mình nên xử lí như nào?",
+        tag: "🔒 Personal zoom log query · Sửa điểm danh",
+        intent: "Yêu cầu điều chỉnh ghi nhận điểm danh Workshop Zoom (M45740)",
+        dataRequired: "Log Zoom tham gia và quyền can thiệp database của BTC",
+        accessCheckText: "Bot có quyền truy cập? <strong style='color: #FA777C;'>NO</strong>",
+        accessBadge: "NO ACCESS",
+        accessBadgeClass: "badge-no-access",
+        decision: "ESCALATE",
+        reason: "Yêu cầu sửa đổi hồ sơ điểm danh. Bot không có quyền can thiệp dữ liệu điểm danh.",
+        typingText: "Phát hiện yêu cầu can thiệp điểm danh cá nhân (M45740)",
+        chipText: "ESCALATION REQUIRED",
+        botReply: "Chào bạn Việt! Trợ lý không thể tự ý sửa đổi danh sách điểm danh Zoom do không có quyền can thiệp hệ thống.<br><br>Để đảm bảo quyền lợi và tránh mất điểm oan, mình đã tạo yêu cầu và chuyển tới TA phụ trách để đối chiếu log Zoom và cập nhật điểm danh cho bạn nhé!",
+        assurances: [
+          { text: "✓ Tránh mất điểm oan", class: "tag-no-guess" },
+          { text: "✓ Chuyển đúng TA xử lý", class: "tag-handoff" }
+        ],
+        sysEvent: "↳ Trợ lý Kute đã tag @TA-Support",
+        handoffTicket: {
+          recipient: "@TA-Support",
+          student: "Lê Văn Việt (ID: T029-02504)",
+          request: "Học viên sai cú pháp Zoom workshop, cần đối soát log tham dự để cộng điểm bù.",
+          reason: "Yêu cầu điều chỉnh hồ sơ điểm danh cá nhân. Bot không được phép can thiệp record.",
+          action: "Vui lòng mở log Zoom ngày 12/9, tra cứu theo email học viên và cập nhật điểm danh."
+        },
+        taSysMsg: "✓ TA-Support đã tiếp nhận yêu cầu đối soát log Zoom.",
+        taReply: "Chào bạn Việt, mình đã nhận được case. Mình sẽ kiểm tra log Zoom theo email của bạn và cập nhật bổ sung nhé!"
+      },
+      3: {
+        id: "M84993",
+        studentName: "T101-NGUYỄN VĂN HUY-02420",
+        studentAvatar: "VH",
+        avatarBg: "linear-gradient(135deg, #7C3AED, #A78BFA)",
+        time: "Hôm nay lúc 16:05",
+        question: "@Trợ lý Kute check xem t đã nộp bài codelab chưa",
+        tag: "🔒 Personal submission record · CodeLab",
+        intent: "Tra cứu trạng thái nộp bài cá nhân trên CodeLab (M84993)",
+        dataRequired: "Hồ sơ bài nộp và tài khoản CodeLab riêng của học viên",
+        accessCheckText: "Bot có quyền truy cập? <strong style='color: #FA777C;'>NO</strong>",
+        accessBadge: "NO ACCESS",
+        accessBadgeClass: "badge-no-access",
+        decision: "ESCALATE",
+        reason: "Bot không có quyền truy cập tài khoản CodeLab của từng học viên.",
+        typingText: "Phát hiện yêu cầu tra cứu bài nộp cá nhân (M84993)",
+        chipText: "NO CODELAB API ACCESS",
+        botReply: "Mình không có quyền truy cập tài khoản CodeLab riêng của bạn để kiểm tra trạng thái nộp bài.<br><br>Mình sẽ không phỏng đoán giờ chấm hay suy đoán kết quả. Mình đã chuyển thông tin cho TA phụ trách bài tập để kiểm tra trực tiếp cho bạn.",
+        assurances: [
+          { text: "✓ Không phỏng đoán giờ nộp", class: "tag-no-guess" },
+          { text: "✓ Đối soát trực tiếp", class: "tag-handoff" }
+        ],
+        sysEvent: "↳ Trợ lý Kute đã tag @TA-Support",
+        handoffTicket: {
+          recipient: "@TA-Support",
+          student: "Nguyễn Văn Huy (ID: T101-02420)",
+          request: "Học viên cần kiểm tra xem bài CodeLab đã được hệ thống ghi nhận chưa.",
+          reason: "Hồ sơ bài nộp cá nhân trên CodeLab. Bot không có quyền truy xuất trực tiếp.",
+          action: "Vui lòng kiểm tra dashboard chấm bài CodeLab và báo lại trạng thái cho học viên."
+        },
+        taSysMsg: "✓ TA-Support đã tiếp nhận yêu cầu đối soát bài CodeLab.",
+        taReply: "Chào bạn Huy, mình sẽ mở hệ thống CodeLab kiểm tra commit của bạn ngay nhé."
+      },
+      4: {
+        id: "GENERAL_FAQ",
+        studentName: "T107-VŨ VIỆT HOÀNG-02398",
+        studentAvatar: "VH",
+        avatarBg: "linear-gradient(135deg, #059669, #34D399)",
+        time: "Hôm nay lúc 16:28",
+        question: "@Trợ lý Kute các repo nộp bài lab để ở chế độ private được không hay bắt buộc phải public nhỉ",
+        tag: "🌐 General Policy · Quy định nộp bài",
+        intent: "Hỏi quy định chung về quyền truy cập repository nộp bài",
+        dataRequired: "Tài liệu quy định chính thức AI20K Build Phase",
+        accessCheckText: "Bot có quyền truy cập? <strong style='color: #57F287;'>YES</strong>",
+        accessBadge: "PUBLIC DOCS",
+        accessBadgeClass: "badge-detected",
+        decision: "ANSWER",
+        reason: "Câu hỏi về quy định chung có sẵn trong tài liệu. Bot tự tin trả lời chính xác.",
+        typingText: "Truy xuất tài liệu quy định khóa học...",
+        chipText: "GROUNDED FAQ",
+        botReply: "Chào bạn nhé! Về việc để repo nộp các bài lab và dự án, bạn nên ưu tiên sử dụng repo trong <strong>Organization chính thức</strong> (<code>github.com/AI20K-Build-Phase-Cohort-4</code>).<br><br>Quyền truy cập: Việc để repo trong Org giúp Mentor và Mod có thể theo dõi tiến độ, hỗ trợ debug và chấm bài cho bạn dễ dàng hơn nhé!",
+        assurances: [
+          { text: "✓ Trả lời có căn cứ", class: "tag-no-guess" },
+          { text: "✓ Tự xử lý · Không làm phiền TA", class: "tag-handoff" }
+        ],
+        sysEvent: "↳ Đã trích dẫn từ cẩm nang AI20K Build Phase",
+        handoffTicket: {
+          recipient: "None (Bot resolved)",
+          student: "Vũ Việt Hoàng (ID: T107-02398)",
+          request: "Quy định về chế độ private/public cho repo nộp bài.",
+          reason: "Quy định chung đã công khai, bot tự trả lời đúng 100%.",
+          action: "Không cần TA can thiệp. Tiết kiệm thời gian cho đội ngũ vận hành."
+        },
+        taSysMsg: "✓ Case đã được Bot tự giải quyết thành công.",
+        taReply: "Không cần TA trả lời bổ sung."
+      },
+      5: {
+        id: "M55443",
+        studentName: "T152-ĐÀO NGỌC BÌNH THIÊN-02814",
+        studentAvatar: "BT",
+        avatarBg: "linear-gradient(135deg, #D97706, #FBBF24)",
+        time: "Hôm nay lúc 18:21",
+        question: "@Trợ lý Kute check điểm danh như nào",
+        tag: "❓ Ambiguous Query · Chưa rõ ý định",
+        intent: "Hỏi về điểm danh nhưng chưa rõ loại hoạt động hay hồ sơ cá nhân",
+        dataRequired: "Chưa đủ thông tin để xác định phạm vi câu hỏi",
+        accessCheckText: "Bot có quyền truy cập? <strong style='color: #F0B232;'>CẦN LÀM RÕ</strong>",
+        accessBadge: "NEED CONTEXT",
+        accessBadgeClass: "badge-detected",
+        decision: "CLARIFY",
+        reason: "Câu hỏi chưa rõ ý định. Bot chủ động hỏi lại thay vì đoán mò hoặc quăng menu lạc đề.",
+        typingText: "Phát hiện câu hỏi chưa rõ phạm vi...",
+        chipText: "INTENT CLARIFICATION",
+        botReply: "Bạn muốn hỏi về <strong>quy tắc điểm danh tự động qua Zoom</strong> của chương trình, hay bạn đang cần <strong>kiểm tra xem buổi học cụ thể nào của mình đã được ghi nhận chưa</strong>?<br><br>Bạn nói rõ thêm một chút để mình hỗ trợ đúng nhu cầu hoặc chuyển TA giúp bạn nhé!",
+        assurances: [
+          { text: "✓ Hỏi lại đúng trọng tâm", class: "tag-no-guess" },
+          { text: "✓ Không ép dùng menu rối rắm", class: "tag-handoff" }
+        ],
+        sysEvent: "↳ Đang chờ học viên cung cấp thêm ngữ cảnh",
+        handoffTicket: {
+          recipient: "Chờ làm rõ",
+          student: "Đào Ngọc Bình Thiên (ID: T152-02814)",
+          request: "Check điểm danh như nào (chưa rõ ngữ cảnh).",
+          reason: "Ý định mơ hồ. Bot đang hỏi lại để phân luồng chính xác.",
+          action: "Chờ phản hồi từ học viên trước khi quyết định Answer hay Escalate."
+        },
+        taSysMsg: "✓ Đang chờ học viên phản hồi làm rõ thông tin.",
+        taReply: "Học viên chưa cần TA hỗ trợ ngay lúc này."
+      }
+    };
+
+    let currentCaseId = 1;
+    let isProcessing = false;
+    let isEscalated = false;
+    let isAccepted = false;
+    let timerId = null;
+
+    function selectTestCase(caseId) {
+      if (isProcessing) return;
+      currentCaseId = caseId;
+
+      // Update active tabs
+      for (let i = 1; i <= 5; i++) {
+        const tab = document.getElementById(`tab-case-1`);
+        const el = document.getElementById(`tab-case-${i}`);
+        if (el) {
+          if (i === caseId) el.classList.add('active');
+          else el.classList.remove('active');
+        }
+      }
+
+      loadCurrentCaseUI();
+      resetDemo();
+    }
+
+    function loadCurrentCaseUI() {
+      const c = testCases[currentCaseId];
+
+      // Student info in Discord
+      document.getElementById('msg-student-avatar').textContent = c.studentAvatar;
+      document.getElementById('msg-student-avatar').style.background = c.avatarBg;
+      document.getElementById('msg-student-author').textContent = c.studentName;
+      document.getElementById('msg-student-time').textContent = c.time;
+      document.getElementById('msg-student-text').innerHTML = `<span class="discord-mention">@Trợ lý Kute</span> ${c.question.replace('@Trợ lý Kute ', '')}`;
+      document.getElementById('msg-student-tag').textContent = c.tag;
+
+      // Sidebar Mini User
+      document.getElementById('side-user-avatar').textContent = c.studentAvatar;
+      document.getElementById('side-user-name').textContent = c.studentName.split('-')[1] || c.studentName;
+
+      // Reply Reference
+      document.getElementById('reply-to-user').textContent = `@${c.studentName}`;
+      document.getElementById('reply-to-snippet').textContent = c.question.replace('@Trợ lý Kute ', '');
+
+      // Pipeline Initial text
+      document.getElementById('val-p-1').textContent = c.intent;
+      document.getElementById('val-p-2').textContent = c.dataRequired;
+
+      // Ticket
+      document.getElementById('ticket-recipient').textContent = c.handoffTicket.recipient;
+      document.getElementById('ticket-student').textContent = c.handoffTicket.student;
+      document.getElementById('ticket-request').textContent = c.handoffTicket.request;
+      document.getElementById('ticket-reason').textContent = c.handoffTicket.reason;
+      document.getElementById('ticket-action').textContent = c.handoffTicket.action;
+
+      // Input Field Placeholder
+      document.getElementById('chat-user-input').value = "";
+      document.getElementById('chat-user-input').placeholder = `Thử câu hỏi: "${c.question.replace('@Trợ lý Kute ', '')}"`;
+    }
+
+    function runAIDecision() {
+      if (isProcessing || isEscalated) return;
+      isProcessing = true;
+
+      const c = testCases[currentCaseId];
+      const btnRun = document.getElementById('btn-run');
+      btnRun.disabled = true;
+      btnRun.innerHTML = '<span>⏳ Đang phân tích...</span>';
+
+      // 1. Show Typing Status in Discord
+      const typingBox = document.getElementById('typing-box');
+      const typingLabel = document.getElementById('typing-label');
+      const typingSpinner = document.getElementById('typing-spinner');
+      const chipPersonal = document.getElementById('chip-personal-data');
+
+      typingBox.style.display = 'flex';
+      typingSpinner.style.display = 'flex';
+      typingLabel.textContent = 'Trợ lý Kute đang xác định loại yêu cầu...';
+      chipPersonal.style.display = 'none';
+
+      // 2. Right panel progressive pipeline
+      const badgeStatus = document.getElementById('badge-ai-flow-status');
+      badgeStatus.style.backgroundColor = 'var(--blurple-bg)';
+      badgeStatus.style.color = '#C9CDFB';
+      badgeStatus.textContent = 'Analyzing';
+
+      document.getElementById('p-step-1').classList.add('active');
+      document.getElementById('badge-p-1').style.display = 'inline-block';
+
+      timerId = setTimeout(() => {
+        // Step 2 & 3: Data & Access Check
+        document.getElementById('p-step-2').classList.add('active');
+        document.getElementById('p-step-3').classList.add('active');
+
+        const badgeP3 = document.getElementById('badge-p-3');
+        badgeP3.style.display = 'inline-block';
+        badgeP3.className = `pipe-badge ${c.accessBadgeClass}`;
+        badgeP3.textContent = c.accessBadge;
+
+        document.getElementById('val-p-3').innerHTML = c.accessCheckText;
+
+        // Step 4: Decision logic
+        document.getElementById('p-step-4').classList.add('active');
+        document.getElementById('pill-ans').className = 'action-choice-pill pill-answer faded';
+        document.getElementById('pill-cla').className = 'action-choice-pill pill-clarify faded';
+        document.getElementById('pill-esc').className = 'action-choice-pill pill-escalate faded';
+
+        if (c.decision === 'ESCALATE') {
+          document.getElementById('pill-esc').className = 'action-choice-pill pill-escalate active';
+        } else if (c.decision === 'ANSWER') {
+          document.getElementById('pill-ans').className = 'action-choice-pill pill-answer active';
+        } else if (c.decision === 'CLARIFY') {
+          document.getElementById('pill-cla').className = 'action-choice-pill pill-clarify active';
+        }
+
+        document.getElementById('box-esc-title').textContent = `Selected: ${c.decision}`;
+        document.getElementById('box-esc-desc').textContent = c.reason;
+        document.getElementById('box-esc-reason').style.display = 'block';
+
+        // Update Discord typing status banner
+        typingSpinner.style.display = 'none';
+        typingLabel.textContent = c.typingText;
+        chipPersonal.textContent = c.chipText;
+        chipPersonal.style.display = 'inline-block';
+
+        // 3. Reveal Bot Response Message
+        setTimeout(() => {
+          document.getElementById('bot-response-content').innerHTML = c.botReply;
+
+          // Render assurances
+          const tagsContainer = document.getElementById('bot-tags-container');
+          tagsContainer.innerHTML = c.assurances.map(a => `<span class="assurance-tag ${a.class}">${a.text}</span>`).join('');
+
+          document.getElementById('bot-system-event').textContent = c.sysEvent;
+          document.getElementById('msg-bot-block').style.display = 'flex';
+
+          // Unlock TA Handoff Box
+          const taCard = document.getElementById('card-ta-handoff');
+          const btnTA = document.getElementById('btn-ta-action');
+          const ticketStatus = document.getElementById('ta-ticket-status');
+
+          if (c.decision === 'ESCALATE') {
+            taCard.style.opacity = '1';
+            taCard.style.pointerEvents = 'auto';
+            btnTA.disabled = false;
+            btnTA.style.display = 'inline-flex';
+            document.getElementById('btn-ta-text').textContent = 'TA tiếp nhận yêu cầu';
+            btnTA.style.backgroundColor = '#F0B232';
+            ticketStatus.textContent = 'Waiting for TA';
+            ticketStatus.className = 'status-tag-waiting';
+          } else {
+            taCard.style.opacity = '0.85';
+            taCard.style.pointerEvents = 'none';
+            btnTA.disabled = true;
+            btnTA.style.display = 'none';
+            ticketStatus.textContent = c.decision === 'ANSWER' ? 'Bot Resolved' : 'Clarifying';
+            ticketStatus.className = c.decision === 'ANSWER' ? 'status-tag-accepted' : 'status-tag-waiting';
+          }
+
+          badgeStatus.style.backgroundColor = c.decision === 'ESCALATE' ? 'var(--blurple-bg)' : (c.decision === 'ANSWER' ? 'var(--green-bg)' : 'var(--yellow-bg)');
+          badgeStatus.style.color = c.decision === 'ESCALATE' ? '#C9CDFB' : (c.decision === 'ANSWER' ? '#57F287' : '#F0B232');
+          badgeStatus.textContent = c.decision;
+
+          btnRun.innerHTML = `<span>✓ Decision: ${c.decision}</span>`;
+          isProcessing = false;
+          isEscalated = true;
+        }, 500);
+
+      }, 800);
+    }
+
+    function acceptTARequest() {
+      if (!isEscalated || isAccepted) return;
+      isAccepted = true;
+
+      const c = testCases[currentCaseId];
+
+      // Update TA Ticket UI
+      const ticketStatus = document.getElementById('ta-ticket-status');
+      ticketStatus.textContent = 'ACCEPTED · Handling';
+      ticketStatus.className = 'status-tag-accepted';
+
+      const btnTA = document.getElementById('btn-ta-action');
+      btnTA.disabled = true;
+      btnTA.innerHTML = '<span>✓ TA is handling this request</span>';
+      btnTA.style.backgroundColor = 'var(--green)';
+      btnTA.style.color = '#FFFFFF';
+
+      // Update Discord Chat
+      const sysBlock = document.getElementById('sys-ta-accepted-block');
+      sysBlock.textContent = c.taSysMsg;
+      sysBlock.style.display = 'flex';
+
+      document.getElementById('ta-response-content').textContent = c.taReply;
+
+      setTimeout(() => {
+        document.getElementById('msg-ta-block').style.display = 'flex';
+      }, 400);
+    }
+
+    function resetDemo() {
+      if (timerId) clearTimeout(timerId);
+
+      isProcessing = false;
+      isEscalated = false;
+      isAccepted = false;
+
+      // Reset Buttons
+      const btnRun = document.getElementById('btn-run');
+      btnRun.disabled = false;
+      btnRun.innerHTML = '<span>▶ Run AI Decision</span>';
+
+      const btnTA = document.getElementById('btn-ta-action');
+      btnTA.disabled = true;
+      document.getElementById('btn-ta-text').textContent = 'TA tiếp nhận yêu cầu';
+      btnTA.style.backgroundColor = '#F0B232';
+      btnTA.style.color = '#111214';
+
+      // Reset Discord Chat
+      document.getElementById('typing-box').style.display = 'none';
+      document.getElementById('msg-bot-block').style.display = 'none';
+      document.getElementById('sys-ta-accepted-block').style.display = 'none';
+      document.getElementById('msg-ta-block').style.display = 'none';
+
+      // Reset AI Pipeline
+      const badgeStatus = document.getElementById('badge-ai-flow-status');
+      badgeStatus.style.backgroundColor = '#1E1F22';
+      badgeStatus.style.color = 'var(--text-muted)';
+      badgeStatus.textContent = 'Chờ phân tích';
+
+      document.getElementById('p-step-1').classList.remove('active');
+      document.getElementById('badge-p-1').style.display = 'none';
+
+      document.getElementById('p-step-2').classList.remove('active');
+
+      document.getElementById('p-step-3').classList.remove('active');
+      document.getElementById('badge-p-3').style.display = 'none';
+      document.getElementById('val-p-3').textContent = 'Bot có quyền truy cập? —';
+
+      document.getElementById('p-step-4').classList.remove('active');
+      document.getElementById('pill-ans').className = 'action-choice-pill pill-answer faded';
+      document.getElementById('pill-cla').className = 'action-choice-pill pill-clarify faded';
+      document.getElementById('pill-esc').className = 'action-choice-pill pill-escalate';
+      document.getElementById('box-esc-reason').style.display = 'none';
+
+      // Reset TA Handoff Box
+      const taCard = document.getElementById('card-ta-handoff');
+      taCard.style.opacity = '0.55';
+      taCard.style.pointerEvents = 'none';
+
+      const ticketStatus = document.getElementById('ta-ticket-status');
+      ticketStatus.textContent = 'Waiting for TA';
+      ticketStatus.className = 'status-tag-waiting';
+    }
+
+    function handleInputKey(event) {
+      if (event.key === 'Enter') {
+        sendCustomMessage();
+      }
+    }
+
+    function sendCustomMessage() {
+      const input = document.getElementById('chat-user-input');
+      const val = input.value.trim();
+      if (!val) return;
+
+      const lower = val.toLowerCase();
+      // Classify user input to best matching test case
+      if (lower.includes('repo') || lower.includes('public') || lower.includes('private') || lower.includes('quy định')) {
+        selectTestCase(4);
+      } else if (lower.includes('zoom') || lower.includes('cú pháp') || lower.includes('workshop')) {
+        selectTestCase(2);
+      } else if (lower.includes('codelab') || lower.includes('lab') || lower.includes('nộp')) {
+        selectTestCase(3);
+      } else if (lower.includes('như nào') || lower.includes('sao') || lower.length < 25) {
+        selectTestCase(5);
+      } else {
+        selectTestCase(1);
+      }
+
+      // Override with user typed text
+      document.getElementById('msg-student-text').innerHTML = `<span class="discord-mention">@Trợ lý Kute</span> ${val.replace('@Trợ lý Kute', '')}`;
+      document.getElementById('reply-to-snippet').textContent = val.replace('@Trợ lý Kute', '');
+
+      // Trigger AI decision
+      setTimeout(() => {
+        runAIDecision();
+      }, 200);
+    }
+
+    // Initialize on load
+    loadCurrentCaseUI();
+  </script>
+
+</body>
+</html>

@@ -4,14 +4,14 @@
 
 ## 👥 Thành viên nhóm & Phân công vai trò
 
-**Lớp:** 3A · **Phòng:** ____ · **Cụm:** ____ · **Track:** ____
+**Lớp:** 3A · **Phòng:** E403 · **Cụm:** 2 · **Track:** ____
 
 | Họ và Tên | Mã Học Viên | Vai trò chính | Phần việc đảm nhiệm trong dự án |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| Nguyễn Đức Thắng | 2A202602605 |  |  | 
+| Trần Anh Quân | 2A202602598 |  | Thiết kế giao diện người dùng và frontend | 
+| Nguyễn Hải Long | 2A202602471 |  | Xử lý dữ liệu và huấn luyện/tinh chỉnh mô hình | 
+| Ngô Tiến Dũng | 2A202602374 |  | Kiểm thử, viết tài liệu và báo cáo | 
 
 > Nhóm copy nguyên file README này về repo của mình, rồi điền bảng trên. Cột **Phần việc đảm nhiệm** ghi càng cụ thể càng tốt.
 

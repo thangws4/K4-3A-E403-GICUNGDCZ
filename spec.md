@@ -103,7 +103,7 @@ Loại: [X] Tối ưu tính năng có sẵn  [ ] Tính năng mới
   | Thành phần | CP2 (luồng) | CP3 → demo |
   |---|---|---|
   | Giao diện kênh Discord + hàng đợi TA | Mock (HTML tĩnh) | Mock |
-  | **Phân loại intent + độ tin + tóm tắt** | Mock (luật từ khoá `classify()`) | **Thật: 1 lời gọi LLM trả JSON** `{intent, confidence, record_type, urgent, injection, summary, reasons}` |
+  | **Phân loại intent + độ tin + tóm tắt** | Mock (luật từ khoá `classify()`) | **Thật (đã làm ở CP3):** 1 lời gọi Gemini (`codebase/decision/decide.py`) trả JSON `{intent, confidence, record_type, urgent, injection, faq_id, summary, reasons}`; mỗi lời gọi ghi log prompt + phản hồi thô |
   | Nguồn chính thức (FAQ) | Mock, 3 mục giả | Mock, nội dung chép từ thông báo thật của khoá |
   | Tag TA, câu trả lời của TA | Mock | Mock |
   | Nhật ký sửa sai | Mock (hiển thị) | Xuất JSON để bổ sung golden set |
@@ -158,10 +158,29 @@ Loại: [X] Tối ưu tính năng có sẵn  [ ] Tính năng mới
 - Mọi câu trả lời không chuyển TA đều phải có **nguồn**.
 
 ## §7. Kiểm thử
-- Chiều chất lượng + định nghĩa kiểm chứng được:
-- Golden set (≥20 case theo cơ cấu trong guide §2.6, file trong eval/):
-- Quality bar (chốt từ hạn chốt spec của khoá, giữ nguyên sau đó): "Đạt khi ≥ ___% qua bộ, và ___"
-- Kết quả các lượt chạy (bảng % — cập nhật đến trước CP6):
+- **Chiều chất lượng + định nghĩa kiểm chứng được:** chấm tự động bằng [`eval/run_eval.py`](eval/run_eval.py) trên JSON thật của LLM.
+  - **Định tuyến đúng:** `route` (do luật cố định tính từ JSON của LLM) nằm trong các route chấp nhận của ca.
+  - **Cờ đúng:** `urgent` (sát hạn nộp / bị chặn) và `injection` (tin chứa chỉ dẫn cho bot) khớp kỳ vọng.
+  - **Có căn cứ:** khi `route = answer` thì `faq_id` phải đúng mục; không có mục phù hợp thì phải `no_grounding`.
+  - **Hợp lệ:** gọi API và parse JSON thành công. Ca lỗi gọi API **tính là không đạt**.
+  - *(Bổ sung cho lượt 2)* summary không được khẳng định trạng thái hồ sơ.
+- **Golden set:** [`eval/golden_set.json`](eval/golden_set.json), mô tả ở [`eval/golden-set.md`](eval/golden-set.md). **25 ca**, trong đó **18 ca từ dữ liệu thật** (có `msg_id`).
+
+  | Nhóm | Số ca |
+  |---|---|
+  | Phổ biến hằng ngày | 10 |
+  | ① Nguồn sự thật | 3 |
+  | ② Mơ hồ | 3 |
+  | ③ Ngoài phạm vi / thẩm quyền | 3 |
+  | ④ Đặc thù nghiệp vụ | 3 |
+  | Edge (không dấu, tin kép, chào hỏi) | 3 |
+
+- **Quality bar** (chốt từ hạn chốt spec của khoá, giữ nguyên sau đó): "Đạt khi ≥ ___% qua bộ, và ___" *(chưa chốt, chốt trước 21:00 17/09)*
+- **Kết quả các lượt chạy** (chi tiết và phân tích lỗi: [`eval/run_results.md`](eval/run_results.md)):
+
+  | Lượt | Thời điểm | Model | Thử | Đạt | Tỉ lệ | Ghi chú |
+  |---|---|---|---|---|---|---|
+  | 1 | 17/09 09:46 | gemini-3.5-flash · temp 0 | 25 | 22 | **88%** | H2-1 sai do luật `route()` không hỏi lại câu `GENERAL` độ tin thấp · E1, E2 không đo được (hết quota free tier 20 request/ngày) |
 
 ## §8. Phân công & kế hoạch
 - Phân công có tên: spec / evidence / prompt / code / demo

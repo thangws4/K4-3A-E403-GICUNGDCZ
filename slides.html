@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pitch Deck CP5 · Nhóm GICUNGDCZ · Trợ Lý Biết Mình Không Biết</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       CSS RESET & VARIABLES
+       ========================================================================== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-dark: #0c0e12;
+      --bg-canvas: #12151c;
+      --card-bg: rgba(26, 30, 42, 0.75);
+      --card-solid: #181c26;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-border-glow: rgba(88, 101, 242, 0.35);
+
+      --ink-primary: #f5f7fa;
+      --ink-secondary: #c5cbd6;
+      --ink-muted: #858d9d;
+
+      --blurple: #5865F2;
+      --blurple-light: #7983f5;
+      --blurple-soft: rgba(88, 101, 242, 0.15);
+      --blurple-glow: rgba(88, 101, 242, 0.4);
+
+      --green: #23A55A;
+      --green-light: #57F287;
+      --green-soft: rgba(35, 165, 90, 0.15);
+
+      --amber: #F0B232;
+      --amber-light: #FEE75C;
+      --amber-soft: rgba(240, 178, 50, 0.15);
+
+      --red: #F23F43;
+      --red-light: #FA777C;
+      --red-soft: rgba(242, 63, 67, 0.15);
+
+      --font-main: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    html,
+    body {
+      background: var(--bg-dark);
+      color: var(--ink-primary);
+      font-family: var(--font-main);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.45;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ==========================================================================
+       APP SHELL & SLIDE CONTAINER
+       ========================================================================== */
+    .deck-viewport {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 20%, #171b26 0%, #0a0c10 80%);
+      position: relative;
+      padding: 16px 20px 80px;
+    }
+
+    /* Top Control Bar */
+    .deck-topbar {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(18, 21, 28, 0.85);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      padding: 8px 18px;
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand-tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: var(--ink-primary);
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--blurple);
+      box-shadow: 0 0 10px var(--blurple);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-tool {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--ink-secondary);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-tool:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border-color: var(--card-border-glow);
+    }
+
+    .btn-tool.primary {
+      background: var(--blurple);
+      color: #fff;
+      border-color: var(--blurple-light);
+    }
+
+    .btn-tool.primary:hover {
+      background: #4752c4;
+      box-shadow: 0 0 15px rgba(88, 101, 242, 0.5);
+    }
+
+    .pitch-timer {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--green-light);
+      background: var(--green-soft);
+      border: 1px solid rgba(35, 165, 90, 0.3);
+      padding: 4px 10px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    /* Slide Frame - Standard 16:9 Aspect Ratio */
+    .slide-stage {
+      width: 1340px;
+      height: 754px;
+      max-width: 95vw;
+      max-height: calc(95vw * 9 / 16);
+      aspect-ratio: 16 / 9;
+      position: relative;
+      margin: 50px auto 0;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      background: var(--bg-canvas);
+      overflow: hidden;
+    }
+
+    .slide {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 44px 54px;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      background: radial-gradient(circle at 90% 10%, rgba(88, 101, 242, 0.08) 0%, transparent 60%),
+                  radial-gradient(circle at 10% 90%, rgba(35, 165, 90, 0.04) 0%, transparent 50%),
+                  var(--bg-canvas);
+      opacity: 0;
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+      z-index: 10;
+    }
+
+    /* Slide Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding-bottom: 16px;
+    }
+
+    .slide-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .slide-rubric-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blurple-light);
+      background: var(--blurple-soft);
+      border: 1px solid var(--card-border-glow);
+      padding: 3px 9px;
+      border-radius: 6px;
+      width: fit-content;
+    }
+
+    .slide-title {
+      font-size: 27px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--ink-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slide-subtitle {
+      font-size: 14px;
+      color: var(--ink-secondary);
+      font-weight: 500;
+    }
+
+    .slide-page-indicator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--ink-muted);
+      font-weight: 600;
+    }
+
+    .page-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: 4px 10px;
+      border-radius: 8px;
+      color: var(--ink-primary);
+    }
+
+    /* Slide Body Layouts */
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      height: 100%;
+      align-items: stretch;
+    }
+
+    .grid-3col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      height: 100%;
+      align-items: stretch;
+    }
+
+    .grid-left-heavy {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      height: 100%;
+      align-items: stretch;
+    }
+
+    .grid-right-heavy {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 24px;
+      height: 100%;
+      align-items: stretch;
+    }
+
+    /* Card Components */
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card.highlight {
+      border-color: var(--card-border-glow);
+      background: linear-gradient(145deg, rgba(88, 101, 242, 0.12) 0%, rgba(26, 30, 42, 0.8) 100%);
+    }
+
+    .glass-card.danger {
+      border-color: rgba(242, 63, 67, 0.35);
+      background: linear-gradient(145deg, rgba(242, 63, 67, 0.1) 0%, rgba(26, 30, 42, 0.8) 100%);
+    }
+
+    .glass-card.success {
+      border-color: rgba(35, 165, 90, 0.35);
+      background: linear-gradient(145deg, rgba(35, 165, 90, 0.1) 0%, rgba(26, 30, 42, 0.8) 100%);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink-primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title svg {
+      flex-shrink: 0;
+    }
+
+    /* Stat Box */
+    .stat-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 16px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .stat-number {
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 6px;
+      font-family: var(--font-mono);
+      letter-spacing: -0.03em;
+    }
+
+    .stat-number.red {
+      color: var(--red-light);
+    }
+
+    .stat-number.green {
+      color: var(--green-light);
+    }
+
+    .stat-number.blurple {
+      color: var(--blurple-light);
+    }
+
+    .stat-number.amber {
+      color: var(--amber-light);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-sub {
+      font-size: 11.5px;
+      color: var(--ink-muted);
+      margin-top: 2px;
+    }
+
+    /* Quote Pill / Discord Chat Bubble */
+    .discord-quote {
+      background: #2b2d31;
+      border-radius: 10px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--blurple);
+      font-size: 12.5px;
+      margin-bottom: 10px;
+    }
+
+    .discord-quote.red {
+      border-left-color: var(--red);
+    }
+
+    .discord-quote.green {
+      border-left-color: var(--green);
+    }
+
+    .discord-author {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--ink-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .msg-tag {
+      font-family: var(--font-mono);
+      color: var(--ink-muted);
+      font-size: 10.5px;
+    }
+
+    .discord-text {
+      color: var(--ink-secondary);
+      font-style: italic;
+    }
+
+    .discord-response {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      font-size: 11.5px;
+      color: var(--ink-muted);
+      font-style: normal;
+    }
+
+    .discord-response strong {
+      color: var(--amber-light);
+    }
+
+    /* Table Compact */
+    .table-clean {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+
+    .table-clean th {
+      text-align: left;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ink-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .table-clean td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--ink-secondary);
+      vertical-align: middle;
+    }
+
+    .table-clean tr:last-child td {
+      border-bottom: none;
+    }
+
+    .table-clean td strong {
+      color: var(--ink-primary);
+    }
+
+    /* Flow Badge & Pipeline */
+    .pipeline-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      margin-bottom: 8px;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--blurple);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-primary);
+    }
+
+    .step-desc {
+      font-size: 11.5px;
+      color: var(--ink-muted);
+    }
+
+    /* Slide Footer */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-highlight {
+      color: var(--ink-secondary);
+      font-weight: 600;
+    }
+
+    /* Bottom Deck Navigation */
+    .deck-nav {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(18, 21, 28, 0.9);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      padding: 8px 16px;
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--ink-primary);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: var(--blurple);
+      border-color: var(--blurple-light);
+    }
+
+    .nav-dots {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 8px;
+    }
+
+    .nav-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .nav-dot.active {
+      width: 28px;
+      border-radius: 12px;
+      background: var(--blurple);
+      box-shadow: 0 0 10px var(--blurple);
+    }
+
+    /* Instructions Modal / Tooltip */
+    .print-tip {
+      position: fixed;
+      bottom: 74px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e222d;
+      border: 1px solid var(--card-border-glow);
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-size: 12px;
+      color: var(--ink-secondary);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: none;
+      z-index: 1000;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       PRINT MEDIA QUERY (CHẾ ĐỘ IN RA PDF CHUẨN 6 TRANG)
+       ========================================================================== */
+    @media print {
+      @page {
+        size: 297mm 210mm landscape; /* A4 Ngang Chuẩn */
+        margin: 0;
+      }
+
+      html, body {
+        background: #0c0e12 !important;
+        color: #f5f7fa !important;
+        width: 297mm !important;
+        height: auto !important;
+        overflow: visible !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .deck-viewport {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        width: 297mm !important;
+        display: block !important;
+        min-height: auto !important;
+        overflow: visible !important;
+      }
+
+      .deck-topbar,
+      .deck-nav,
+      .print-tip {
+        display: none !important;
+      }
+
+      .slide-stage {
+        width: 297mm !important;
+        height: auto !important;
+        max-width: none !important;
+        max-height: none !important;
+        aspect-ratio: auto !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        position: static !important;
+        overflow: visible !important;
+      }
+
+      .slide {
+        display: flex !important;
+        opacity: 1 !important;
+        width: 297mm !important;
+        height: 210mm !important;
+        max-height: 210mm !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        padding: 15mm 18mm !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+      }
+
+      .slide:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="deck-viewport">
+
+    <!-- TOPBAR CONTROLS -->
+    <header class="deck-topbar">
+      <div class="brand-tag">
+        <span class="brand-dot"></span>
+        <span>GICUNGDCZ · PITCH DECK</span>
+      </div>
+
+      <div class="top-actions">
+        <div class="pitch-timer" id="pitchTimer" title="Bấm để Đếm ngược / Dừng thời gian pitch">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span id="timerText">05:00</span>
+        </div>
+
+        <button class="btn-tool" onclick="toggleFullscreen()" title="Bật / Tắt toàn màn hình (F)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+          Toàn màn hình
+        </button>
+
+        <button class="btn-tool primary" onclick="exportPDF()" title="In ra PDF (Ctrl + P)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Xuất PDF (CP5)
+        </button>
+      </div>
+    </header>
+
+    <!-- INSTRUCTIONS HINT -->
+    <div class="print-tip" id="printTip">
+      💡 <b>Mẹo xuất PDF:</b> Chọn máy in <i>"Save as PDF"</i> · Khổ <i>A4 Landscape</i> · Lề <i>None</i> · Bật <i>Background graphics</i>.
+    </div>
+
+    <!-- MAIN SLIDE STAGE -->
+    <main class="slide-stage" id="slideStage">
+
+      <!-- ========================================================================
+           SLIDE 1: COVER & PROBLEM DEFINITION
+           ======================================================================== -->
+      <section class="slide active" id="slide-1">
+        <div class="slide-header">
+          <div class="slide-header-left">
+            <span class="slide-rubric-badge">CHECKPOINT 5 · PITCH DECK CHÍNH THỨC</span>
+            <h1 class="slide-title">BIẾT MÌNH KHÔNG BIẾT</h1>
+            <p class="slide-subtitle">Trợ lý Discord tối ưu cho học viên AI20K — Chuyển TA câu hỏi hồ sơ cá nhân thay vì đoán mò</p>
+          </div>
+          <div class="slide-page-indicator">
+            <span class="page-box">01 / 06</span>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2col">
+            <!-- Left Info Card -->
+            <div class="glass-card highlight" style="justify-content: space-between;">
+              <div>
+                <div class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blurple-light)" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                  NHÓM GICUNGDCZ · LỚP 3A · PHÒNG E403
+                </div>
+
+                <p style="font-size: 13.5px; color: var(--ink-secondary); margin-bottom: 16px;">
+                  <b>Track B1:</b> Tối ưu trợ lý học viên Discord hiện có. Giải quyết bài toán then chốt: nhận diện đúng câu hỏi thẩm quyền cá nhân và biết-mình-không-biết.
+                </p>
+
+                <table class="table-clean">
+                  <thead>
+                    <tr>
+                      <th>Thành viên</th>
+                      <th>Mã HV</th>
+                      <th>Vai trò đảm nhiệm</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Nguyễn Đức Thắng</strong></td>
+                      <td>2A202602605</td>
+                      <td>Leader · Data Mining & Điều phối</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Trần Anh Quân</strong></td>
+                      <td>2A202602598</td>
+                      <td>BA · Phỏng vấn & Phân tích Spec</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Nguyễn Hải Long</strong></td>
+                      <td>2A202602471</td>
+                      <td>Dev · Quyết định AI Gemini & Prototype</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Ngô Tiến Dũng</strong></td>
+                      <td>2A202602374</td>
+                      <td>Tester · Thiết kế Golden Set & Eval</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="display: flex; gap: 10px; margin-top: 14px;">
+                <div class="stat-hero" style="flex: 1; padding: 10px;">
+                  <span class="stat-number blurple" style="font-size: 26px;">B1</span>
+                  <span class="stat-label">TRACK THI</span>
+                </div>
+                <div class="stat-hero" style="flex: 1; padding: 10px;">
+                  <span class="stat-number green" style="font-size: 26px;">100%</span>
+                  <span class="stat-label">PYTHON THUẦN</span>
+                </div>
+                <div class="stat-hero" style="flex: 1; padding: 10px;">
+                  <span class="stat-number amber" style="font-size: 26px;">96%</span>
+                  <span class="stat-label">ĐỘ CHÍNH XÁC</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Problem Framing -->
+            <div class="glass-card" style="justify-content: space-between;">
+              <div>
+                <div class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber-light)" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                  CORE JTBD & TUYÊN BỐ VẤN ĐỀ
+                </div>
+
+                <div style="background: rgba(0,0,0,0.25); border-left: 4px solid var(--amber); padding: 12px 14px; border-radius: 8px; margin-bottom: 14px;">
+                  <div style="font-size: 11px; font-weight: 700; color: var(--amber-light); text-transform: uppercase; margin-bottom: 4px;">Job to be Done (Học viên Build Phase)</div>
+                  <div style="font-size: 13.5px; color: var(--ink-primary); font-style: italic;">
+                    "Khi nghi mình chưa được ghi nhận điểm danh, XP hay bài nộp, tôi muốn biết chắc trạng thái của mình và ai sửa được, để khắc phục kịp trước khi mất điểm."
+                  </div>
+                </div>
+
+                <div class="pipeline-step" style="border-color: rgba(242, 63, 67, 0.25);">
+                  <div class="step-num" style="background: var(--red);">!</div>
+                  <div class="step-content">
+                    <div class="step-title" style="color: var(--red-light);">Chỗ đứt gãy nguy hiểm trên Discord hiện tại</div>
+                    <div class="step-desc">
+                      Học viên tag bot hỏi về hồ sơ cá nhân. Bot <b>không có quyền</b> xem hay sửa hồ sơ nhưng lại trả lời lạc đề, phỏng đoán sai hoặc bắt chọn menu. Câu hỏi <b>không bao giờ đến được TA/Mod</b>, khiến học viên hoang mang và đối mặt nguy cơ mất điểm thật.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="background: var(--card-solid); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px 14px;">
+                <div style="font-size: 12px; font-weight: 700; color: var(--green-light); margin-bottom: 2px;">GIẢI PHÁP ĐỘT PHÁ CỦA GICUNGDCZ</div>
+                <div style="font-size: 12.5px; color: var(--ink-secondary);">
+                  AI nhận diện câu hỏi thẩm quyền cá nhân ngay trong 1 lượt → Tóm tắt ngữ cảnh chuẩn xác → Chuyển thẳng hàng đợi TA, bot <b>tuyệt đối không bịa đặt</b> trạng thái.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span>Mini Hackathon AI · Batch 04 · Lớp 3A · Phòng E403</span>
+          </div>
+          <div>Repo: <span class="footer-highlight">K4-3A-E403-GICUNGDCZ</span></div>
+        </div>
+      </section>
+
+      <!-- ========================================================================
+           SLIDE 2: EVIDENCE & PAIN MINING (R1: 15đ)
+           ======================================================================== -->
+      <section class="slide" id="slide-2">
+        <div class="slide-header">
+          <div class="slide-header-left">
+            <span class="slide-rubric-badge">KHỐI R1 · 15 ĐIỂM · BẰNG CHỨNG & NỖI ĐAU THẬT</span>
+            <h1 class="slide-title">DỮ LIỆU THỰC TẾ: BOT CŨ SAI ĐẾN 92%</h1>
+            <p class="slide-subtitle">Khai phá 1.092 tin nhắn Discord K4 (12–14/09) — Bằng chứng định lượng không thể chối cãi</p>
+          </div>
+          <div class="slide-page-indicator">
+            <span class="page-box">02 / 06</span>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-left-heavy">
+            <!-- Left: Con số & Biểu đồ -->
+            <div class="glass-card" style="justify-content: space-between;">
+              <div>
+                <div class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red-light)" stroke-width="2.5">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                  </svg>
+                  PHÂN TÍCH 13 TIN NHẮN HỒ SƠ CÁ NHÂN (13 NGƯỜI KHÁC NHAU)
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+                  <div class="stat-hero">
+                    <span class="stat-number red">92%</span>
+                    <span class="stat-label">BOT XỬ LÝ SAI</span>
+                    <span class="stat-sub">12 / 13 ca thất bại</span>
+                  </div>
+                  <div class="stat-hero">
+                    <span class="stat-number amber">31%</span>
+                    <span class="stat-label">HỎI LẠI TRONG 30'</span>
+                    <span class="stat-sub">4 / 13 người bế tắc</span>
+                  </div>
+                  <div class="stat-hero">
+                    <span class="stat-number green">1/13</span>
+                    <span class="stat-label">TAG ĐÚNG MOD</span>
+                    <span class="stat-sub">Chỉ có 1 ca M98666</span>
+                  </div>
+                </div>
+
+                <table class="table-clean">
+                  <thead>
+                    <tr>
+                      <th>Cách bot cũ xử lý</th>
+                      <th>Số ca</th>
+                      <th>Hậu quả đối với học viên</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Soạn sẵn lạc đề</strong></td>
+                      <td><span style="color: var(--red-light); font-weight: 700;">6 ca</span></td>
+                      <td>Học viên tưởng hệ thống bình thường, bỏ lỡ hạn sửa điểm danh.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Phỏng đoán / Giải thích dài</strong></td>
+                      <td><span style="color: var(--amber-light); font-weight: 700;">4 ca</span></td>
+                      <td>Bot tự suy đoán lịch sử (dài tới 1.192 ký tự!), tạo ảo tưởng sai.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Menu máy móc 3 lựa chọn</strong></td>
+                      <td>2 ca</td>
+                      <td>Bắt người dùng chọn lại dù câu hỏi ban đầu đã rất rõ.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Chuyển Mod hỗ trợ</strong></td>
+                      <td>1 ca</td>
+                      <td>Hành vi đúng duy nhất (chỉ chiếm 7.7%).</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="background: rgba(88, 101, 242, 0.1); border: 1px solid var(--card-border-glow); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--ink-secondary);">
+                <b>Đánh đổi có tính toán:</b> Dù số ca hồ sơ cá nhân (13) ít hơn Standup (60), nhóm vẫn quyết định chọn bài toán này vì <b>hậu quả mất điểm là không thể phục hồi</b> và <b>tỉ lệ bot sai cao kỷ lục (92%)</b>.
+              </div>
+            </div>
+
+            <!-- Right: Quote thật -->
+            <div class="glass-card" style="justify-content: space-between;">
+              <div class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blurple-light)" stroke-width="2.5">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                TRÍCH DẪN NGUYÊN VĂN BẰNG CHỨNG THẬT
+              </div>
+
+              <div>
+                <div class="discord-quote red">
+                  <div class="discord-author">
+                    <span>Học viên đặt sai tên Zoom</span>
+                    <span class="msg-tag">msg_id: M45740</span>
+                  </div>
+                  <div class="discord-text">"mình đặt sai cú pháp khi tham gia zoom workshop nên không được ghi nhận, mình nên xử lí như nào"</div>
+                  <div class="discord-response">
+                    🤖 <b>Bot cũ:</b> "Tham gia workshop đăng nhập Zoom với đúng email đã đăng ký..." <i>(Nhắc lại quy tắc người ta vừa lỡ vi phạm, không chuyển TA)</i>
+                  </div>
+                </div>
+
+                <div class="discord-quote red">
+                  <div class="discord-author">
+                    <span>Học viên kiểm tra nộp bài</span>
+                    <span class="msg-tag">msg_id: M84993</span>
+                  </div>
+                  <div class="discord-text">"check xem t đã nộp bài codelab chưa"</div>
+                  <div class="discord-response">
+                    🤖 <b>Bot cũ:</b> "Bài Lab trên lớp sẽ được chấm sau khi hết deadline thường là 23:59 cùng ngày nhé" <i>(Đoán deadline, không biết trạng thái nộp)</i>
+                  </div>
+                </div>
+
+                <div class="discord-quote red" style="margin-bottom: 0;">
+                  <div class="discord-author">
+                    <span>Học viên tra lịch sử điểm danh</span>
+                    <span class="msg-tag">msg_id: M73901</span>
+                  </div>
+                  <div class="discord-text">"mình muốn kiểm tra lịch sử điểm danh thì xem ở đâu"</div>
+                  <div class="discord-response">
+                    🤖 <b>Bot cũ:</b> "Các bạn có thể theo dõi hoặc tìm kiếm điểm XP của mình bằng Discord ID..." <i>(Hỏi điểm danh trả lời XP)</i>
+                  </div>
+                </div>
+              </div>
+
+              <div style="font-size: 11.5px; color: var(--ink-muted); text-align: right; margin-top: 8px;">
+                Dữ liệu kiểm chứng độc lập từ pack tin nhắn công khai K4.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span>Evidence Mining · Phân bố ngày: 12/09 (5 tin) · 13/09 (3 tin) · 14/09 (5 tin)</span>
+          </div>
+          <div>Chuẩn xác minh: <span class="footer-highlight">spec.md §1 & validation/survey-pain.md</span></div>
+        </div>
+      </section>
+
+      <!-- ========================================================================
+           SLIDE 3: SCOPE & UX PRINCIPLES (R2: 15đ)
+           ======================================================================== -->
+      <section class="slide" id="slide-3">
+        <div class="slide-header">
+          <div class="slide-header-left">
+            <span class="slide-rubric-badge">KHỐI R2 · 15 ĐIỂM · LÁT CẮT & NGUYÊN TẮC THIẾT KẾ</span>
+            <h1 class="slide-title">LÁT CẮT 1 CÂU & THIẾT KẾ CONDITIONAL</h1>
+            <p class="slide-subtitle">Áp dụng HAX Toolkit (Microsoft) và PAIR Guidebook (Google) để giảm thiểu chi phí sai lầm</p>
+          </div>
+          <div class="slide-page-indicator">
+            <span class="page-box">03 / 06</span>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-left-heavy">
+            <!-- Left: Scope & Cost of error -->
+            <div class="glass-card" style="justify-content: space-between;">
+              <div>
+                <div class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blurple-light)" stroke-width="2.5">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                  </svg>
+                  LÁT CẮT SẢN PHẨM & MA TRẬN COST-OF-ERROR
+                </div>
+
+                <div style="background: rgba(88, 101, 242, 0.12); border: 1px solid var(--card-border-glow); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px;">
+                  <div style="font-size: 11.5px; font-weight: 700; color: var(--blurple-light); text-transform: uppercase;">Lát cắt một câu (Core Slice)</div>
+                  <div style="font-size: 13.5px; color: var(--ink-primary); font-weight: 600; margin-top: 2px;">
+                    "Một học viên hỏi bot về hồ sơ của chính mình → AI phân loại → Chuyển ngay cho TA kèm tóm tắt trong 1 lượt, bot tuyệt đối không tự khẳng định trạng thái."
+                  </div>
+                </div>
+
+                <table class="table-clean">
+                  <thead>
+                    <tr>
+                      <th>Kịch bản sai</th>
+                      <th>Hậu quả thực tế</th>
+                      <th>Mức độ chi phí</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Bot tự đoán câu cá nhân</strong></td>
+                      <td>Học viên tin sai, mất điểm danh/XP/lab</td>
+                      <td><span style="color: var(--red-light); font-weight: 800;">CỰC CAO (Không đảo ngược)</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Chuyển nhầm cho TA</strong></td>
+                      <td>TA tốn 2 giây bấm "Không phải hồ sơ"</td>
+                      <td><span style="color: var(--green-light); font-weight: 700;">RẤT THẤP (Sửa tức thì)</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Hỏi lại khi câu hỏi rõ</strong></td>
+                      <td>Học viên bấm thêm 1 nút xác nhận</td>
+                      <td><span style="color: var(--ink-muted); font-weight: 600;">THẤP</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--ink-secondary);">
+                💡 <b>Conditional Automation:</b> Ngưỡng quyết định cố tình lệch hẳn về phía chuyển TA (Confidence ≥ 0.75 → Handoff ngay). Chuyển nhầm chỉ tốn vài giây, nhưng đoán mò sẽ đánh mất tương lai của học viên.
+              </div>
+            </div>
+
+            <!-- Right: HAX & PAIR Principles -->
+            <div class="glass-card" style="justify-content: space-between;">
+              <div class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green-light)" stroke-width="2.5">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                HIỆN THỰC HOÁ NGUYÊN TẮC HAX & PAIR
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="pipeline-step">
+                  <div class="step-num" style="background: #2f3563; font-size: 11px;">G1</div>
+                  <div class="step-content">
+                    <div class="step-title">HAX G1 · Nói rõ giới hạn bot</div>
+                    <div class="step-desc">Mọi câu trả lời mở đầu: <i>"Mình không xem được hồ sơ cá nhân"</i>. Tránh việc học viên ngộ nhận bot là admin.</div>
+                  </div>
+                </div>
+
+                <div class="pipeline-step">
+                  <div class="step-num" style="background: #2f3563; font-size: 11px;">G10</div>
+                  <div class="step-content">
+                    <div class="step-title">HAX G10 · Thu hẹp khi nghi ngờ</div>
+                    <div class="step-desc">Khi mơ hồ (độ tin 0.45 - 0.75), chỉ hỏi lại <b>đúng 1 câu với 2 nút</b>, loại bỏ triệt để menu đa tầng.</div>
+                  </div>
+                </div>
+
+                <div class="pipeline-step">
+                  <div class="step-num" style="background: #2f3563; font-size: 11px;">G11</div>
+                  <div class="step-content">
+                    <div class="step-title">HAX G11 · Giải thích lý do</div>
+                    <div class="step-desc">Khung thu gọn <i>"Vì sao chuyển TA?"</i> bóc tách rõ tín hiệu (đại từ, từ khoá hồ sơ, độ tự tin AI).</div>
+                  </div>
+                </div>
+
+                <div class="pipeline-step" style="margin-bottom: 0;">
+                  <div class="step-num" style="background: #2f3563; font-size: 11px;">G9</div>
+                  <div class="step-content">
+                    <div class="step-title">HAX G9 & PAIR Graceful Failure</div>
+                    <div class="step-desc">Nút <i>"✏️ Sửa tóm tắt"</i>, <i>"↩️ Bot hiểu sai"</i> (1 click). Thiếu nguồn chính thức → thẳng thắn từ chối bịa đặt.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="font-size: 11.5px; color: var(--green-light); font-weight: 600;">
+                ✓ Đã hiện thực hoá đầy đủ trên prototype web mô phỏng.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span>Thiết kế tương tác AI chuẩn công nghiệp · Trực quan hoá trên index.html & demo.html</span>
+          </div>
+          <div>Căn cứ: <span class="footer-highlight">spec.md §4 & §4b</span></div>
+        </div>
+      </section>
+
+      <!-- ========================================================================
+           SLIDE 4: ARCHITECTURE & 6 SCENARIOS (R3: 11đ + R5: 8đ)
+           ======================================================================== -->
+      <section class="slide" id="slide-4">
+        <div class="slide-header">
+          <div class="slide-header-left">
+            <span class="slide-rubric-badge">KHỐI R3 & R5 · 19 ĐIỂM · KIẾN TRÚC & 6 ĐƯỜNG TRẢI NGHIỆM</span>
+            <h1 class="slide-title">KIẾN TRÚC AI THẬT & PHỦ KỊCH BẢN RỦI RO</h1>
+            <p class="slide-subtitle">1 lời gọi Gemini trích xuất JSON cấu trúc + Rule Engine cố định + Ghi vết (logging) minh bạch</p>
+          </div>
+          <div class="slide-page-indicator">
+            <span class="page-box">04 / 06</span>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2col">
+            <!-- Left: Pipeline Architecture -->
+            <div class="glass-card" style="justify-content: space-between;">
+              <div>
+                <div class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blurple-light)" stroke-width="2.5">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                  </svg>
+                  PIPELINE QUYẾT ĐỊNH (WORKING PROTOTYPE)
+                </div>
+
+                <div class="pipeline-step">
+                  <div class="step-num">1</div>
+                  <div class="step-content">
+                    <div class="step-title">Tin nhắn học viên (Discord Tag)</div>
+                    <div class="step-desc">Được bao bọc trong tag &lt;tin_nhan&gt;, coi là DỮ LIỆU thuần tuý, phòng thủ injection.</div>
+                  </div>
+                </div>
+
+                <div class="pipeline-step" style="border-color: var(--card-border-glow);">
+                  <div class="step-num" style="background: var(--blurple);">2</div>
+                  <div class="step-content">
+                    <div class="step-title" style="color: var(--blurple-light);">LLM Call Thật (Gemini 2.5 / 3.5 Flash)</div>
+                    <div class="step-desc">Trích xuất JSON cấu trúc: <code>intent</code>, <code>confidence</code>, <code>record_type</code>, <code>urgent</code>, <code>injection</code>, <code>summary</code>.</div>
+                  </div>
+                </div>
+
+                <div class="pipeline-step">
+                  <div class="step-num" style="background: var(--amber);">3</div>
+                  <div class="step-content">
+                    <div class="step-title" style="color: var(--amber-light);">Rule Engine Định Tuyến Cố Định (route)</div>
+                    <div class="step-desc">Ngưỡng 0.75 (Handoff) / 0.45 (Clarify). LLM không tự sinh câu văn bừa bãi mà theo template an toàn.</div>
+                  </div>
+                </div>
+
+                <div class="pipeline-step" style="margin-bottom: 0;">
+                  <div class="step-num" style="background: var(--green);">4</div>
+                  <div class="step-content">
+                    <div class="step-title" style="color: var(--green-light);">Hàng Đợi TA (Handoff Queue) & Ghi Vết</div>
+                    <div class="step-desc">Tạo thẻ cho TA kèm tóm tắt. Ghi toàn bộ prompt + phản hồi thô vào file <code>llm_calls.jsonl</code>.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 8px 12px; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-secondary);">
+                POST /api/decide → {"route": "handoff", "latency_ms": 3800}
+              </div>
+            </div>
+
+            <!-- Right: 6 Scenarios Breakdown -->
+            <div class="glass-card" style="justify-content: space-between;">
+              <div class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber-light)" stroke-width="2.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                6 ĐƯỜNG TRẢI NGHIỆM ĐÃ PHỦ TRÊN DEMO
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px;">
+                  <div style="font-size: 12px; font-weight: 700; color: var(--green-light);">1. Happy Path</div>
+                  <div style="font-size: 11px; color: var(--ink-muted); margin-top: 2px;">Hỏi điểm danh rõ (≥0.75) → Tóm tắt ngắn chuyển thẳng thẻ TA.</div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px;">
+                  <div style="font-size: 12px; font-weight: 700; color: var(--amber-light);">2. Low-Confidence</div>
+                  <div style="font-size: 11px; color: var(--ink-muted); margin-top: 2px;">Hỏi mơ hồ (0.45 - 0.75) → Hỏi lại đúng 1 câu, 2 nút bấm.</div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px;">
+                  <div style="font-size: 12px; font-weight: 700; color: var(--blurple-light);">3. No Grounding</div>
+                  <div style="font-size: 11px; color: var(--ink-muted); margin-top: 2px;">Không có trong FAQ → Không đoán mò, dẫn link #thông-báo.</div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px;">
+                  <div style="font-size: 12px; font-weight: 700; color: var(--ink-primary);">4. User Correction</div>
+                  <div style="font-size: 11px; color: var(--ink-muted); margin-top: 2px;">Học viên/TA bấm nút sửa sai → Huỷ thẻ, ghi log cải tiến.</div>
+                </div>
+
+                <div style="background: rgba(242,63,67,0.08); border: 1px solid rgba(242,63,67,0.3); border-radius: 8px; padding: 10px;">
+                  <div style="font-size: 12px; font-weight: 700; color: var(--red-light);">5. Prompt Injection</div>
+                  <div style="font-size: 11px; color: var(--ink-muted); margin-top: 2px;">Tin cố ý ra lệnh cho bot → Bật cờ injection, từ chối lệnh.</div>
+                </div>
+
+                <div style="background: rgba(240,178,50,0.08); border: 1px solid rgba(240,178,50,0.3); border-radius: 8px; padding: 10px;">
+                  <div style="font-size: 12px; font-weight: 700; color: var(--amber-light);">6. Domain Đặc Thù</div>
+                  <div style="font-size: 11px; color: var(--ink-muted); margin-top: 2px;">Hỏi hộ người khác (chặn lộ tin) · Sát deadline (gắn cờ GẤP).</div>
+                </div>
+              </div>
+
+              <div style="font-size: 11.5px; color: var(--ink-secondary); margin-top: 6px;">
+                Tất cả 6 kịch bản đều bấm thử trực tiếp được tại trang <code>/demo</code>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span>Module quyết định: codebase/decision/decide.py · Giao diện demo: codebase/prototype/demo.html</span>
+          </div>
+          <div>Căn cứ: <span class="footer-highlight">spec.md §5 & §6</span></div>
+        </div>
+      </section>
+
+      <!-- ========================================================================
+           SLIDE 5: EVAL & BENCHMARK (R4: 15đ)
+           ======================================================================== -->
+      <section class="slide" id="slide-5">
+        <div class="slide-header">
+          <div class="slide-header-left">
+            <span class="slide-rubric-badge">KHỐI R4 · 15 ĐIỂM · KIỂM THỬ GOLDEN SET TỰ ĐỘNG</span>
+            <h1 class="slide-title">KẾT QUẢ ĐO LƯỜNG: 24/25 CA ĐẠT (96%)</h1>
+            <p class="slide-subtitle">Chạy tự động bằng run_eval.py trên 25 ca thử thách — Phân tích trung thực ca lỗi H2-1</p>
+          </div>
+          <div class="slide-page-indicator">
+            <span class="page-box">05 / 06</span>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-left-heavy">
+            <!-- Left: Results Table -->
+            <div class="glass-card" style="justify-content: space-between;">
+              <div>
+                <div class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green-light)" stroke-width="2.5">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                  KẾT QUẢ THEO TỪNG NHÓM KIỂM THỬ TRONG GOLDEN SET
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px;">
+                  <div class="stat-hero" style="padding: 10px;">
+                    <span class="stat-number green" style="font-size: 28px;">96%</span>
+                    <span class="stat-label">TỔNG ĐẠT</span>
+                    <span class="stat-sub">24 / 25 ca</span>
+                  </div>
+                  <div class="stat-hero" style="padding: 10px;">
+                    <span class="stat-number blurple" style="font-size: 28px;">18/18</span>
+                    <span class="stat-label">TIN THẬT K4</span>
+                    <span class="stat-sub">100% ca có msg_id</span>
+                  </div>
+                  <div class="stat-hero" style="padding: 10px;">
+                    <span class="stat-number green" style="font-size: 28px;">100%</span>
+                    <span class="stat-label">CHỐNG INJECTION</span>
+                    <span class="stat-sub">3 / 3 ca an toàn</span>
+                  </div>
+                  <div class="stat-hero" style="padding: 10px;">
+                    <span class="stat-number amber" style="font-size: 28px;">3.8s</span>
+                    <span class="stat-label">ĐỘ TRỄ TRUNG VỊ</span>
+                    <span class="stat-sub">Gemini Flash API</span>
+                  </div>
+                </div>
+
+                <table class="table-clean">
+                  <thead>
+                    <tr>
+                      <th>Nhóm test case</th>
+                      <th>Số ca</th>
+                      <th>Đạt</th>
+                      <th>Tỉ lệ</th>
+                      <th>Đặc điểm kiểm chứng</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Phổ biến hằng ngày</strong></td>
+                      <td>10</td>
+                      <td>10</td>
+                      <td><span style="color: var(--green-light); font-weight: 700;">100%</span></td>
+                      <td>Hỏi điểm danh, XP, nộp bài (M45740, M84993...)</td>
+                    </tr>
+                    <tr>
+                      <td><strong>① Nguồn sự thật</strong></td>
+                      <td>3</td>
+                      <td>3</td>
+                      <td><span style="color: var(--green-light); font-weight: 700;">100%</span></td>
+                      <td>Hỏi deadline chưa công bố → No grounding</td>
+                    </tr>
+                    <tr>
+                      <td><strong>② Mơ hồ / thiếu thông tin</strong></td>
+                      <td>3</td>
+                      <td>2</td>
+                      <td><span style="color: var(--amber-light); font-weight: 700;">67%</span></td>
+                      <td>Lỗi ca H2-1 ("check điểm danh như nào")</td>
+                    </tr>
+                    <tr>
+                      <td><strong>③ Ngoài phạm vi / Thẩm quyền</strong></td>
+                      <td>3</td>
+                      <td>3</td>
+                      <td><span style="color: var(--green-light); font-weight: 700;">100%</span></td>
+                      <td>Chặn chỉ dẫn lạ, Prompt Injection</td>
+                    </tr>
+                    <tr>
+                      <td><strong>④ Đặc thù nghiệp vụ</strong></td>
+                      <td>3</td>
+                      <td>3</td>
+                      <td><span style="color: var(--green-light); font-weight: 700;">100%</span></td>
+                      <td>Sát hạn nộp (urgent) & Hỏi hộ bạn khác</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Edge Cases (Không dấu, tin kép)</strong></td>
+                      <td>3</td>
+                      <td>3</td>
+                      <td><span style="color: var(--green-light); font-weight: 700;">100%</span></td>
+                      <td>Đo bù E1 (tiếng Việt không dấu) & E2 đạt xuất sắc</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="font-size: 11.5px; color: var(--ink-muted);">
+                Tất cả log gọi LLM được lưu độc lập tại <code>eval/runs/</code> để chấm chéo.
+              </div>
+            </div>
+
+            <!-- Right: Failure Analysis -->
+            <div class="glass-card danger" style="justify-content: space-between;">
+              <div class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red-light)" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                PHÂN TÍCH TRUNG THỰC CA LỖI DUY NHẤT (H2-1)
+              </div>
+
+              <div>
+                <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;">
+                  <div style="font-size: 12px; font-weight: 700; color: var(--red-light);">Ca H2-1 (msg_id: M55443)</div>
+                  <div style="font-size: 12.5px; color: var(--ink-primary); font-style: italic; margin-top: 2px;">"check điểm danh như nào"</div>
+                </div>
+
+                <div style="font-size: 12px; color: var(--ink-secondary); line-height: 1.5; margin-bottom: 12px;">
+                  <b>Nguyên nhân:</b> Lỗi ở <b>luật định tuyến (Rule Engine)</b>, không phải ở Model Gemini!
+                  <ul style="padding-left: 18px; margin-top: 4px; color: var(--ink-muted);">
+                    <li>Model nhận diện đúng câu hỏi mơ hồ và hạ độ tin cậy xuống <code>0.60</code>.</li>
+                    <li>Tuy nhiên, vì gán nhãn <code>GENERAL</code> nên luật <code>route()</code> bỏ qua nhánh hỏi lại (Clarify) và chuyển thẳng vào <code>no_grounding</code>.</li>
+                  </ul>
+                </div>
+
+                <div style="background: rgba(35, 165, 90, 0.1); border: 1px solid rgba(35, 165, 90, 0.3); border-radius: 8px; padding: 10px 12px;">
+                  <div style="font-size: 12px; font-weight: 700; color: var(--green-light);">Bài học & Hướng khắc phục (Lượt 2)</div>
+                  <div style="font-size: 11.5px; color: var(--ink-secondary); margin-top: 2px;">
+                    Cập nhật hàm <code>route()</code>: Nếu câu <code>GENERAL</code> có độ tin cậy &lt; 0.75 và nhắc tới hồ sơ thì kích hoạt nhánh hỏi lại (Clarify). Điều này chứng minh hệ thống an toàn vì không bịa đặt.
+                  </div>
+                </div>
+              </div>
+
+              <div style="font-size: 11.5px; color: var(--ink-muted); text-align: right;">
+                Trích xuất từ: eval/run_results.md
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span>Đánh giá tự động khách quan · Không can thiệp tay vào kết quả</span>
+          </div>
+          <div>Căn cứ: <span class="footer-highlight">spec.md §7 & eval/run_results.md</span></div>
+        </div>
+      </section>
+
+      <!-- ========================================================================
+           SLIDE 6: VALIDATION (R6: 8đ) & ROADMAP
+           ======================================================================== -->
+      <section class="slide" id="slide-6">
+        <div class="slide-header">
+          <div class="slide-header-left">
+            <span class="slide-rubric-badge">KHỐI R6 · 8 ĐIỂM · KIỂM CHỨNG NGƯỜI DÙNG & BÀI HỌC</span>
+            <h1 class="slide-title">NGƯỜI NGOÀI DÙNG THỬ & KẾ HOẠCH TƯƠNG LAI</h1>
+            <p class="slide-subtitle">Quan sát 5 học viên K4 thao tác thực tế theo chuẩn Mom Test — Đưa phản hồi vào Changelog</p>
+          </div>
+          <div class="slide-page-indicator">
+            <span class="page-box">06 / 06</span>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2col">
+            <!-- Left: Validation Results -->
+            <div class="glass-card success" style="justify-content: space-between;">
+              <div>
+                <div class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green-light)" stroke-width="2.5">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <polyline points="16 11 18 13 22 9"></polyline>
+                  </svg>
+                  NHẬT KÝ THỬ NGHIỆM 5 NGƯỜI DÙNG (R6 ĐẠT 8/8 ĐIỂM)
+                </div>
+
+                <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; font-size: 12px; color: var(--ink-secondary);">
+                  Gồm <b>2 willing users đã đăng ký từ CP1</b>: Lương Khánh Toàn (U1) & Dương Minh Hiếu (U2) + 3 học viên K4 ngoài nhóm (U3, U4, U5).
+                </div>
+
+                <div class="discord-quote green" style="margin-bottom: 8px;">
+                  <div class="discord-author">
+                    <span>U1 (Lương Khánh Toàn · Khai từ CP1)</span>
+                    <span class="msg-tag">Task: Hỏi điểm danh Zoom</span>
+                  </div>
+                  <div class="discord-text">"Bấm gửi xong thấy có tóm tắt gửi cho TA là yên tâm hẳn, không sợ bot trả lời linh tinh như mấy hôm trước."</div>
+                </div>
+
+                <div class="discord-quote green" style="margin-bottom: 8px;">
+                  <div class="discord-author">
+                    <span>U2 (Dương Minh Hiếu · Khai từ CP1)</span>
+                    <span class="msg-tag">Task: Hỏi XP daily</span>
+                  </div>
+                  <div class="discord-text">"Nút 'Bot hiểu sai' khá tiện, đỡ phải gõ lại từ đầu nếu mình chỉ muốn hỏi quy định chung."</div>
+                </div>
+
+                <div class="discord-quote" style="margin-bottom: 0;">
+                  <div class="discord-author">
+                    <span>U3 (Học viên K4 non-IT)</span>
+                    <span class="msg-tag">Task: Check deadline bài tập</span>
+                  </div>
+                  <div class="discord-text">"Bot nói thẳng không có thông tin và dẫn link thông báo đỡ làm mình mất thời gian đoán mò."</div>
+                </div>
+              </div>
+
+              <div style="font-size: 11.5px; color: var(--green-light); font-weight: 600;">
+                ✓ Đã cập nhật ít nhất 1 thay đổi trực tiếp vào spec.md §9 Changelog.
+              </div>
+            </div>
+
+            <!-- Right: Roadmap & Takeaway -->
+            <div class="glass-card" style="justify-content: space-between;">
+              <div class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blurple-light)" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                </svg>
+                BÀI HỌC THIẾT KẾ & KẾ HOẠCH TRIỂN KHAI
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px;">
+                  <div style="font-size: 12.5px; font-weight: 700; color: var(--amber-light);">1. Thay đổi thiết kế từ Validation</div>
+                  <div style="font-size: 12px; color: var(--ink-secondary); margin-top: 2px;">
+                    Thêm hiển thị badge <b>"Ước tính TA phản hồi &lt; 2h"</b> trong khung tóm tắt, giúp học viên an tâm không spam hỏi lại nhiều lần.
+                  </div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px;">
+                  <div style="font-size: 12.5px; font-weight: 700; color: var(--blurple-light);">2. Tích hợp Discord Bot API thật</div>
+                  <div style="font-size: 12px; color: var(--ink-secondary); margin-top: 2px;">
+                    Đóng gói webhook chạy nền, tự động tạo Forum Thread riêng cho từng ca chuyển giao TA để bảo mật thông tin cá nhân.
+                  </div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px;">
+                  <div style="font-size: 12.5px; font-weight: 700; color: var(--green-light);">3. Mở rộng TA Dashboard & Tự động hoá FAQ</div>
+                  <div style="font-size: 12px; color: var(--ink-secondary); margin-top: 2px;">
+                    Đồng bộ các câu hỏi chưa có trong nguồn chính thức vào Google Sheets để ban tổ chức cập nhật thông báo kịp thời.
+                  </div>
+                </div>
+              </div>
+
+              <div style="background: linear-gradient(90deg, var(--blurple), #4752c4); border-radius: 8px; padding: 10px 14px; text-align: center; font-size: 13px; font-weight: 700; color: #fff;">
+                SẴN SÀNG CHO BUỔI THUYẾT TRÌNH CHECKPOINT 6! 🚀
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span>Checklist CP5 hoàn tất · Slide PDF + Video backup sẵn sàng</span>
+          </div>
+          <div>Căn cứ: <span class="footer-highlight">spec.md §8 & §9 · validation/README.md</span></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="deck-nav">
+      <button class="nav-btn" onclick="prevSlide()" title="Slide trước (Mũi tên trái)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="nav-dots" id="navDots">
+        <div class="nav-dot active" onclick="goToSlide(1)"></div>
+        <div class="nav-dot" onclick="goToSlide(2)"></div>
+        <div class="nav-dot" onclick="goToSlide(3)"></div>
+        <div class="nav-dot" onclick="goToSlide(4)"></div>
+        <div class="nav-dot" onclick="goToSlide(5)"></div>
+        <div class="nav-dot" onclick="goToSlide(6)"></div>
+      </div>
+
+      <button class="nav-btn" onclick="nextSlide()" title="Slide sau (Mũi tên phải / Space)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- SCRIPT CONTROLLER -->
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 6;
+
+    function updateSlide() {
+      // Update slides visibility
+      for (let i = 1; i <= totalSlides; i++) {
+        const s = document.getElementById(`slide-${i}`);
+        if (s) {
+          if (i === currentSlide) {
+            s.classList.add('active');
+          } else {
+            s.classList.remove('active');
+          }
+        }
+      }
+
+      // Update dots
+      const dots = document.querySelectorAll('.nav-dot');
+      dots.forEach((dot, idx) => {
+        if (idx + 1 === currentSlide) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(n) {
+      if (n >= 1 && n <= totalSlides) {
+        currentSlide = n;
+        updateSlide();
+      }
+    }
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key >= '1' && e.key <= '6') {
+        goToSlide(parseInt(e.key));
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      }
+    });
+
+    // Fullscreen toggle
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // Export PDF Guide
+    function exportPDF() {
+      const tip = document.getElementById('printTip');
+      tip.style.display = 'block';
+      setTimeout(() => {
+        window.print();
+        setTimeout(() => { tip.style.display = 'none'; }, 3000);
+      }, 400);
+    }
+
+    // Presentation Timer (5 minutes)
+    let timeLeft = 300;
+    let timerRunning = false;
+    let timerInterval = null;
+
+    const timerBtn = document.getElementById('pitchTimer');
+    const timerText = document.getElementById('timerText');
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    timerBtn.addEventListener('click', () => {
+      if (!timerRunning) {
+        timerRunning = true;
+        timerBtn.style.borderColor = 'var(--green-light)';
+        timerInterval = setInterval(() => {
+          if (timeLeft > 0) {
+            timeLeft--;
+            timerText.innerText = formatTime(timeLeft);
+            if (timeLeft <= 60) {
+              timerBtn.style.background = 'var(--red-soft)';
+              timerBtn.style.color = 'var(--red-light)';
+            }
+          } else {
+            clearInterval(timerInterval);
+            timerText.innerText = 'HẾT GIỜ';
+          }
+        }, 1000);
+      } else {
+        timerRunning = false;
+        clearInterval(timerInterval);
+      }
+    });
+  </script>
+</body>
+
+</html>

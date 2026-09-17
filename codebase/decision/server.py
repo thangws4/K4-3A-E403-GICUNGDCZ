@@ -101,6 +101,8 @@ class Handler(SimpleHTTPRequestHandler):
             self.path = "/eval.html"
         if path in ("/demo", "/demo/"):
             self.path = "/demo.html"
+        if path in ("/slides", "/slides/"):
+            self.path = "/slides.html"
         return super().do_GET()
 
     def _body(self) -> dict:

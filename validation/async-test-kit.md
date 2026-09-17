@@ -29,7 +29,9 @@
 
 *Không kể trước cho người thử bot sẽ "chuyển TA" hay "từ chối", để khỏi dắt kết quả.*
 
-## 3 · Nội dung Google Form (copy từng câu)
+## 3 · Nội dung Google Form
+
+**Tạo tự động bằng code:** dán [`create_form.gs`](create_form.gs) vào https://script.google.com (New project), rồi chạy hàm `createR6Form`. Script tạo form đúng các câu dưới đây, kèm Google Sheet nhận câu trả lời, và in 3 link (link gửi người thử, link sửa form, link sheet) trong Execution log. Nội dung bên dưới để đối chiếu, hoặc tạo tay nếu không chạy được script.
 
 **Mô tả form:**
 > Form ẩn danh, khoảng 3 phút. Hãy kể đúng những gì đã xảy ra khi bạn dùng thử, kể cả chỗ bạn thấy khó hiểu hay không vừa ý. Nhóm cần nhất là những chỗ đó.

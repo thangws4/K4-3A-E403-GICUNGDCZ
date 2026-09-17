@@ -180,7 +180,8 @@ Loại: [X] Tối ưu tính năng có sẵn  [ ] Tính năng mới
 
   | Lượt | Thời điểm | Model | Thử | Đạt | Tỉ lệ | Ghi chú |
   |---|---|---|---|---|---|---|
-  | 1 | 17/09 09:46 | gemini-3.5-flash · temp 0 | 25 | 22 | **88%** | H2-1 sai do luật `route()` không hỏi lại câu `GENERAL` độ tin thấp · E1, E2 không đo được (hết quota free tier 20 request/ngày) |
+  | 1 | 17/09 09:46 | gemini-3.5-flash · temp 0 | 25 | 22 | 88% | H2-1 sai do luật `route()` không hỏi lại câu `GENERAL` độ tin thấp · E1, E2 không đo được (hết quota free tier 20 request/ngày) |
+  | 1 + đo bù | 17/09 11:29 | như lượt 1 (code, FAQ, golden set không đổi) | 25 | 24 | **96%** | Đo bù E1 (không dấu → chuyển TA) và E2 (tin kép → hỏi lại), cả 2 đạt · còn 1 ca sai: H2-1 |
 
 ## §8. Phân công & kế hoạch
 - Phân công có tên: spec / evidence / prompt / code / demo

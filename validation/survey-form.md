@@ -32,10 +32,6 @@
 
 ### Phần 1 · Về bạn
 
-**Q1.** Bạn đang học ở server/level nào? *[Trắc nghiệm · bắt buộc]*
-- K4 · L2–3
-- K4 · L3–4
-- Khác
 
 **Q2.** Tuần vừa rồi bạn dùng Discord của khoá thường xuyên cỡ nào? *[Trắc nghiệm · bắt buộc]*
 - Gần như mỗi ngày
@@ -94,39 +90,5 @@
 - Bot trả lời dài nhưng mình vẫn không biết mình có được ghi nhận không
 - Không nhớ
 
-**Q10.** Nếu nhớ, bạn đã **gõ gì cho bot**? Chép lại gần đúng, kể cả viết tắt. *[Trả lời ngắn · không bắt buộc]*
-
-**Q11.** Tình huống đó ảnh hưởng tới bạn thế nào? *[Đoạn văn · không bắt buộc]*
-> Ví dụ: mất thời gian, lo lắng, phải nhắn nhiều người, bỏ qua luôn…
-
-### Phần 3 · Nơi hỏi *(chỉ hiện nếu Q3 ≠ "Chưa từng gặp")*
-
-**Q12.** Nếu gặp lại tình huống này **vào tuần sau**, bạn định hỏi ở đâu trước? Vì sao? *[Đoạn văn · không bắt buộc]*
-
-### Phần 4 · Điều gì sẽ giúp *(hỏi sau cùng để không dắt câu trả lời)*
-
-**Q13.** Nghĩ lại lần gần nhất đó, **điều gì** sẽ giúp bạn biết chắc nhanh hơn? *[Đoạn văn · không bắt buộc]*
-
-### Phần 5 · Thử sản phẩm *(tuỳ chọn)*
-
-**Q14.** Nhóm cần vài bạn **thử bản prototype khoảng 10 phút** (dự kiến 17–18/9). Bạn có sẵn sàng không? *[Trắc nghiệm · bắt buộc]*
-- Có
-- Không
-
-**Q15.** Nếu có, để lại **tên Discord** để nhóm liên hệ. *[Trả lời ngắn · không bắt buộc]*
-> Thông tin này chỉ dùng để hẹn lịch thử, **không đưa lên repo công khai** và sẽ xoá sau hackathon.
-
----
-
-## Kịch bản phỏng vấn trực tiếp (≥3 người, 10 phút)
-
-Dùng cùng giả thuyết H1–H4 với form. Người hỏi **ghi nguyên văn** câu trả lời; không gợi ý, không giới thiệu giải pháp.
-
-1. "Lần gần nhất bạn không chắc mình đã được điểm danh hay được cộng XP là khi nào? Kể mình nghe chuyện hôm đó."
-2. "Lúc đó bạn làm gì đầu tiên? Rồi sau đó làm gì?"
-3. "Nếu có hỏi bot: bạn còn nhớ đã gõ gì không? Bot trả lời sao? Rồi bạn làm gì tiếp?"
-4. "Cuối cùng ai cho bạn câu trả lời? Mất bao lâu?"
-5. "Chuyện đó có làm bạn mất gì không: thời gian, điểm, hay phải nhắn nhiều người?"
-6. "Còn ai khác bạn biết cũng gặp chuyện này không?" *(chỉ hỏi số lượng, không hỏi tên)*
 
 Ghi vào `survey-pain.md`: mã người (P1, P2…), ngày, quote nguyên văn, giả thuyết mà câu trả lời xác nhận hoặc bác bỏ.

@@ -62,7 +62,7 @@ Mỗi lời gọi ghi 1 dòng JSON gồm: `log_id`, thời điểm, provider/mod
 
 | Thành phần | Trạng thái |
 |---|---|
-| Phân loại tin nhắn | **Thật** (Gemini; hoặc Ollama local) |
+| Phân loại tin nhắn | **Thật** (Gemini) |
 | Giao diện kênh Discord + hàng đợi TA | Mock (HTML tĩnh) |
 | Nguồn chính thức (FAQ) | Mock: tóm từ câu trả lời bot hiện có, chưa được BTC xác nhận |
 | Tag TA, câu trả lời của TA | Mock |

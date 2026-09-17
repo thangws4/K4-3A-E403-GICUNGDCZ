@@ -31,46 +31,35 @@
 
 ## 3 · Nội dung Google Form
 
-**Tạo tự động bằng code:** dán [`create_form.gs`](create_form.gs) vào https://script.google.com (New project), rồi chạy hàm `createR6Form`. Script tạo form đúng các câu dưới đây, kèm Google Sheet nhận câu trả lời, và in 3 link (link gửi người thử, link sửa form, link sheet) trong Execution log. Nội dung bên dưới để đối chiếu, hoặc tạo tay nếu không chạy được script.
+**Tạo tự động bằng code:** dán [`create_form.gs`](create_form.gs) vào https://script.google.com (New project), rồi chạy hàm `createR6Form`. Script tạo form đúng các câu dưới đây, kèm Google Sheet nhận câu trả lời, và in 3 link (link gửi người thử, link sửa form, link sheet) trong Execution log.
 
-**Mô tả form:**
-> Form ẩn danh, khoảng 3 phút. Hãy kể đúng những gì đã xảy ra khi bạn dùng thử, kể cả chỗ bạn thấy khó hiểu hay không vừa ý. Nhóm cần nhất là những chỗ đó.
+**Nguyên tắc:** câu hỏi lựa chọn mô tả **điều đã xảy ra** (bot làm gì, người thử làm gì tiếp), không hỏi "có thích không". Câu người thử gõ **không hỏi lại**, vì server đã lưu theo mã U. Chỉ **Q12** là ô tự viết, để lấy quote nguyên văn cho R6.
 
-**Q1.** Mã người thử của bạn (trong tin nhắn mời) *[Trắc nghiệm · bắt buộc]*
-- U1 · U2 · U3 · U4 · U5
+| # | Câu hỏi | Loại | Lựa chọn |
+|---|---|---|---|
+| Q1 | Mã người thử | Danh sách · bắt buộc | U1 · U2 · U3 · U4 · U5 |
+| Q2 | Thiết bị | Trắc nghiệm · bắt buộc | Điện thoại · Máy tính |
+| **Việc 1** | *hỏi điểm danh của mình* | | |
+| Q3 | Bot đã làm gì? | Trắc nghiệm · bắt buộc | Trả lời luôn đã/chưa được điểm danh · Giải thích quy định chung · Nói không xem được hồ sơ và chuyển TA/Mod · Hỏi lại của mình hay quy định chung · Nói không tìm thấy · Báo lỗi / không trả lời · Không nhớ |
+| Q4 | Có biết bước tiếp theo không? | Trắc nghiệm · bắt buộc | Biết rõ · Biết nhưng chưa chắc · Không biết |
+| Q5 | Có phải gõ lại không? | Trắc nghiệm · bắt buộc | Không, 1 lần là xong · Gõ lại 1 lần · Gõ lại ≥ 2 lần · Bỏ dở |
+| Q6 | Chỗ khựng lại | Hộp kiểm · tuỳ chọn · có "Khác" | Không có · Không chắc TA có nhận không · Không biết chờ bao lâu / ở đâu · Trả lời quá dài · Bot hiểu sai ý · Không biết bấm nút nào · Chờ bot lâu |
+| **Việc 2** | *hỏi hạn nộp daily standup* | | |
+| Q7 | Bot đã làm gì? | Trắc nghiệm · bắt buộc | Trả lời có ghi nguồn · Trả lời không thấy nguồn · Nói không tìm thấy · Chuyển TA/Mod · Hỏi lại · Báo lỗi · Không nhớ |
+| Q8 | Có giúp biết nộp lúc nào không? | Trắc nghiệm · bắt buộc | Đủ để làm theo ngay · Một phần, vẫn phải hỏi thêm · Không giúp được |
+| **Việc 3** | *nhờ bot cộng XP* | | |
+| Q9 | Bot đã làm gì? | Trắc nghiệm · bắt buộc | Nói đã cộng XP · Từ chối, chỉ TA/Mod sửa được · Chuyển TA/Mod · Hỏi lại · Trả lời chuyện khác · Báo lỗi · Không nhớ |
+| Q10 | Thấy phản ứng đó thế nào? | Trắc nghiệm · bắt buộc | Hợp lý, đúng như nghĩ · Hợp lý nhưng hơi khó chịu · Không hợp lý · Không có ý kiến |
+| **Nhìn lại** | | | |
+| Q11 | Lúc bối rối nhất | Trắc nghiệm · bắt buộc | Việc 1 · Việc 2 · Việc 3 · Không lúc nào |
+| Q12 | **Kể lại lúc đó bằng lời của bạn** | Đoạn văn · tuỳ chọn | *(quote nguyên văn cho R6)* |
+| Q13 | Đã thử bấm nút nào trong tin của bot | Hộp kiểm · tuỳ chọn · có "Khác" | Không bấm · Sửa tóm tắt · Bot hiểu sai · Không cần chuyển TA · Của mình / quy định chung · Hỏi TA giúp mình · Chuyển TA kiểm tra |
 
-**Q2.** Bạn dùng thử bằng thiết bị nào? *[Trắc nghiệm · bắt buộc]*
-- Điện thoại · Máy tính
-
-### Việc 1: hỏi điểm danh của bạn
-
-**Q3.** Bạn đã gõ gì cho bot? Copy lại nếu còn, không thì ghi gần đúng. *[Trả lời ngắn · bắt buộc]*
-
-**Q4.** Theo bạn, bot đã làm gì với câu hỏi đó? *[Đoạn văn · bắt buộc]*
-> Kể bằng lời của bạn, không cần đúng thuật ngữ.
-
-**Q5.** Sau câu trả lời đó, bạn có biết bước tiếp theo mình cần làm hoặc chờ gì không? *[Trắc nghiệm · bắt buộc]*
-- Biết rõ · Biết nhưng chưa chắc · Không biết
-
-**Q6.** Có chỗ nào bạn khựng lại, khó hiểu hoặc không như mong đợi? *[Đoạn văn · không bắt buộc]*
-
-### Việc 2: hỏi hạn nộp daily standup
-
-**Q7.** Bạn đã gõ gì cho bot? *[Trả lời ngắn · bắt buộc]*
-
-**Q8.** Bot trả lời có giúp được bạn không? Vì sao? *[Đoạn văn · bắt buộc]*
-
-### Việc 3: nhờ bot cộng XP
-
-**Q9.** Bạn đã gõ gì cho bot? *[Trả lời ngắn · bắt buộc]*
-
-**Q10.** Bot phản ứng thế nào, và bạn thấy sao về phản ứng đó? *[Đoạn văn · bắt buộc]*
-
-### Chung
-
-**Q11.** Trong cả 3 việc, lúc nào bạn thấy **khó chịu hoặc bối rối nhất**? Kể lại lúc đó. *[Đoạn văn · không bắt buộc]*
-
-**Q12.** Có gì bạn đã thử làm mà trang **không cho làm**, hoặc bạn muốn bấm mà không bấm được? *[Đoạn văn · không bắt buộc]*
+**Cách đọc để điền nhật ký:**
+- Q3, Q7, Q9 đối chiếu với route trong log: người thử có **nhận ra** bot làm gì không.
+- Q4, Q5, Q6, Q8, Q10 → cột "Kẹt ở đâu".
+- Q12 → cột "Quote nguyên văn".
+- Q13 cho biết người thử có cố bấm nút minh hoạ (trên `/demo` các nút sửa sai chưa hoạt động) hay không.
 
 ## 4 · Sau khi thu đủ
 

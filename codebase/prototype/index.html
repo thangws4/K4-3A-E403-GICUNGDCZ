@@ -34,6 +34,8 @@
   .top p { margin: 0; font-size: 13px; color: var(--muted); }
   .mockbadge { background: #fff4c2; color: #7a5a00; border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 700; white-space: nowrap; }
   .mockbadge.real { background: #dff3e8; color: #1f7a4d; }
+  .topright { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+  .navlink { font-size: 14px; color: var(--chip-ink); text-decoration: none; padding: 5px 8px; }
   .typing { color: var(--chat-muted); font-style: italic; }
 
   .app { display: grid; grid-template-columns: 270px minmax(0,1fr) 340px; height: calc(100vh - 62px); }
@@ -118,7 +120,11 @@
     <h1>Trợ lý Discord · chuyển TA câu hỏi hồ sơ cá nhân</h1>
     <p>Prototype CP3 · Nhóm GICUNGDCZ · Track B1. Chọn kịch bản bên trái, hoặc tự gõ câu hỏi.</p>
   </div>
-  <span class="mockbadge" id="modeBadge">MOCK · phân loại bằng luật từ khoá (mở qua server để dùng AI thật)</span>
+  <div class="topright">
+    <span class="mockbadge" id="modeBadge">MOCK · phân loại bằng luật từ khoá (mở qua server để dùng AI thật)</span>
+    <a class="navlink" href="/demo">Demo</a>
+    <a class="navlink" href="/eval">Eval</a>
+  </div>
 </div>
 
 <div class="app">

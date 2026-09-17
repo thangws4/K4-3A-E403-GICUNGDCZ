@@ -4,56 +4,61 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Eval golden set · GICUNGDCZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  /* Cùng bảng màu với index.html (giao diện chat) */
   :root {
     color-scheme: light;
-    --page: #f9f9f7; --surface: #fcfcfb; --card: #ffffff;
-    --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
-    --grid: #e1e0d9; --axis: #c3c2b7; --ring: rgba(11,11,11,0.10);
-    --series: #2a78d6; --track: #e8f0fb;
-    --good: #0ca30c; --good-ink: #006300; --good-bg: #e6f5e6;
-    --warn: #fab219; --warn-ink: #7a5200; --warn-bg: #fff3d6;
-    --crit: #d03b3b; --crit-ink: #a12a2a; --crit-bg: #fbe7e7;
-    --chip: #eef2f8; --chip-ink: #24406b; --accent: #2a78d6;
-    --code-bg: #f3f2ee;
+    --page: #f4f1ea; --surface: #ffffff; --card: #ffffff;
+    --ink: #1c2f5a; --ink-2: #3a4660; --muted: #6b7489;
+    --grid: #ece7dd; --axis: #cfc8ba; --ring: #e3ddd1;
+    --series: #5865f2; --track: #d9dcfb;
+    --good: #2e9e6a; --good-ink: #1f7a4d; --good-bg: #dff3e8;
+    --warn: #c7771b; --warn-ink: #8a5310; --warn-bg: #fdefd9;
+    --crit: #d0453a; --crit-ink: #b3372d; --crit-bg: #fde2df;
+    --chip: #eef0fb; --chip-ink: #3b46b8; --accent: #5865f2;
+    --code-bg: #f1ede4;
   }
   @media (prefers-color-scheme: dark) {
     :root:where(:not([data-theme="light"])) {
       color-scheme: dark;
-      --page: #0d0d0d; --surface: #1a1a19; --card: #1a1a19;
-      --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
-      --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
-      --series: #3987e5; --track: #1f2a38;
-      --good-ink: #0ca30c; --good-bg: #16261a;
-      --warn-ink: #fab219; --warn-bg: #2d2615;
-      --crit-ink: #e66767; --crit-bg: #2e1a1a;
-      --chip: #22262e; --chip-ink: #b9cdf0; --accent: #3987e5;
-      --code-bg: #111110;
+      --page: #141821; --surface: #1d2230; --card: #1d2230;
+      --ink: #e6ecf8; --ink-2: #c3cbdb; --muted: #8e97aa;
+      --grid: #2a3040; --axis: #3a4156; --ring: #2e3446;
+      --series: #7983f5; --track: #2f3563;
+      --good-ink: #6fd3a3; --good-bg: #16352a;
+      --warn-ink: #f2b56b; --warn-bg: #3a2c16;
+      --crit-ink: #f08a80; --crit-bg: #3d1f22;
+      --chip: #262c4a; --chip-ink: #b7befa; --accent: #7983f5;
+      --code-bg: #161a24;
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --page: #0d0d0d; --surface: #1a1a19; --card: #1a1a19;
-    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
-    --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
-    --series: #3987e5; --track: #1f2a38;
-    --good-ink: #0ca30c; --good-bg: #16261a;
-    --warn-ink: #fab219; --warn-bg: #2d2615;
-    --crit-ink: #e66767; --crit-bg: #2e1a1a;
-    --chip: #22262e; --chip-ink: #b9cdf0; --accent: #3987e5;
-    --code-bg: #111110;
+    --page: #141821; --surface: #1d2230; --card: #1d2230;
+    --ink: #e6ecf8; --ink-2: #c3cbdb; --muted: #8e97aa;
+    --grid: #2a3040; --axis: #3a4156; --ring: #2e3446;
+    --series: #7983f5; --track: #2f3563;
+    --good-ink: #6fd3a3; --good-bg: #16352a;
+    --warn-ink: #f2b56b; --warn-bg: #3a2c16;
+    --crit-ink: #f08a80; --crit-bg: #3d1f22;
+    --chip: #262c4a; --chip-ink: #b7befa; --accent: #7983f5;
+    --code-bg: #161a24;
   }
 
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.5 "Be Vietnam Pro", system-ui, "Segoe UI", sans-serif; }
   button, select, input { font: inherit; color: inherit; }
   a { color: var(--accent); }
   code, pre { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
   .wrap { max-width: 1320px; margin: 0 auto; padding: 20px 24px 40px; }
 
-  header { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-  header h1 { margin: 0; font-size: 20px; }
-  header p { margin: 2px 0 0; color: var(--ink-2); font-size: 13px; }
+  header { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--card); border-bottom: 1px solid var(--ring); }
+  header h1 { margin: 0; font-size: 18px; }
+  header p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  .navlink { font-size: 14px; color: var(--chip-ink); text-decoration: none; padding: 5px 8px; }
   .hbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .pill { border: 1px solid var(--ring); background: var(--card); border-radius: 999px; padding: 4px 12px; font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
   .pill b { color: var(--ink); }
@@ -151,6 +156,7 @@
   }
   @media (max-width: 760px) {
     .wrap { padding: 14px 16px 32px; }
+    header { padding: 12px 16px; }
     .top { grid-template-columns: minmax(0, 1fr); }
     .card { padding: 14px; }
     .bars, .axis { grid-template-columns: 92px minmax(0, 1fr) 64px; column-gap: 8px; }
@@ -165,19 +171,20 @@
 </style>
 </head>
 <body>
+<header>
+  <div>
+    <h1>Eval · Golden set</h1>
+    <p>Trợ lý chuyển TA câu hỏi hồ sơ cá nhân · Nhóm GICUNGDCZ · Track B1</p>
+  </div>
+  <div class="hbar">
+    <span class="pill" id="modelPill">Model: …</span>
+    <label class="pill" for="runSel">Lượt chạy</label>
+    <select id="runSel" aria-label="Chọn lượt chạy"></select>
+    <a class="navlink" href="/demo">Demo</a>
+    <a class="navlink" href="/">Chat</a>
+  </div>
+</header>
 <div class="wrap">
-  <header>
-    <div>
-      <h1>Eval · Golden set</h1>
-      <p>Trợ lý chuyển TA câu hỏi hồ sơ cá nhân · Nhóm GICUNGDCZ · Track B1</p>
-    </div>
-    <div class="hbar">
-      <span class="pill" id="modelPill">Model: …</span>
-      <label class="pill" for="runSel">Lượt chạy</label>
-      <select id="runSel" aria-label="Chọn lượt chạy"></select>
-      <a class="btnlink" href="/">← Demo chat</a>
-    </div>
-  </header>
 
   <div class="notice" id="notice" hidden></div>
 

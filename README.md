@@ -4,14 +4,14 @@
 
 ## 👥 Thành viên nhóm & Phân công vai trò
 
-**Lớp:** 3A · **Phòng:** E403 · **Cụm:** 2 · **Track:** ____
+**Lớp:** 3A · **Phòng:** E403 · **Cụm:** 2 · **Track:*B* 
 
 | Họ và Tên | Mã Học Viên | Vai trò chính | Phần việc đảm nhiệm trong dự án |
 |---|---|---|---|
-| Nguyễn Đức Thắng | 2A202602605 |  |  | 
-| Trần Anh Quân | 2A202602598 |  | Thiết kế giao diện người dùng và frontend | 
-| Nguyễn Hải Long | 2A202602471 |  | Xử lý dữ liệu và huấn luyện/tinh chỉnh mô hình | 
-| Ngô Tiến Dũng | 2A202602374 |  | Kiểm thử, viết tài liệu và báo cáo | 
+| Nguyễn Đức Thắng | 2A202602605 | Leader | Tìm kiếm dữ liệu, lên ý tưởng, phân công và điều phối công việc chung | 
+| Trần Anh Quân | 2A202602598 | BA | Phỏng vấn, phân tích requirements và  | 
+| Nguyễn Hải Long | 2A202602471 | Dev | Lập trình, xây dựng hệ thống AI theo yêu cầu | 
+| Ngô Tiến Dũng | 2A202602374 | Tester | Thiết kế test case, thực hiện kiểm thử, đánh giá và báo cáo kết quả | 
 
 > Nhóm copy nguyên file README này về repo của mình, rồi điền bảng trên. Cột **Phần việc đảm nhiệm** ghi càng cụ thể càng tốt.
 

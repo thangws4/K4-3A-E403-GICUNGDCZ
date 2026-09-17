@@ -2041,7 +2041,7 @@
           $("#modelPill").textContent = `Người thử ${TESTER}`;
           sysEvent(`Chào bạn ${TESTER}! Hãy <b>tự gõ</b> vào ô chat bên dưới để làm lần lượt 3 việc (viết theo cách bạn vẫn hay nhắn, không cần chuẩn):
             <ol style="margin:6px 0 0 18px">${TASKS.map(t => `<li>${t}</li>`).join("")}</ol>
-            Làm xong, bạn quay lại Google Form để kể lại nhé. Không có đúng hay sai: chỗ nào khó hiểu chính là điều nhóm cần biết.`);
+            Vừa làm vừa nói ra điều bạn đang nghĩ nhé. Không có đúng hay sai: chỗ nào khó hiểu chính là điều nhóm cần biết.`);
           return;
         }
         await loadReplay().catch(() => { });

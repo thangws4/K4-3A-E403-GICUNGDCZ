@@ -269,18 +269,19 @@ Loại: [X] Tối ưu tính năng có sẵn  [ ] Tính năng mới
 - **Willing users + kế hoạch vòng validation (R6, trước CP5 13:00 18/09):**
   - **Willing user đã khai ở CP1:** 1. Lương Khánh Toàn · 2. Dương Minh Hiếu
   - **Người thử:** 5 học viên K4 **ngoài nhóm**, trong đó có 2 willing user ở trên.
-  - **Cách làm: thử không đồng bộ** (nhóm không gặp trực tiếp được người thử).
-    - Mở `/demo?tester=U1…U5` qua link tunnel (AI thật, giới hạn 18 lời gọi, tắt API eval).
-    - Người thử tự gõ 3 việc, rồi điền Google Form (bộ công cụ: [`validation/async-test-kit.md`](validation/async-test-kit.md)).
+  - **Cách làm: thử trực tiếp trên máy nhóm, có quan sát** (bộ công cụ và phiếu quan sát: [`validation/observation-kit.md`](validation/observation-kit.md)).
+    - Người thử dùng `/demo?tester=U1…U5` trên laptop của nhóm (AI thật; chỉ chạy local, không mở ra ngoài). 1 thành viên ngồi cạnh ghi phiếu, không giải thích, không gợi ý.
+    - Người thử vừa làm vừa nói ra suy nghĩ. Sau khi xong, người quan sát hỏi 3 câu về điều đã xảy ra.
     - Câu đã gõ và route của bot được ghi log theo mã người thử (`validation/export_tester_logs.py`).
-    - **Giới hạn:** không quan sát trực tiếp, nên quote là lời người thử tự kể lại sau khi làm.
+    - **Giới hạn:** người thử biết đang bị quan sát nên có thể cố gắng hơn khi dùng thật; giao diện là mô phỏng Discord.
+    - Trước đó (17/09 tối) nhóm đã thử cách không đồng bộ qua tunnel nhưng chưa thu được lượt nào. Lượt dò lỗi bằng persona giả lập ([`validation/pilot-ai-dryrun.md`](validation/pilot-ai-dryrun.md)) **không tính** vào R6.
     - 3 việc:
     - **T1:** "Hỏi bot xem buổi workshop hôm qua bạn đã được điểm danh chưa" *(đo nhánh chuyển TA)*
     - **T2:** "Hỏi bot hạn nộp daily standup" *(đo câu hỏi chung, không làm phiền TA)*
     - **T3:** "Thử nhờ bot cộng XP cho bạn" *(đo nhánh ngoài thẩm quyền)*
   - **Ghi nhật ký** vào [`validation/README.md`](validation/README.md): ai thử · task · kẹt ở đâu · quote nguyên văn · quyết định. Cuối bảng viết 4 dòng tổng kết.
   - **Ít nhất 1 thay đổi** ghi vào §9. Nếu giữ nguyên thiết kế thì ghi rõ vì sao.
-  - **Trạng thái:** **chưa thực hiện**.
+  - **Trạng thái:** **chưa thực hiện**. Bộ thử trực tiếp đã sẵn sàng; nhật ký sẽ điền từ phiếu quan sát và log thật.
 - **Multi-prototype:** 2 phương án cho **mắt xích phân loại**, chạy trên **cùng 25 ca golden set**:
 
   | Phương án | Cách phân loại | Đạt | Ca hồ sơ cá nhân bị bỏ sót | Ghi chú |
@@ -304,4 +305,3 @@ Loại: [X] Tối ưu tính năng có sẵn  [ ] Tính năng mới
 | 17/09 11:29 | Đo bù E1, E2 (cùng code, FAQ, golden set, model) → 24/25 | Lượt 1 bị HTTP 429 ở 2 ca cuối |
 | 17/09 · CP4 | **Chốt quality bar:** ≥ 85% + 3 điều kiện cứng = 0; tự động hoá trong `run_eval.py`. Kết quả: **chưa đạt** (H2-1) | Điều kiện cứng bám cost-of-error §4 |
 | *Kế hoạch lượt 2* | *`route()`: câu `GENERAL` độ tin < 0,75 và có loại hồ sơ → `clarify`; chạy lại đủ 25 ca* | *H2-1: model đã nhận ra câu hỏi mơ hồ nhưng luật không hỏi lại. Chưa áp dụng tại thời điểm chốt spec* |
-| *Sau validation (CP5)* | *Chưa có: chờ nhật ký 5 người dùng thử* | *R6* |

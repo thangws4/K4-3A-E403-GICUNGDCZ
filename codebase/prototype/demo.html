@@ -46,7 +46,8 @@
   .btn-action-reset:hover { background: var(--hover-bg); color: #fff; }
 
   /* ---------- workspace */
-  .workspace-grid { display: grid; grid-template-columns: minmax(0, 58fr) minmax(0, 42fr); gap: 12px; flex-grow: 1; }
+  .workspace-grid { display: grid; grid-template-columns: 280px minmax(0, 1.3fr) minmax(0, 1fr); gap: 12px; flex-grow: 1; align-items: start; }
+  .scen-panel { padding: 8px 8px 10px; gap: 0; height: calc(100vh - 128px); min-height: 560px; overflow-y: auto; }
   .discord-app-window { background: var(--chat-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; box-shadow: 0 8px 30px rgba(0,0,0,.45); height: calc(100vh - 128px); min-height: 560px; }
 
   .discord-server-rail { width: 58px; background: var(--server-bg); padding: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 8px; border-right: 1px solid #141517; flex-shrink: 0; }
@@ -55,7 +56,7 @@
   .server-icon.active::before { content: ""; position: absolute; left: -8px; width: 4px; height: 36px; border-radius: 0 4px 4px 0; background: #fff; }
   .server-divider { width: 30px; height: 2px; background: var(--border); border-radius: 1px; }
 
-  .discord-channel-sidebar { width: 210px; background: var(--sidebar-bg); display: flex; flex-direction: column; border-right: 1px solid #202225; flex-shrink: 0; }
+  .discord-channel-sidebar { width: 190px; background: var(--sidebar-bg); display: flex; flex-direction: column; border-right: 1px solid #202225; flex-shrink: 0; }
   .server-header-dropdown { height: 46px; padding: 0 14px; border-bottom: 1px solid #1F2023; display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 13.5px; color: var(--text-header); white-space: nowrap; overflow: hidden; }
   .channel-list { padding: 8px 6px; display: flex; flex-direction: column; gap: 2px; flex-grow: 1; overflow-y: auto; }
   .channel-category-label { font-size: 10.5px; font-weight: 700; color: var(--text-muted); letter-spacing: .04em; text-transform: uppercase; padding: 6px 8px 3px; }
@@ -77,17 +78,21 @@
   .chat-header-desc { font-size: 11.5px; color: var(--text-muted); border-left: 1px solid var(--border); padding-left: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .search-mock { background: #1E1F22; border-radius: 4px; padding: 3px 8px; font-size: 11px; color: var(--text-muted); white-space: nowrap; }
 
-  .test-cases-toolbar { background: #232428; border-bottom: 1px solid #1F2023; padding: 6px 12px 8px; display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; max-height: 46%; overflow-y: auto; }
-  .toolbar-head { display: flex; align-items: center; gap: 8px; }
-  .test-cases-title { font-size: 11px; font-weight: 800; color: var(--text-interactive); letter-spacing: .04em; white-space: nowrap; text-transform: uppercase; margin-right: 4px; }
-  .toolbar-toggle { margin-left: auto; background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 11px; font-weight: 700; border-radius: 6px; padding: 2px 8px; cursor: pointer; }
-  .toolbar-toggle:hover { color: var(--text-header); }
-  .case-group { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
-  .case-group-label { font-size: 10px; font-weight: 800; color: var(--text-muted); letter-spacing: .05em; text-transform: uppercase; min-width: 92px; }
-  .test-cases-toolbar.collapsed .case-group:not(.has-active) { display: none; }
-  .case-tab-btn { background: var(--sidebar-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; transition: all .15s ease; }
-  .case-tab-btn:hover:not(:disabled) { background: var(--hover-bg); color: var(--text-header); border-color: #4E5058; }
-  .case-tab-btn.active { background: var(--blurple); color: #fff; border-color: var(--blurple); box-shadow: 0 2px 8px rgba(88,101,242,.35); }
+  /* Danh sách kịch bản trong cột kênh bên trái */
+  .scen-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 8px 8px 2px; }
+  .scen-head span { font-size: 11px; font-weight: 800; color: var(--text-interactive); letter-spacing: .04em; text-transform: uppercase; }
+  .scen-head button { background: transparent; border: 0; color: var(--text-muted); font-size: 10.5px; font-weight: 700; cursor: pointer; }
+  .scen-head button:hover { color: var(--text-header); }
+  .case-group-label { width: 100%; display: flex; align-items: center; gap: 4px; background: transparent; border: 0; text-align: left; cursor: pointer; font-size: 10.5px; font-weight: 700; color: var(--text-muted); letter-spacing: .04em; text-transform: uppercase; padding: 8px 8px 3px; }
+  .case-group-label:hover { color: var(--text-interactive); }
+  .case-group-label .count { margin-left: auto; font-family: var(--mono); font-size: 10px; }
+  .case-group.closed .case-tab-btn:not(.active) { display: none; }
+  .case-tab-btn { width: 100%; display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 6px; text-align: left; background: transparent; border: 0; color: var(--text-muted); padding: 5px 8px; border-radius: 5px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background .1s ease; }
+  .case-tab-btn .cid { font-family: var(--mono); font-size: 10.5px; color: #6D6F78; }
+  .case-tab-btn .ttl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .case-tab-btn:hover:not(:disabled) { background: var(--hover-bg); color: var(--text-interactive); }
+  .case-tab-btn.active { background: var(--blurple); color: #fff; box-shadow: 0 2px 8px rgba(88,101,242,.35); }
+  .case-tab-btn.active .cid { color: rgba(255,255,255,.8); }
   .case-tab-btn:disabled { cursor: not-allowed; opacity: .6; }
   .case-type-tag { font-size: 9px; padding: 1px 4px; border-radius: 3px; font-weight: 800; text-transform: uppercase; }
   .tag-esc { background: rgba(242,63,67,.2); color: var(--red-text); }
@@ -210,17 +215,24 @@
   .pitch-footer-quote { text-align: center; font-size: 13px; font-style: italic; color: var(--text-interactive); padding: 4px 0; }
   .pitch-footer-quote span { display: block; font-style: normal; font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
 
-  @media (max-width: 1280px) {
-    .discord-channel-sidebar { width: 180px; }
+  @media (max-width: 1600px) {
+    .discord-server-rail { display: none; }
     .action-cards-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
+  @media (max-width: 1500px) {
+    .discord-channel-sidebar { display: none; }
+  }
   @media (max-width: 1100px) {
-    .workspace-grid { grid-template-columns: minmax(0, 1fr); }
-    .discord-app-window { height: 78vh; }
+    .workspace-grid { grid-template-columns: 260px minmax(0, 1fr); }
+    .ai-inspector-panel { grid-column: 1 / -1; }
+    .discord-app-window, .scen-panel { height: 78vh; }
   }
   @media (max-width: 760px) {
     .app-viewport { padding: 8px 10px 12px; }
-    .discord-server-rail, .discord-channel-sidebar, .search-mock, .chat-header-desc { display: none; }
+    .workspace-grid { grid-template-columns: minmax(0, 1fr); }
+    .scen-panel { height: auto; max-height: 320px; min-height: 0; }
+    .discord-app-window { height: 72vh; min-height: 0; }
+    .search-mock, .chat-header-desc { display: none; }
     .compare-grid { grid-template-columns: minmax(0, 1fr); }
     .pitch-title-area { flex-wrap: wrap; }
     .panel-card { padding: 12px 14px; }
@@ -251,6 +263,11 @@
   </header>
 
   <main class="workspace-grid">
+    <!-- Cột kịch bản bên trái, ngoài cửa sổ Discord -->
+    <aside class="panel-card scen-panel">
+      <div id="toolbar"></div>
+    </aside>
+
     <!-- Cửa sổ Discord -->
     <section class="discord-app-window">
       <aside class="discord-server-rail">
@@ -285,10 +302,6 @@
             <div class="chat-header-desc">Tag @Trợ lý để hỏi · hồ sơ cá nhân sẽ được chuyển TA</div>
           </div>
           <div class="search-mock">🔍 Tìm kiếm</div>
-        </div>
-
-        <div class="test-cases-toolbar" id="toolbar">
-          <span class="test-cases-title">🎯 Kịch bản:</span>
         </div>
 
         <div class="chat-stream-area" id="stream"></div>
@@ -681,24 +694,34 @@ const GROUPS = [
 ];
 const groupOf = c => (GROUPS.find(g => g.match(c.case)) || { label: "Khác" }).label;
 
+const closedGroups = new Set();
 function renderToolbar() {
   const tb = $("#toolbar");
-  const collapsed = tb.classList.contains("collapsed");
-  const head = `<div class="toolbar-head"><span class="test-cases-title">🎯 Kịch bản · ${S.cases.length} ca golden set</span>
-    <button class="toolbar-toggle" id="tbToggle">${collapsed ? "▼ Hiện tất cả" : "▲ Thu gọn"}</button></div>`;
+  const allClosed = closedGroups.size === GROUPS.length;
+  const head = `<div class="scen-head"><span>🎯 Kịch bản · ${S.cases.length} ca</span>
+    <button id="tbToggle">${allClosed ? "Mở tất cả" : "Thu gọn tất cả"}</button></div>`;
   const groups = GROUPS.map(g => {
     const items = S.cases.map((c, i) => ({ c, i })).filter(x => g.match(x.c.case));
     if (!items.length) return "";
-    const active = items.some(x => x.i === S.idx);
-    return `<div class="case-group ${active ? "has-active" : ""}"><span class="case-group-label">${esc(g.label)}</span>${items.map(({ c, i }) => {
-      const [cls, label] = TAG_OF[c.case.expected.routes[0]] || ["ans", "?"];
-      return `<button class="case-tab-btn ${i === S.idx ? "active" : ""}" data-i="${i}" title="${esc(c.case.input)}">
-        <span class="mono" style="font-size:10.5px;opacity:.8">${esc(c.case_id)}</span><span>${esc(c.title)}</span><span class="case-type-tag tag-${cls}">${label}</span></button>`;
-    }).join("")}</div>`;
+    const closed = closedGroups.has(g.label);
+    return `<div class="case-group ${closed ? "closed" : ""}">
+      <button class="case-group-label" data-g="${esc(g.label)}">${closed ? "▶" : "▼"} ${esc(g.label)}<span class="count">${items.length}</span></button>
+      ${items.map(({ c, i }) => {
+        const [cls, label] = TAG_OF[c.case.expected.routes[0]] || ["ans", "?"];
+        return `<button class="case-tab-btn ${i === S.idx ? "active" : ""}" data-i="${i}" title="${esc(c.case.input)}">
+          <span class="cid">${esc(c.case_id)}</span><span class="ttl">${esc(c.title)}</span><span class="case-type-tag tag-${cls}">${label}</span></button>`;
+      }).join("")}</div>`;
   }).join("");
   tb.innerHTML = head + groups;
   tb.querySelectorAll(".case-tab-btn").forEach(b => (b.onclick = () => send(+b.dataset.i)));
-  $("#tbToggle").onclick = () => { tb.classList.toggle("collapsed"); renderToolbar(); };
+  tb.querySelectorAll(".case-group-label").forEach(b => (b.onclick = () => {
+    closedGroups.has(b.dataset.g) ? closedGroups.delete(b.dataset.g) : closedGroups.add(b.dataset.g);
+    renderToolbar();
+  }));
+  $("#tbToggle").onclick = () => {
+    if (allClosed) closedGroups.clear(); else GROUPS.forEach(g => closedGroups.add(g.label));
+    renderToolbar();
+  };
   lock(S.busy);
 }
 function send(i) {

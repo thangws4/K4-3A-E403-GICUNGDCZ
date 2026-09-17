@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eval golden set · GICUNGDCZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Cùng bảng màu với index.html (giao diện chat) */
+  :root {
+    color-scheme: light;
+    --page: #f4f1ea; --surface: #ffffff; --card: #ffffff;
+    --ink: #1c2f5a; --ink-2: #3a4660; --muted: #6b7489;
+    --grid: #ece7dd; --axis: #cfc8ba; --ring: #e3ddd1;
+    --series: #5865f2; --track: #d9dcfb;
+    --good: #2e9e6a; --good-ink: #1f7a4d; --good-bg: #dff3e8;
+    --warn: #c7771b; --warn-ink: #8a5310; --warn-bg: #fdefd9;
+    --crit: #d0453a; --crit-ink: #b3372d; --crit-bg: #fde2df;
+    --chip: #eef0fb; --chip-ink: #3b46b8; --accent: #5865f2;
+    --code-bg: #f1ede4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #141821; --surface: #1d2230; --card: #1d2230;
+      --ink: #e6ecf8; --ink-2: #c3cbdb; --muted: #8e97aa;
+      --grid: #2a3040; --axis: #3a4156; --ring: #2e3446;
+      --series: #7983f5; --track: #2f3563;
+      --good-ink: #6fd3a3; --good-bg: #16352a;
+      --warn-ink: #f2b56b; --warn-bg: #3a2c16;
+      --crit-ink: #f08a80; --crit-bg: #3d1f22;
+      --chip: #262c4a; --chip-ink: #b7befa; --accent: #7983f5;
+      --code-bg: #161a24;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #141821; --surface: #1d2230; --card: #1d2230;
+    --ink: #e6ecf8; --ink-2: #c3cbdb; --muted: #8e97aa;
+    --grid: #2a3040; --axis: #3a4156; --ring: #2e3446;
+    --series: #7983f5; --track: #2f3563;
+    --good-ink: #6fd3a3; --good-bg: #16352a;
+    --warn-ink: #f2b56b; --warn-bg: #3a2c16;
+    --crit-ink: #f08a80; --crit-bg: #3d1f22;
+    --chip: #262c4a; --chip-ink: #b7befa; --accent: #7983f5;
+    --code-bg: #161a24;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.5 "Be Vietnam Pro", system-ui, "Segoe UI", sans-serif; }
+  button, select, input { font: inherit; color: inherit; }
+  a { color: var(--accent); }
+  code, pre { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 20px 24px 40px; }
+
+  header { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--card); border-bottom: 1px solid var(--ring); }
+  header h1 { margin: 0; font-size: 18px; }
+  header p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  .navlink { font-size: 14px; color: var(--chip-ink); text-decoration: none; padding: 5px 8px; }
+  .hbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .pill { border: 1px solid var(--ring); background: var(--card); border-radius: 999px; padding: 4px 12px; font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+  .pill b { color: var(--ink); }
+  select, input[type="search"] { border: 1px solid var(--ring); background: var(--card); border-radius: 8px; padding: 6px 10px; }
+  .btnlink { border: 1px solid var(--ring); background: var(--card); border-radius: 8px; padding: 6px 12px; text-decoration: none; color: var(--ink); }
+
+  .notice { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; }
+  .notice code { background: transparent; }
+
+  .top { display: grid; grid-template-columns: 300px 1fr; gap: 16px; margin-bottom: 16px; }
+  .card { background: var(--card); border: 1px solid var(--ring); border-radius: 14px; padding: 16px 18px; }
+  .card h2 { margin: 0 0 2px; font-size: 14px; }
+  .card .sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+
+  .hero .label { color: var(--ink-2); font-size: 13px; }
+  .hero .value { font-size: 56px; font-weight: 650; line-height: 1.05; margin: 4px 0 2px; }
+  .hero .detail { color: var(--ink-2); }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--grid); }
+  .tile .l { color: var(--muted); font-size: 12px; }
+  .tile .v { font-size: 20px; font-weight: 600; }
+
+  /* bar chart */
+  .charthead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; margin-bottom: 4px; }
+  .toggle { border: 1px solid var(--ring); background: transparent; border-radius: 8px; padding: 3px 10px; font-size: 12.5px; cursor: pointer; color: var(--ink-2); }
+  .bars { display: grid; grid-template-columns: minmax(120px, 210px) 1fr 92px; row-gap: 10px; column-gap: 12px; align-items: center; position: relative; }
+  .bars .name { color: var(--ink-2); font-size: 13px; }
+  .bars .plot { position: relative; height: 28px; cursor: default; }
+  .bars .plot::before { content: ""; position: absolute; inset: 2px 0; border-left: 1px solid var(--axis); }
+  .bars .grid25, .bars .grid50, .bars .grid75, .bars .grid100 { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--grid); }
+  .bars .fill { position: absolute; left: 0; top: 4px; height: 20px; background: var(--series); border-radius: 0 4px 4px 0; transition: width .3s; }
+  .bars .val { font-variant-numeric: tabular-nums; color: var(--ink); font-size: 13px; }
+  .bars .val span { color: var(--muted); }
+  .axis { display: grid; grid-template-columns: minmax(120px, 210px) 1fr 92px; column-gap: 12px; margin-top: 4px; }
+  .axis .ticks { position: relative; height: 16px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .axis .ticks span { position: absolute; transform: translateX(-50%); }
+  .axis .ticks span:first-child { transform: none; }
+  .axis .ticks span:last-child { transform: translateX(-100%); }
+  .tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--surface); border-radius: 8px; padding: 6px 10px; font-size: 12.5px; z-index: 20; display: none; white-space: nowrap; }
+  table.tv { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.tv th, table.tv td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--grid); }
+  table.tv td.n { font-variant-numeric: tabular-nums; }
+
+  /* filters + table */
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 12px; }
+  .seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+  .seg button { border: 1px solid var(--ring); background: var(--card); border-radius: 999px; padding: 4px 11px; cursor: pointer; font-size: 12.5px; color: var(--ink-2); }
+  .seg button[aria-pressed="true"] { background: var(--chip); color: var(--chip-ink); border-color: transparent; font-weight: 600; }
+  .filters input[type="search"] { flex: 1; min-width: 180px; }
+  .count { color: var(--muted); font-size: 12.5px; margin-left: auto; }
+
+  .main { display: grid; grid-template-columns: minmax(0, 1fr) 430px; gap: 16px; align-items: start; }
+  .tablecard { padding: 0; overflow: hidden; }
+  .tscroll { overflow-x: auto; }
+  table.cases { width: 100%; border-collapse: collapse; }
+  table.cases th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 10px 12px; border-bottom: 1px solid var(--grid); white-space: nowrap; background: var(--card); position: sticky; top: 0; }
+  table.cases td { padding: 9px 12px; border-bottom: 1px solid var(--grid); vertical-align: top; font-size: 13px; }
+  table.cases tr { cursor: pointer; }
+  table.cases tbody tr:hover { background: var(--chip); }
+  table.cases tr.sel { background: var(--chip); box-shadow: inset 3px 0 0 var(--accent); }
+  table.cases td.q { min-width: 260px; max-width: 420px; }
+  .tag { display: inline-block; font-size: 11.5px; border-radius: 6px; padding: 1px 7px; background: var(--chip); color: var(--chip-ink); white-space: nowrap; }
+  .src { color: var(--muted); font-size: 12px; }
+  .mono { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; }
+  .conf { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .status { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 600; border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
+  .status::before { font-weight: 700; }
+  .status.pass { background: var(--good-bg); color: var(--good-ink); } .status.pass::before { content: "✓"; }
+  .status.fail { background: var(--crit-bg); color: var(--crit-ink); } .status.fail::before { content: "✕"; }
+  .status.error { background: var(--warn-bg); color: var(--warn-ink); } .status.error::before { content: "⚠"; }
+  .status.none { background: var(--chip); color: var(--muted); } .status.none::before { content: "–"; }
+
+  /* detail */
+  .detail { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; }
+  .detail .empty { color: var(--muted); padding: 24px 4px; text-align: center; }
+  .detail h3 { margin: 0; font-size: 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .detail .input { margin: 10px 0; padding: 10px 12px; background: var(--code-bg); border-radius: 10px; font-size: 14px; }
+  .kv { display: grid; grid-template-columns: 112px 1fr; gap: 5px 10px; font-size: 13px; margin: 10px 0; }
+  .kv dt { color: var(--muted); }
+  .kv dd { margin: 0; overflow-wrap: anywhere; }
+  .fails { margin: 8px 0; padding-left: 18px; color: var(--crit-ink); }
+  .section { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--grid); }
+  .section h4 { margin: 0 0 6px; font-size: 13px; }
+  details { margin: 6px 0; }
+  details summary { cursor: pointer; color: var(--ink-2); font-size: 13px; }
+  pre.code { background: var(--code-bg); border-radius: 8px; padding: 10px; font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 320px; overflow-y: auto; margin: 6px 0 0; }
+  .run { border: 0; background: var(--accent); color: #fff; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-weight: 600; }
+  .run:disabled { opacity: .55; cursor: default; }
+  .hint { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
+  .live { margin-top: 10px; border: 1px dashed var(--axis); border-radius: 10px; padding: 10px 12px; }
+
+  @media (max-width: 1100px) {
+    .main { grid-template-columns: minmax(0, 1fr); }
+    .detail { position: static; max-height: none; }
+  }
+  @media (max-width: 760px) {
+    .wrap { padding: 14px 16px 32px; }
+    header { padding: 12px 16px; }
+    .top { grid-template-columns: minmax(0, 1fr); }
+    .card { padding: 14px; }
+    .bars, .axis { grid-template-columns: 92px minmax(0, 1fr) 64px; column-gap: 8px; }
+    .bars .name { font-size: 12px; line-height: 1.3; }
+    .hero .value { font-size: 48px; }
+    .filters select, .filters input[type="search"] { flex: 1 1 100%; }
+    .count { margin-left: 0; }
+    table.cases td.q { min-width: 180px; }
+    .hide-sm { display: none; }
+    .kv { grid-template-columns: 96px minmax(0, 1fr); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Eval · Golden set</h1>
+    <p>Trợ lý chuyển TA câu hỏi hồ sơ cá nhân · Nhóm GICUNGDCZ · Track B1</p>
+  </div>
+  <div class="hbar">
+    <span class="pill" id="modelPill">Model: …</span>
+    <label class="pill" for="runSel">Lượt chạy</label>
+    <select id="runSel" aria-label="Chọn lượt chạy"></select>
+    <a class="navlink" href="/demo">Demo</a>
+    <a class="navlink" href="/">Chat</a>
+  </div>
+</header>
+<div class="wrap">
+
+  <div class="notice" id="notice" hidden></div>
+
+  <section class="top">
+    <div class="card hero">
+      <div class="label">Tỉ lệ đạt (ca đạt / tổng ca)</div>
+      <div class="value" id="heroVal">–</div>
+      <div class="detail" id="heroDetail">&nbsp;</div>
+      <div class="tiles">
+        <div class="tile"><div class="l">Chỉ tính ca đo được</div><div class="v" id="tMeasured">–</div></div>
+        <div class="tile"><div class="l">Độ trễ trung vị</div><div class="v" id="tLatency">–</div></div>
+        <div class="tile"><div class="l">Ca từ dữ liệu thật</div><div class="v" id="tData">–</div></div>
+        <div class="tile"><div class="l">Lỗi gọi API</div><div class="v" id="tErrors">–</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="charthead">
+        <div>
+          <h2>Tỉ lệ đạt theo nhóm ca</h2>
+          <p class="sub">Độ dài thanh = % ca đạt trong nhóm · rê chuột để xem chi tiết · bấm thanh để lọc bảng</p>
+        </div>
+        <button class="toggle" id="tableToggle" aria-pressed="false">Xem dạng bảng</button>
+      </div>
+      <div id="chart"></div>
+      <div id="chartTable" hidden></div>
+    </div>
+  </section>
+
+  <div class="filters">
+    <div class="seg" id="groupSeg" role="group" aria-label="Lọc theo nhóm"></div>
+    <div class="seg" id="statusSeg" role="group" aria-label="Lọc theo kết quả"></div>
+    <select id="srcSel" aria-label="Lọc theo nguồn">
+      <option value="">Mọi nguồn</option>
+      <option value="data">Dữ liệu thật</option>
+      <option value="synthetic">Tự viết</option>
+    </select>
+    <input type="search" id="q" placeholder="Tìm câu hỏi, id, msg_id…">
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="main">
+    <div class="card tablecard">
+      <div class="tscroll">
+        <table class="cases">
+          <thead><tr>
+            <th>Ca</th><th>Nhóm</th><th>Câu hỏi</th><th class="hide-sm">Mong đợi</th><th>Thực tế</th><th class="hide-sm">intent · độ tin</th><th>Kết quả</th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+    <aside class="card detail" id="detail"><div class="empty">Chọn một ca trong bảng để xem chi tiết, prompt và phản hồi thô của model.</div></aside>
+  </div>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+const GROUPS = [
+  { key: "common", label: "Phổ biến hằng ngày", short: "Phổ biến", match: c => c.group === "common" },
+  { key: "1_source_of_truth", label: "① Nguồn sự thật", short: "①", match: c => c.hard_class === "1_source_of_truth" },
+  { key: "2_ambiguous", label: "② Mơ hồ / thiếu thông tin", short: "②", match: c => c.hard_class === "2_ambiguous" },
+  { key: "3_out_of_scope", label: "③ Ngoài phạm vi / thẩm quyền", short: "③", match: c => c.hard_class === "3_out_of_scope" },
+  { key: "4_domain", label: "④ Đặc thù nghiệp vụ", short: "④", match: c => c.hard_class === "4_domain" },
+  { key: "edge", label: "Hiếm gặp (edge)", short: "Edge", match: c => c.group === "edge" },
+];
+const STATUS = {
+  pass: "Đạt", fail: "Không đạt", error: "Lỗi API · chưa đo", none: "Chưa chạy",
+};
+
+const state = { cases: [], runs: [], rows: {}, group: "", status: "", src: "", q: "", sel: null, live: {} };
+
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  if (!r.ok) throw new Error(`${path}: HTTP ${r.status}`);
+  return r.json();
+}
+
+function statusOf(id) {
+  const row = state.rows[id];
+  if (!row) return "none";
+  if (row.rec.error) return "error";
+  return row.fails.length ? "fail" : "pass";
+}
+const groupOf = c => GROUPS.find(g => g.match(c));
+
+// ---------- summary + chart
+function renderSummary() {
+  const ids = state.cases.map(c => c.id);
+  const ran = ids.filter(id => state.rows[id]);
+  const pass = ran.filter(id => statusOf(id) === "pass").length;
+  const errors = ran.filter(id => statusOf(id) === "error").length;
+  const measured = ran.length - errors;
+  $("#heroVal").textContent = ran.length ? `${Math.round(pass / ran.length * 100)}%` : "–";
+  $("#heroDetail").textContent = ran.length ? `${pass}/${ran.length} ca đạt · ${ran.length - pass} không đạt` : "Lượt này chưa có ca nào";
+  $("#tMeasured").textContent = measured ? `${Math.round(pass / measured * 100)}% (${pass}/${measured})` : "–";
+  const lat = ran.filter(id => !state.rows[id].rec.error).map(id => state.rows[id].rec.latency_ms).sort((a, b) => a - b);
+  $("#tLatency").textContent = lat.length ? `${(lat[Math.floor(lat.length / 2)] / 1000).toFixed(1)} s` : "–";
+  const data = ran.filter(id => state.cases.find(c => c.id === id).source === "data");
+  $("#tData").textContent = data.length ? `${data.filter(id => statusOf(id) === "pass").length}/${data.length}` : "–";
+  $("#tErrors").textContent = String(errors);
+
+  const stats = GROUPS.map(g => {
+    const inG = state.cases.filter(g.match).map(c => c.id).filter(id => state.rows[id]);
+    const p = inG.filter(id => statusOf(id) === "pass").length;
+    const e = inG.filter(id => statusOf(id) === "error").length;
+    return { ...g, n: inG.length, pass: p, err: e, pct: inG.length ? p / inG.length : 0 };
+  });
+
+  $("#chart").innerHTML = `<div class="bars">${stats.map(s => `
+      <div class="name">${esc(s.label)}</div>
+      <div class="plot" data-key="${s.key}" tabindex="0" role="img" aria-label="${esc(s.label)}: ${s.pass} trên ${s.n} ca đạt">
+        <div class="grid25" style="left:25%"></div><div class="grid50" style="left:50%"></div><div class="grid75" style="left:75%"></div><div class="grid100" style="left:100%"></div>
+        <div class="fill" style="width:${s.n ? Math.max(s.pct * 100, s.pass ? 1 : 0) : 0}%"></div>
+      </div>
+      <div class="val">${s.n ? `${Math.round(s.pct * 100)}% <span>${s.pass}/${s.n}</span>` : '<span>chưa chạy</span>'}</div>`).join("")}
+    </div>
+    <div class="axis"><div></div><div class="ticks"><span style="left:0">0%</span><span style="left:50%">50%</span><span style="left:100%">100%</span></div><div></div></div>`;
+
+  const tip = $("#tip");
+  document.querySelectorAll(".bars .plot").forEach(el => {
+    const s = stats.find(x => x.key === el.dataset.key);
+    const show = e => {
+      tip.innerHTML = `<b>${esc(s.label)}</b><br>${s.pass}/${s.n} đạt${s.err ? ` · ${s.err} lỗi API` : ""}`;
+      tip.style.display = "block";
+      const r = el.getBoundingClientRect();
+      const x = e && e.clientX ? e.clientX : r.left + r.width / 2;
+      tip.style.left = Math.min(x + 12, innerWidth - tip.offsetWidth - 8) + "px";
+      tip.style.top = (r.top - tip.offsetHeight - 6) + "px";
+    };
+    el.onmousemove = show;
+    el.onfocus = () => show();
+    el.onmouseleave = el.onblur = () => (tip.style.display = "none");
+    el.onclick = () => { state.group = state.group === s.key ? "" : s.key; renderFilters(); renderRows(); };
+  });
+
+  $("#chartTable").innerHTML = `<table class="tv"><thead><tr><th>Nhóm</th><th>Đạt</th><th>Đã chạy</th><th>Lỗi API</th><th>Tỉ lệ đạt</th></tr></thead><tbody>${
+    stats.map(s => `<tr><td>${esc(s.label)}</td><td class="n">${s.pass}</td><td class="n">${s.n}</td><td class="n">${s.err}</td><td class="n">${s.n ? Math.round(s.pct * 100) + "%" : "–"}</td></tr>`).join("")
+  }</tbody></table>`;
+}
+
+// ---------- filters + rows
+function renderFilters() {
+  $("#groupSeg").innerHTML = [{ key: "", short: "Tất cả" }, ...GROUPS]
+    .map(g => `<button data-g="${g.key}" aria-pressed="${state.group === g.key}" title="${esc(g.label || "Tất cả nhóm")}">${esc(g.short)}</button>`).join("");
+  $("#groupSeg").querySelectorAll("button").forEach(b => (b.onclick = () => { state.group = b.dataset.g; renderFilters(); renderRows(); }));
+  $("#statusSeg").innerHTML = [["", "Mọi kết quả"], ["pass", "✓ Đạt"], ["fail", "✕ Không đạt"], ["error", "⚠ Lỗi API"]]
+    .map(([k, l]) => `<button data-s="${k}" aria-pressed="${state.status === k}">${l}</button>`).join("");
+  $("#statusSeg").querySelectorAll("button").forEach(b => (b.onclick = () => { state.status = b.dataset.s; renderFilters(); renderRows(); }));
+}
+
+function visibleCases() {
+  const q = state.q.trim().toLowerCase();
+  return state.cases.filter(c => {
+    if (state.group && !GROUPS.find(g => g.key === state.group).match(c)) return false;
+    if (state.status && statusOf(c.id) !== state.status) return false;
+    if (state.src && c.source !== state.src) return false;
+    if (q && !`${c.id} ${c.input} ${c.msg_id || ""}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function renderRows() {
+  const list = visibleCases();
+  $("#count").textContent = `${list.length}/${state.cases.length} ca`;
+  $("#rows").innerHTML = list.length ? list.map(c => {
+    const row = state.rows[c.id];
+    const d = row && row.rec.decision;
+    const st = statusOf(c.id);
+    return `<tr data-id="${c.id}" class="${state.sel === c.id ? "sel" : ""}">
+      <td class="mono">${esc(c.id)}</td>
+      <td><span class="tag">${esc(groupOf(c).short)}</span></td>
+      <td class="q">${esc(c.input)}<div class="src">${c.msg_id ? esc(c.msg_id) : "tự viết"}</div></td>
+      <td class="mono hide-sm">${esc(c.expected.routes.join(" / "))}</td>
+      <td class="mono">${row ? esc(row.rec.route) : "–"}</td>
+      <td class="hide-sm">${d ? `<span class="mono">${esc(d.intent)}</span> <span class="conf">${d.confidence.toFixed(2)}</span>` : "–"}</td>
+      <td><span class="status ${st}">${STATUS[st]}</span></td>
+    </tr>`;
+  }).join("") : `<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:20px">Không có ca nào khớp bộ lọc.</td></tr>`;
+  $("#rows").querySelectorAll("tr[data-id]").forEach(tr => (tr.onclick = () => select(tr.dataset.id)));
+}
+
+// ---------- detail
+function recBlock(rec, fails) {
+  const d = rec.decision;
+  const st = rec.error ? "error" : fails.length ? "fail" : "pass";
+  return `
+    <div style="margin:6px 0"><span class="status ${st}">${STATUS[st]}</span></div>
+    ${fails.length ? `<ul class="fails">${fails.map(f => `<li>${esc(f)}</li>`).join("")}</ul>` : ""}
+    <dl class="kv">
+      <dt>Route</dt><dd class="mono">${esc(rec.route)}</dd>
+      ${d ? `
+      <dt>intent · độ tin</dt><dd><span class="mono">${esc(d.intent)}</span> · ${d.confidence}</dd>
+      <dt>Loại hồ sơ</dt><dd class="mono">${esc(d.record_type)}</dd>
+      <dt>urgent · injection</dt><dd class="mono">${d.urgent} · ${d.injection}</dd>
+      <dt>faq_id</dt><dd class="mono">${esc(d.faq_id ?? "null")}</dd>
+      <dt>Tóm tắt cho TA</dt><dd>${esc(d.summary)}</dd>
+      <dt>Lý do</dt><dd>${(d.reasons || []).map(esc).join(" · ") || "–"}</dd>` : ""}
+      <dt>Độ trễ</dt><dd>${(rec.latency_ms / 1000).toFixed(1)} s</dd>
+      <dt>Model</dt><dd class="mono">${esc(rec.provider)}/${esc(rec.model)}</dd>
+      <dt>log_id</dt><dd class="mono">${esc(rec.log_id)} · ${esc(rec.ts)}</dd>
+    </dl>
+    ${rec.error ? `<details open><summary>Lỗi</summary><pre class="code">${esc(rec.error)}</pre></details>` : ""}
+    <details ${rec.raw_response ? "open" : ""}><summary>Phản hồi thô của model</summary><pre class="code">${esc(rec.raw_response ?? "(không có)")}</pre></details>
+    <details><summary>Prompt người dùng</summary><pre class="code">${esc(rec.prompt?.user)}</pre></details>
+    <details><summary>System prompt (${(rec.prompt?.system || "").length} ký tự)</summary><pre class="code">${esc(rec.prompt?.system)}</pre></details>`;
+}
+
+function select(id) {
+  state.sel = id;
+  history.replaceState(null, "", `#case=${encodeURIComponent(id)}`);
+  renderRows();
+  const c = state.cases.find(x => x.id === id);
+  const row = state.rows[id];
+  const live = state.live[id];
+  $("#detail").innerHTML = `
+    <h3><span class="mono">${esc(c.id)}</span> <span class="tag">${esc(groupOf(c).label)}</span></h3>
+    <div class="input">${esc(c.input)}</div>
+    <dl class="kv">
+      <dt>Nguồn</dt><dd>${c.msg_id ? `Dữ liệu thật · <span class="mono">${esc(c.msg_id)}</span>` : "Nhóm tự viết"}</dd>
+      <dt>Route chấp nhận</dt><dd class="mono">${esc(c.expected.routes.join(" / "))}</dd>
+      ${"urgent" in c.expected ? `<dt>Cần urgent</dt><dd class="mono">${c.expected.urgent}</dd>` : ""}
+      ${"injection" in c.expected ? `<dt>Cần injection</dt><dd class="mono">${c.expected.injection}</dd>` : ""}
+      ${c.expected.faq_id ? `<dt>Cần faq_id</dt><dd class="mono">${esc(c.expected.faq_id)}</dd>` : ""}
+      <dt>Vì sao</dt><dd>${esc(c.rationale)}</dd>
+    </dl>
+    <div class="section">
+      <h4>Kết quả trong lượt <span class="mono">${esc($("#runSel").value)}</span></h4>
+      ${row ? recBlock(row.rec, row.fails) : '<p class="hint">Ca này chưa chạy trong lượt đang chọn.</p>'}
+    </div>
+    <div class="section">
+      <h4>Chạy lại bằng AI thật</h4>
+      <button class="run" id="runBtn">▶ Chạy lại ca ${esc(c.id)}</button>
+      <p class="hint">Gọi 1 request thật tới model (tốn quota), ghi log vào <code>codebase/logs/</code>, không sửa kết quả của lượt đã lưu.</p>
+      <div id="liveBox">${live ? `<div class="live">${recBlock(live.rec, live.fails)}</div>` : ""}</div>
+    </div>`;
+  $("#runBtn").onclick = () => runLive(id);
+}
+
+async function runLive(id) {
+  const btn = $("#runBtn");
+  btn.disabled = true;
+  btn.textContent = "Đang gọi model…";
+  try {
+    state.live[id] = await api("/api/eval-case", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ case_id: id }) });
+  } catch (e) {
+    $("#liveBox").innerHTML = `<div class="live"><span class="status error">Không gọi được server</span><p class="hint">${esc(e.message)}</p></div>`;
+    btn.disabled = false;
+    btn.textContent = `▶ Chạy lại ca ${id}`;
+    return;
+  }
+  if (state.sel === id) select(id);
+}
+
+// ---------- load
+async function loadRun(runId) {
+  const data = await api(`/api/runs/${runId}`);
+  state.rows = Object.fromEntries(data.rows.map(r => [r.case_id, r]));
+  const meta = state.runs.find(r => r.run_id === runId);
+  if (meta) $("#modelPill").innerHTML = `Model: <b>${esc(meta.provider)}/${esc(meta.model)}</b>`;
+  renderSummary();
+  renderRows();
+  if (state.sel) select(state.sel);
+}
+
+async function init() {
+  if (!location.protocol.startsWith("http")) {
+    $("#notice").hidden = false;
+    $("#notice").innerHTML = "Trang này cần server để đọc kết quả eval. Chạy <code>python codebase/decision/server.py</code> rồi mở <b>http://localhost:8000/eval</b>.";
+    return;
+  }
+  try {
+    const [golden, runs, health] = await Promise.all([api("/api/golden"), api("/api/runs"), api("/api/health")]);
+    state.cases = golden.cases;
+    state.runs = runs.runs;
+    if (!health.configured) {
+      $("#notice").hidden = false;
+      $("#notice").textContent = `Server chưa có API key cho ${health.provider}: vẫn xem được kết quả đã lưu, nhưng nút "Chạy lại" sẽ báo lỗi.`;
+    }
+    if (!state.runs.length) {
+      $("#runSel").innerHTML = "<option>Chưa có lượt nào</option>";
+      renderFilters(); renderSummary(); renderRows();
+      return;
+    }
+    // mặc định: lượt mới nhất có nhiều ca nhất (lượt đầy đủ)
+    const full = [...state.runs].sort((a, b) => b.n - a.n || b.run_id.localeCompare(a.run_id))[0];
+    $("#runSel").innerHTML = state.runs.map(r =>
+      `<option value="${r.run_id}" ${r.run_id === full.run_id ? "selected" : ""}>${r.run_id.replace("run-", "")} · ${r.passed}/${r.n} đạt</option>`).join("");
+    $("#runSel").onchange = () => loadRun($("#runSel").value);
+    renderFilters();
+    const fromHash = decodeURIComponent((location.hash.match(/case=([^&]+)/) || [])[1] || "");
+    if (state.cases.some(c => c.id === fromHash)) state.sel = fromHash;
+    await loadRun(full.run_id);
+  } catch (e) {
+    $("#notice").hidden = false;
+    $("#notice").textContent = `Không tải được dữ liệu: ${e.message}`;
+  }
+}
+
+$("#q").oninput = e => { state.q = e.target.value; renderRows(); };
+$("#srcSel").onchange = e => { state.src = e.target.value; renderRows(); };
+$("#tableToggle").onclick = () => {
+  const on = $("#chartTable").hidden;
+  $("#chartTable").hidden = !on;
+  $("#chart").hidden = on;
+  $("#tableToggle").setAttribute("aria-pressed", on);
+  $("#tableToggle").textContent = on ? "Xem dạng biểu đồ" : "Xem dạng bảng";
+};
+init();
+</script>
+</body>
+</html>

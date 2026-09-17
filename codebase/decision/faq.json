@@ -1,0 +1,47 @@
+{
+  "_note": "Nguồn chính thức GIẢ LẬP. Nội dung tóm lại từ các câu trả lời bot hiện có trong pack Discord K4 (chưa được BTC xác nhận). Bot chỉ được trả lời câu hỏi chung khi khớp đúng 1 mục dưới đây.",
+  "items": [
+    {
+      "id": "xp_rank",
+      "question": "Xem XP / lịch sử XP / level của chính mình bằng cách nào?",
+      "answer": "Gõ lệnh /rank để xem XP, level và lịch sử cộng XP của bạn.",
+      "source": "FAQ Bot · mục XP"
+    },
+    {
+      "id": "xp_leaderboard",
+      "question": "Xem bảng xếp hạng XP của server bằng cách nào?",
+      "answer": "Gõ lệnh /leaderboard users để xem bảng xếp hạng XP cá nhân toàn server.",
+      "source": "FAQ Bot · mục XP"
+    },
+    {
+      "id": "attendance_rule",
+      "question": "Quy định để được điểm danh workshop (điều kiện chung, không phải tra cứu của một người)?",
+      "answer": "Workshop điểm danh tự động khi bạn vào Zoom bằng email đã đăng ký với chương trình, đặt tên đúng cú pháp và có tương tác trong buổi.",
+      "source": "#thông-báo · Quy định điểm danh workshop"
+    },
+    {
+      "id": "daily_time",
+      "question": "Khung giờ / hạn nộp daily standup mỗi ngày? Nộp daily standup muộn thì sao?",
+      "answer": "Daily standup nộp trong khung 0h–10h sáng mỗi ngày. Nộp sau 10h vẫn được ghi nhận nhưng không được cộng XP. (Chỉ áp dụng cho daily standup, không áp dụng cho bài lab.)",
+      "source": "FAQ Bot · mục Daily standup"
+    },
+    {
+      "id": "daily_where",
+      "question": "Nộp daily standup ở đâu, bằng lệnh gì?",
+      "answer": "Gõ lệnh /daily-standup trong thread `Thảo luận` thuộc channel riêng của team bạn (t-xxx).",
+      "source": "FAQ Bot · mục Daily standup"
+    },
+    {
+      "id": "topic_pick",
+      "question": "Chọn / nộp đề tài cho team bằng cách nào?",
+      "answer": "Dùng lệnh /topic pick kèm mã đề tài tương ứng.",
+      "source": "FAQ Bot · mục Team & đề tài"
+    },
+    {
+      "id": "ticket_create",
+      "question": "Mở ticket hỗ trợ như thế nào?",
+      "answer": "Vào kênh hỏi-đáp-bot, gõ lệnh /ticket create để mở một thread hỗ trợ riêng với BTC.",
+      "source": "FAQ Bot · mục Hỗ trợ"
+    }
+  ]
+}

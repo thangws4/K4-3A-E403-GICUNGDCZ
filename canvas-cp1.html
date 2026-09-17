@@ -1,218 +1,539 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Canvas CP1 · GICUNGDCZ</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #faf6ef;
-    --card: #ffffff;
-    --line: #e9e3d8;
-    --ink: #1c2f5a;
-    --text: #3a4660;
-    --muted: #6b7489;
-    --green: #5aa98a;
-    --blue: #4a8fd4;  --blue-soft: #e3effb;  --blue-ink: #2d5f93;
-    --purple: #8a78d6; --purple-soft: #ece8fb; --purple-ink: #4b3d8f;
-    --orange: #e39a4a; --orange-soft: #fcefdf; --orange-ink: #8a5215;
-    --todo-bg: #fff4c2; --todo-ink: #7a5a00;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #141821; --card: #1d2230; --line: #2e3446;
-      --ink: #e6ecf8; --text: #c3cbdb; --muted: #8e97aa;
-      --blue-soft: #1f3147; --blue-ink: #9cc6f2;
-      --purple-soft: #2a2745; --purple-ink: #c3b8f5;
-      --orange-soft: #3a2c1c; --orange-ink: #f2c28c;
-      --todo-bg: #4a3f12; --todo-ink: #ffe28a;
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Canvas CP1 · GICUNGDCZ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf6ef;
+      --card: #ffffff;
+      --line: #e9e3d8;
+      --ink: #1c2f5a;
+      --text: #3a4660;
+      --muted: #6b7489;
+      --green: #5aa98a;
+      --blue: #4a8fd4;
+      --blue-soft: #e3effb;
+      --blue-ink: #2d5f93;
+      --purple: #8a78d6;
+      --purple-soft: #ece8fb;
+      --purple-ink: #4b3d8f;
+      --orange: #e39a4a;
+      --orange-soft: #fcefdf;
+      --orange-ink: #8a5215;
+      --todo-bg: #fff4c2;
+      --todo-ink: #7a5a00;
     }
-  }
-  :root[data-theme="dark"] {
-    --bg: #141821; --card: #1d2230; --line: #2e3446;
-    --ink: #e6ecf8; --text: #c3cbdb; --muted: #8e97aa;
-    --blue-soft: #1f3147; --blue-ink: #9cc6f2;
-    --purple-soft: #2a2745; --purple-ink: #c3b8f5;
-    --orange-soft: #3a2c1c; --orange-ink: #f2c28c;
-    --todo-bg: #4a3f12; --todo-ink: #ffe28a;
-  }
 
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
-    font-size: 17px;
-    line-height: 1.5;
-  }
-  .page { max-width: 1400px; margin: 0 auto; padding: 40px 48px 32px; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #141821;
+        --card: #1d2230;
+        --line: #2e3446;
+        --ink: #e6ecf8;
+        --text: #c3cbdb;
+        --muted: #8e97aa;
+        --blue-soft: #1f3147;
+        --blue-ink: #9cc6f2;
+        --purple-soft: #2a2745;
+        --purple-ink: #c3b8f5;
+        --orange-soft: #3a2c1c;
+        --orange-ink: #f2c28c;
+        --todo-bg: #4a3f12;
+        --todo-ink: #ffe28a;
+      }
+    }
 
-  header { display: flex; gap: 32px; justify-content: space-between; align-items: flex-start; }
-  .chip {
-    display: inline-flex; align-items: center; gap: 10px;
-    border: 1px solid var(--line); background: var(--card); border-radius: 999px;
-    padding: 6px 16px; font-size: 13px; font-weight: 700; letter-spacing: .08em; color: var(--ink);
-  }
-  .chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--orange); }
-  h1 { margin: 14px 0 4px; font-size: clamp(30px, 4vw, 48px); font-weight: 800; color: var(--ink); letter-spacing: -.01em; line-height: 1.15; }
-  .sub { margin: 0; font-size: clamp(16px, 1.6vw, 21px); color: var(--muted); }
-  .meta {
-    flex: 0 0 360px; background: var(--blue-soft); color: var(--blue-ink);
-    border: 1px solid color-mix(in srgb, var(--blue) 35%, transparent);
-    border-radius: 16px; padding: 16px 20px; font-size: 15px;
-  }
-  .meta b { color: var(--ink); }
+    :root[data-theme="dark"] {
+      --bg: #141821;
+      --card: #1d2230;
+      --line: #2e3446;
+      --ink: #e6ecf8;
+      --text: #c3cbdb;
+      --muted: #8e97aa;
+      --blue-soft: #1f3147;
+      --blue-ink: #9cc6f2;
+      --purple-soft: #2a2745;
+      --purple-ink: #c3b8f5;
+      --orange-soft: #3a2c1c;
+      --orange-ink: #f2c28c;
+      --todo-bg: #4a3f12;
+      --todo-ink: #ffe28a;
+    }
 
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
-  .card {
-    position: relative; background: var(--card); border: 1px solid var(--line);
-    border-radius: 20px; padding: 26px 30px 28px; overflow: hidden;
-  }
-  .card::after {
-    content: ""; position: absolute; top: 0; right: 0; width: 140px; height: 8px;
-    border-radius: 0 0 0 8px; background: var(--accent);
-  }
-  .c1 { --accent: var(--green); } .c2 { --accent: var(--blue); }
-  .c3 { --accent: var(--purple); } .c4 { --accent: var(--orange); }
-  .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
-  h2 { margin: 8px 0 12px; font-size: clamp(21px, 2vw, 27px); font-weight: 800; color: var(--ink); line-height: 1.25; }
-  p { margin: 0 0 10px; }
-  b, strong { color: var(--ink); }
-  hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
+    * {
+      box-sizing: border-box;
+    }
 
-  .note {
-    display: flex; gap: 12px; align-items: flex-start;
-    border-radius: 12px; padding: 12px 16px; margin-top: 14px; font-size: 15px;
-  }
-  .note::before { content: ""; flex: 0 0 18px; height: 18px; margin-top: 2px; border-radius: 50%; background: currentColor; opacity: .75; }
-  .note.blue { background: var(--blue-soft); color: var(--blue-ink); }
-  .note.purple { background: var(--purple-soft); color: var(--purple-ink); }
-  .note.orange { background: var(--orange-soft); color: var(--orange-ink); }
-  .note b { color: inherit; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 17px;
+      line-height: 1.5;
+    }
 
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 6px 0 4px; }
-  .stat { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
-  .stat .n { font-size: 26px; font-weight: 800; color: var(--ink); line-height: 1.1; }
-  .stat .l { font-size: 13px; color: var(--muted); line-height: 1.35; }
+    .page {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 48px 32px;
+    }
 
-  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 0 12px; }
-  .tag {
-    background: var(--purple-soft); color: var(--purple-ink);
-    font-size: 13px; font-weight: 700; letter-spacing: .04em; padding: 4px 12px; border-radius: 999px;
-  }
-  .flow { margin: 0; padding-left: 20px; }
-  .flow li { margin-bottom: 4px; }
-  .quote { border-left: 3px solid var(--blue); padding-left: 12px; font-size: 15px; color: var(--muted); margin: 10px 0 0; }
-  .quote i { color: var(--text); }
+    header {
+      display: flex;
+      gap: 32px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
 
-  .todo {
-    background: var(--todo-bg); color: var(--todo-ink); border-radius: 6px;
-    padding: 0 6px; font-weight: 600; white-space: nowrap;
-  }
-  table.team { width: 100%; border-collapse: collapse; font-size: 15px; margin-top: 4px; }
-  table.team td { padding: 6px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  table.team td:first-child { color: var(--ink); font-weight: 600; width: 44%; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--ink);
+    }
 
-  footer {
-    display: flex; justify-content: space-between; align-items: center; gap: 24px;
-    margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted);
-  }
-  footer b { color: var(--ink); }
-  footer .warn { background: var(--orange-soft); color: var(--orange-ink); border-radius: 12px; padding: 10px 16px; text-align: right; }
+    .chip::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--orange);
+    }
 
-  @media (max-width: 900px) {
-    .page { padding: 24px 16px; }
-    header { flex-direction: column; gap: 16px; }
-    .meta { flex: none; width: 100%; }
-    .grid { grid-template-columns: 1fr; gap: 16px; }
-    .card { padding: 22px 18px; }
-    .stats { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .stat .n { font-size: 22px; }
-    footer { flex-direction: column; align-items: flex-start; }
-    footer .warn { text-align: left; }
-    .todo { white-space: normal; }
-  }
-</style>
+    h1 {
+      margin: 14px 0 4px;
+      font-size: clamp(30px, 4vw, 48px);
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -.01em;
+      line-height: 1.15;
+    }
+
+    .sub {
+      margin: 0;
+      font-size: clamp(16px, 1.6vw, 21px);
+      color: var(--muted);
+    }
+
+    .meta {
+      flex: 0 0 360px;
+      background: var(--blue-soft);
+      color: var(--blue-ink);
+      border: 1px solid color-mix(in srgb, var(--blue) 35%, transparent);
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-size: 15px;
+    }
+
+    .meta b {
+      color: var(--ink);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    .card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 26px 30px 28px;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 140px;
+      height: 8px;
+      border-radius: 0 0 0 8px;
+      background: var(--accent);
+    }
+
+    .c1 {
+      --accent: var(--green);
+    }
+
+    .c2 {
+      --accent: var(--blue);
+    }
+
+    .c3 {
+      --accent: var(--purple);
+    }
+
+    .c4 {
+      --accent: var(--orange);
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 8px 0 12px;
+      font-size: clamp(21px, 2vw, 27px);
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.25;
+    }
+
+    p {
+      margin: 0 0 10px;
+    }
+
+    b,
+    strong {
+      color: var(--ink);
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid var(--line);
+      margin: 14px 0;
+    }
+
+    .note {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 14px;
+      font-size: 15px;
+    }
+
+    .note::before {
+      content: "";
+      flex: 0 0 18px;
+      height: 18px;
+      margin-top: 2px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: .75;
+    }
+
+    .note.blue {
+      background: var(--blue-soft);
+      color: var(--blue-ink);
+    }
+
+    .note.purple {
+      background: var(--purple-soft);
+      color: var(--purple-ink);
+    }
+
+    .note.orange {
+      background: var(--orange-soft);
+      color: var(--orange-ink);
+    }
+
+    .note b {
+      color: inherit;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 6px 0 4px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .stat .n {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.1;
+    }
+
+    .stat .l {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 2px 0 12px;
+    }
+
+    .tag {
+      background: var(--purple-soft);
+      color: var(--purple-ink);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .flow {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .flow li {
+      margin-bottom: 4px;
+    }
+
+    .quote {
+      border-left: 3px solid var(--blue);
+      padding-left: 12px;
+      font-size: 15px;
+      color: var(--muted);
+      margin: 10px 0 0;
+    }
+
+    .quote i {
+      color: var(--text);
+    }
+
+    .todo {
+      background: var(--todo-bg);
+      color: var(--todo-ink);
+      border-radius: 6px;
+      padding: 0 6px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    table.team {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+      margin-top: 4px;
+    }
+
+    table.team td {
+      padding: 6px 4px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    table.team td:first-child {
+      color: var(--ink);
+      font-weight: 600;
+      width: 44%;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    footer b {
+      color: var(--ink);
+    }
+
+    footer .warn {
+      background: var(--orange-soft);
+      color: var(--orange-ink);
+      border-radius: 12px;
+      padding: 10px 16px;
+      text-align: right;
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        padding: 24px 16px;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .meta {
+        flex: none;
+        width: 100%;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .card {
+        padding: 22px 18px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+      }
+
+      .stat .n {
+        font-size: 22px;
+      }
+
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      footer .warn {
+        text-align: left;
+      }
+
+      .todo {
+        white-space: normal;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="page">
+  <div class="page">
 
-  <header>
-    <div>
-      <span class="chip">MINI HACKATHON AI · CHECKPOINT 1</span>
-      <h1>CANVAS · NHÓM GICUNGDCZ</h1>
-      <p class="sub">Hướng B · B1 Tối ưu trợ lý hiện có: chuyển TA câu hỏi về hồ sơ cá nhân thay vì đoán</p>
-    </div>
-    <div class="meta">
-      <b>Lớp 3A · Phòng E403 · Cụm <span class="todo">__</span></b><br>
-      Đội trưởng: <span class="todo">Họ tên</span> · Mã HV: <span class="todo">______</span><br>
-      Repo: <b>K4-3A-E403-GICUNGDCZ</b> <span class="todo">link GitHub công khai</span>
-    </div>
-  </header>
-
-  <main class="grid">
-
-    <!-- 01 -->
-    <section class="card c1">
-      <div class="eyebrow">01 · Người dùng &amp; nỗi đau</div>
-      <h2>Học viên muốn biết chắc mình có bị mất điểm không</h2>
-      <p><b>Job:</b> học viên khoá 4 vừa dự workshop, nộp daily hoặc nộp lab, nhưng nghi mình <b>chưa được ghi nhận</b> điểm danh, XP hay bài nộp. Họ cần biết chắc trạng thái của mình và ai sửa được, để khắc phục kịp.</p>
-      <hr>
-      <p><b>Pain:</b> tag bot hỏi thì nhận câu soạn sẵn lạc đề, bị bắt chọn menu, hoặc nhận lời giải thích dài mang tính phỏng đoán. Câu hỏi <b>không đến được TA/Mod</b>, những người duy nhất tra được hồ sơ, nên học viên không biết mình có mất điểm không và phải tự đi tìm người hỏi.</p>
-    </section>
-
-    <!-- 02 -->
-    <section class="card c2">
-      <div class="eyebrow">02 · Bằng chứng ban đầu</div>
-      <h2>Mining 1.092 tin Discord khoá 4 (12–14/09)</h2>
-      <div class="stats">
-        <div class="stat"><div class="n">13</div><div class="l">câu hỏi hồ sơ cá nhân, từ 13 người khác nhau (lọc từ 307 tin gửi bot)</div></div>
-        <div class="stat"><div class="n">12/13</div><div class="l">không được chuyển TA: lạc đề 6 · đoán 4 · menu 2</div></div>
-        <div class="stat"><div class="n">4/13</div><div class="l">người phải hỏi lại bot trong vòng 30 phút</div></div>
+    <header>
+      <div>
+        <span class="chip">MINI HACKATHON AI · CHECKPOINT 1</span>
+        <h1>CANVAS · NHÓM GICUNGDCZ</h1>
+        <p class="sub">Hướng B · B1 Tối ưu trợ lý hiện có: chuyển TA câu hỏi về hồ sơ cá nhân thay vì đoán</p>
       </div>
-      <p class="quote">M45740: <i>"mình đặt sai cú pháp khi tham gia zoom workshop nên không được ghi nhận, mình nên xử lí như nào"</i>. Bot đáp lại đúng quy tắc đặt tên mà học viên đã lỡ sai.</p>
-      <div class="note blue"><span>Chỉ dẫn bằng <b>msg_id</b>, trích tối đa 2 câu. Không copy dữ liệu ra ngoài <b>data/</b>. <b>Còn thiếu:</b> phỏng vấn ≥3 bạn cùng lớp để xác nhận hậu quả mất điểm là thật.</span></div>
-    </section>
-
-    <!-- 03 -->
-    <section class="card c3">
-      <div class="eyebrow">03 · Lát cắt &amp; automation</div>
-      <h2>Một câu hỏi về hồ sơ cá nhân, một quyết định rõ</h2>
-      <div class="tags">
-        <span class="tag">PERSONAL → HANDOFF_TA</span>
-        <span class="tag">GENERAL → ANSWER</span>
-        <span class="tag">OUT_OF_SCOPE</span>
+      <div class="meta">
+        <b>Lớp 3A · Phòng E403 · Cụm <span class="todo">C2</span></b><br>
+        Đội trưởng: <span class="todo">Nguyễn Đức Thắng</span> · Mã HV: <span class="todo">2A202602605</span><br>
+        Repo: <b>K4-3A-E403-GICUNGDCZ</b> <span class="todo">link GitHub công khai</span>
       </div>
-      <p><b>Lát cắt:</b> một học viên hỏi <i>"em đã được điểm danh chưa"</i>. Bot nhận ra đây là câu hỏi về hồ sơ cá nhân mà nó không có dữ liệu, trả lời <b>một câu ngắn</b>, và <b>tag TA kèm tóm tắt</b> (loại hồ sơ · buổi/ngày · msg_id). Học viên không nhận câu trả lời sai, TA xử lý được ngay.</p>
-      <div class="note purple"><span><b>Conditional:</b> câu hỏi cá nhân thì <b>luôn chuyển TA</b>, không bao giờ tự khẳng định trạng thái. Chuyển nhầm chỉ tốn TA vài giây; trả lời sai có thể làm học viên mất điểm. Câu hỏi chung thì trả lời ngắn. Không hỏi lại bằng menu khi câu hỏi đã rõ.</span></div>
-    </section>
+    </header>
 
-    <!-- 04 -->
-    <section class="card c4">
-      <div class="eyebrow">04 · Người thử &amp; phân công</div>
-      <h2>Có người thử, có người chịu trách nhiệm</h2>
-      <p><b>Willing users (khai từ CP1):</b> 1. <span class="todo">______</span> · 2. <span class="todo">______</span><br>
-      Đến CP5 sẽ mời <b>5 người ngoài nhóm</b> thử: giao task "hỏi bot về điểm danh của bạn" rồi quan sát.</p>
-      <table class="team">
-        <tr><td>Spec + evidence (mining, khảo sát)</td><td><span class="todo">______</span></td></tr>
-        <tr><td>Prompt + AI call (phân loại intent)</td><td><span class="todo">______</span></td></tr>
-        <tr><td>Prototype (bot Discord / mock)</td><td><span class="todo">______</span></td></tr>
-        <tr><td>Eval (golden set ≥20 case)</td><td><span class="todo">______</span></td></tr>
-        <tr><td>Validation + demo</td><td><span class="todo">______</span></td></tr>
-      </table>
-    </section>
+    <main class="grid">
 
-  </main>
+      <!-- 01 -->
+      <section class="card c1">
+        <div class="eyebrow">01 · Người dùng &amp; nỗi đau</div>
+        <h2>Học viên muốn biết chắc mình có bị mất điểm không</h2>
+        <p><b>Job:</b> học viên khoá 4 vừa dự workshop, nộp daily hoặc nộp lab, nhưng nghi mình <b>chưa được ghi
+            nhận</b> điểm danh, XP hay bài nộp. Họ cần biết chắc trạng thái của mình và ai sửa được, để khắc phục kịp.
+        </p>
+        <hr>
+        <p><b>Pain:</b> tag bot hỏi thì nhận câu soạn sẵn lạc đề, bị bắt chọn menu, hoặc nhận lời giải thích dài mang
+          tính phỏng đoán. Câu hỏi <b>không đến được TA/Mod</b>, những người duy nhất tra được hồ sơ, nên học viên không
+          biết mình có mất điểm không và phải tự đi tìm người hỏi.</p>
+      </section>
 
-  <footer>
-    <div><b>Checkpoint 1:</b> Canvas nhóm GICUNGDCZ · Track B1 · Discord khoá 4</div>
-    <div class="warn">Số liệu lấy từ <code>data/discord-track</code> (1.092 tin, 3 ngày, kênh public). Đây là số tối thiểu; chi tiết cách đếm ở <b>spec.md §1</b>.</div>
-  </footer>
+      <!-- 02 -->
+      <section class="card c2">
+        <div class="eyebrow">02 · Bằng chứng ban đầu</div>
+        <h2>Mining 1.092 tin Discord khoá 4 (12–14/09)</h2>
+        <div class="stats">
+          <div class="stat">
+            <div class="n">13</div>
+            <div class="l">câu hỏi hồ sơ cá nhân, từ 13 người khác nhau (lọc từ 307 tin gửi bot)</div>
+          </div>
+          <div class="stat">
+            <div class="n">12/13</div>
+            <div class="l">không được chuyển TA: lạc đề 6 · đoán 4 · menu 2</div>
+          </div>
+          <div class="stat">
+            <div class="n">4/13</div>
+            <div class="l">người phải hỏi lại bot trong vòng 30 phút</div>
+          </div>
+        </div>
+        <p class="quote">M45740: <i>"mình đặt sai cú pháp khi tham gia zoom workshop nên không được ghi nhận, mình nên
+            xử lí như nào"</i>. Bot đáp lại đúng quy tắc đặt tên mà học viên đã lỡ sai.</p>
+        <div class="note blue"><span>Chỉ dẫn bằng <b>msg_id</b>, trích tối đa 2 câu. Không copy dữ liệu ra ngoài
+            <b>data/</b>. <b>Còn thiếu:</b> phỏng vấn ≥3 bạn cùng lớp để xác nhận hậu quả mất điểm là thật.</span></div>
+      </section>
 
-</div>
+      <!-- 03 -->
+      <section class="card c3">
+        <div class="eyebrow">03 · Lát cắt &amp; automation</div>
+        <h2>Một câu hỏi về hồ sơ cá nhân, một quyết định rõ</h2>
+        <div class="tags">
+          <span class="tag">PERSONAL → HANDOFF_TA</span>
+          <span class="tag">GENERAL → ANSWER</span>
+          <span class="tag">OUT_OF_SCOPE</span>
+        </div>
+        <p><b>Lát cắt:</b> một học viên hỏi <i>"em đã được điểm danh chưa"</i>. Bot nhận ra đây là câu hỏi về hồ sơ cá
+          nhân mà nó không có dữ liệu, trả lời <b>một câu ngắn</b>, và <b>tag TA kèm tóm tắt</b> (loại hồ sơ · buổi/ngày
+          · msg_id). Học viên không nhận câu trả lời sai, TA xử lý được ngay.</p>
+        <div class="note purple"><span><b>Conditional:</b> câu hỏi cá nhân thì <b>luôn chuyển TA</b>, không bao giờ tự
+            khẳng định trạng thái. Chuyển nhầm chỉ tốn TA vài giây; trả lời sai có thể làm học viên mất điểm. Câu hỏi
+            chung thì trả lời ngắn. Không hỏi lại bằng menu khi câu hỏi đã rõ.</span></div>
+      </section>
+
+      <!-- 04 -->
+      <section class="card c4">
+        <div class="eyebrow">04 · Người thử &amp; phân công</div>
+        <h2>Có người thử, có người chịu trách nhiệm</h2>
+        <p><b>Willing users (khai từ CP1):</b> 1. <span class="todo">Lương Khánh Toàn</span> · 2. <span
+            class="todo">Dương Minh Hiếu</span><br>
+          Đến CP5 sẽ mời <b>5 người ngoài nhóm</b> thử: giao task "hỏi bot về điểm danh của bạn" rồi quan sát.</p>
+        <table class="team">
+          <tr>
+            <td>Spec + evidence (mining, khảo sát)</td>
+            <td><span class="todo">______</span></td>
+          </tr>
+          <tr>
+            <td>Prompt + AI call (phân loại intent)</td>
+            <td><span class="todo">______</span></td>
+          </tr>
+          <tr>
+            <td>Prototype (bot Discord / mock)</td>
+            <td><span class="todo">______</span></td>
+          </tr>
+          <tr>
+            <td>Eval (golden set ≥20 case)</td>
+            <td><span class="todo">______</span></td>
+          </tr>
+          <tr>
+            <td>Validation + demo</td>
+            <td><span class="todo">______</span></td>
+          </tr>
+        </table>
+      </section>
+
+    </main>
+
+    <footer>
+      <div><b>Checkpoint 1:</b> Canvas nhóm GICUNGDCZ · Track B1 · Discord khoá 4</div>
+      <div class="warn">Số liệu lấy từ <code>data/discord-track</code> (1.092 tin, 3 ngày, kênh public). Đây là số tối
+        thiểu; chi tiết cách đếm ở <b>spec.md §1</b>.</div>
+    </footer>
+
+  </div>
 </body>
+
 </html>

@@ -1,0 +1,27 @@
+# Secrets — không commit API key
+.env
+.env.*
+!.env.example
+
+# Data pack của khoá — không commit vào repo công khai
+/data/
+vlearn-pack/
+discord-pack/
+
+# Log gọi LLM lúc chạy demo (log của lượt eval nằm ở eval/runs/ và được commit)
+codebase/logs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,2080 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demo · Trợ lý biết mình không biết</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    /* Theo phong cách index.html ở gốc repo (Discord dark) */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --server-bg: #1E1F22;
+      --sidebar-bg: #2B2D31;
+      --chat-bg: #313338;
+      --hover-bg: #35373C;
+      --input-bg: #383A40;
+      --border: #3F4147;
+      --text-header: #F2F3F5;
+      --text-normal: #DBDEE1;
+      --text-muted: #949BA4;
+      --text-interactive: #B5BAC1;
+      --blurple: #5865F2;
+      --blurple-hover: #4752C4;
+      --blurple-bg: rgba(88, 101, 242, .15);
+      --blurple-border: rgba(88, 101, 242, .4);
+      --green: #23A55A;
+      --green-bg: rgba(35, 165, 90, .15);
+      --green-border: rgba(35, 165, 90, .4);
+      --green-text: #57F287;
+      --yellow: #F0B232;
+      --yellow-bg: rgba(240, 178, 50, .15);
+      --yellow-border: rgba(240, 178, 50, .4);
+      --red: #F23F43;
+      --red-bg: rgba(242, 63, 67, .15);
+      --red-border: rgba(242, 63, 67, .4);
+      --red-text: #FA777C;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+    }
+
+    html,
+    body {
+      background: #111214;
+      color: var(--text-normal);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.4;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    .mono {
+      font-family: var(--mono);
+    }
+
+    code {
+      font-family: var(--mono);
+      background: #1E1F22;
+      padding: 0 4px;
+      border-radius: 3px;
+      font-size: .9em;
+    }
+
+    kbd {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      background: #1E1F22;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0 4px;
+      color: var(--text-interactive);
+    }
+
+    .app-viewport {
+      max-width: 1780px;
+      margin: 0 auto;
+      padding: 10px 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 100vh;
+    }
+
+    /* ---------- pitch header */
+    .pitch-header {
+      background: var(--sidebar-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .3);
+    }
+
+    .pitch-title-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .hackathon-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #fff;
+      background: var(--blurple);
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .hackathon-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .pitch-headings h1 {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-header);
+      letter-spacing: -.01em;
+    }
+
+    .pitch-headings p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Chế độ người thử: ẩn kịch bản có sẵn, nút đổi chế độ, link nội bộ và thẻ so với golden set */
+    body.tester-mode .scen-panel,
+    body.tester-mode .mode-seg,
+    body.tester-mode .pitch-controls .btn-action-reset,
+    body.tester-mode .ai-inspector-panel > .panel-card:nth-child(3),
+    body.tester-mode .pitch-footer-quote span { display: none !important; }
+    @media (min-width: 1101px) {
+      body.tester-mode .workspace-grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) !important; }
+    }
+    @media (max-width: 1100px) {
+      body.tester-mode .workspace-grid { grid-template-columns: minmax(0, 1fr) !important; }
+    }
+
+    .pitch-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mode-seg {
+      display: inline-flex;
+      background: #1E1F22;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .mode-seg button {
+      border: 0;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .mode-seg button[aria-pressed="true"] {
+      background: var(--blurple);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(88, 101, 242, .4);
+    }
+
+    .model-pill {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 6px;
+      background: #1E1F22;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .model-pill.live {
+      color: var(--green-text);
+      border-color: var(--green-border);
+      background: var(--green-bg);
+    }
+
+    .model-pill.replay {
+      color: var(--yellow);
+      border-color: var(--yellow-border);
+      background: var(--yellow-bg);
+    }
+
+    .btn-action-reset {
+      background: var(--input-bg);
+      color: var(--text-normal);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-action-reset:hover {
+      background: var(--hover-bg);
+      color: #fff;
+    }
+
+    /* ---------- workspace */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 12px;
+      flex-grow: 1;
+      align-items: start;
+    }
+
+    .scen-panel {
+      padding: 8px 8px 10px;
+      gap: 0;
+      height: calc(100vh - 128px);
+      min-height: 560px;
+      overflow-y: auto;
+    }
+
+    .discord-app-window {
+      background: var(--chat-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .45);
+      height: calc(100vh - 128px);
+      min-height: 560px;
+    }
+
+    .discord-server-rail {
+      width: 58px;
+      background: var(--server-bg);
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      border-right: 1px solid #141517;
+      flex-shrink: 0;
+    }
+
+    .server-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--sidebar-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-normal);
+      font-weight: 800;
+      font-size: 13px;
+      position: relative;
+    }
+
+    .server-icon.active {
+      border-radius: 14px;
+      background: var(--blurple);
+      color: #fff;
+    }
+
+    .server-icon.active::before {
+      content: "";
+      position: absolute;
+      left: -8px;
+      width: 4px;
+      height: 36px;
+      border-radius: 0 4px 4px 0;
+      background: #fff;
+    }
+
+    .server-divider {
+      width: 30px;
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+    }
+
+    .discord-channel-sidebar {
+      width: 190px;
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #202225;
+      flex-shrink: 0;
+    }
+
+    .server-header-dropdown {
+      height: 46px;
+      padding: 0 14px;
+      border-bottom: 1px solid #1F2023;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--text-header);
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .channel-list {
+      padding: 8px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .channel-category-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      padding: 6px 8px 3px;
+    }
+
+    .channel-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .channel-item.active {
+      background: var(--hover-bg);
+      color: var(--text-header);
+    }
+
+    .channel-hash {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .channel-item.active .channel-hash {
+      color: var(--text-header);
+    }
+
+    .user-profile-bar {
+      height: 48px;
+      background: #232428;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-avatar-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #4BAE91;
+      color: #fff;
+      font-weight: 700;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .online-indicator {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+      border: 2px solid #232428;
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+    }
+
+    .user-name-box {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+      min-width: 0;
+    }
+
+    .user-name-box .n {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-header);
+    }
+
+    .user-name-box .s {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .discord-chat-main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--chat-bg);
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .chat-header {
+      height: 46px;
+      padding: 0 14px;
+      border-bottom: 1px solid #202225;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .chat-header-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text-header);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .chat-header-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      border-left: 1px solid var(--border);
+      padding-left: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .search-mock {
+      background: #1E1F22;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Danh sách kịch bản trong cột kênh bên trái */
+    .scen-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 8px 8px 2px;
+    }
+
+    .scen-head span {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-interactive);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .scen-head button {
+      background: transparent;
+      border: 0;
+      color: var(--text-muted);
+      font-size: 10.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .scen-head button:hover {
+      color: var(--text-header);
+    }
+
+    .case-group-label {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: transparent;
+      border: 0;
+      text-align: left;
+      cursor: pointer;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      padding: 8px 8px 3px;
+    }
+
+    .case-group-label:hover {
+      color: var(--text-interactive);
+    }
+
+    .case-group-label .count {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 10px;
+    }
+
+    .case-group.closed .case-tab-btn:not(.active) {
+      display: none;
+    }
+
+    .case-tab-btn {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 6px;
+      text-align: left;
+      background: transparent;
+      border: 0;
+      color: var(--text-muted);
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .1s ease;
+    }
+
+    .case-tab-btn .cid {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: #6D6F78;
+    }
+
+    .case-tab-btn .ttl {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .case-tab-btn:hover:not(:disabled) {
+      background: var(--hover-bg);
+      color: var(--text-interactive);
+    }
+
+    .case-tab-btn.active {
+      background: var(--blurple);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(88, 101, 242, .35);
+    }
+
+    .case-tab-btn.active .cid {
+      color: rgba(255, 255, 255, .8);
+    }
+
+    .case-tab-btn:disabled {
+      cursor: not-allowed;
+      opacity: .6;
+    }
+
+    .case-type-tag {
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .tag-esc {
+      background: rgba(242, 63, 67, .2);
+      color: var(--red-text);
+    }
+
+    .tag-ans {
+      background: rgba(35, 165, 90, .2);
+      color: var(--green-text);
+    }
+
+    .tag-cla {
+      background: rgba(240, 178, 50, .2);
+      color: var(--yellow);
+    }
+
+    .tag-ref {
+      background: rgba(88, 101, 242, .25);
+      color: #C9CDFB;
+    }
+
+    .case-tab-btn.active .case-type-tag {
+      background: rgba(255, 255, 255, .25);
+      color: #fff;
+    }
+
+    .chat-stream-area {
+      flex-grow: 1;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+    }
+
+    .channel-welcome {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .channel-welcome .big-hash {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--input-bg);
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+      color: var(--text-header);
+      margin-bottom: 6px;
+    }
+
+    .channel-welcome h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-header);
+    }
+
+    .channel-welcome p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .channel-welcome p b {
+      color: var(--text-normal);
+    }
+
+    .discord-msg-row {
+      display: flex;
+      gap: 12px;
+      animation: msgIn .25s ease-out;
+    }
+
+    @keyframes msgIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .msg-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .2);
+    }
+
+    .av-student {
+      background: #4BAE91;
+    }
+
+    .av-bot {
+      background: var(--blurple);
+    }
+
+    .msg-main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .msg-meta-line {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .author-username {
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+
+    .name-student {
+      color: var(--green-text);
+    }
+
+    .name-bot {
+      color: #fff;
+    }
+
+    .app-badge-discord {
+      background: var(--blurple);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 3px;
+      letter-spacing: .04em;
+    }
+
+    .msg-timestamp {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .msg-text-content {
+      font-size: 14px;
+      color: var(--text-normal);
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .msg-text-content b {
+      color: var(--text-header);
+    }
+
+    .discord-mention {
+      background: rgba(88, 101, 242, .25);
+      color: #C9CDFB;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+
+    .msg-source {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .discord-reply-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: -2px;
+    }
+
+    .discord-reply-spine {
+      width: 20px;
+      height: 9px;
+      border-left: 2px solid #4E5058;
+      border-top: 2px solid #4E5058;
+      border-top-left-radius: 6px;
+      margin-left: 17px;
+      margin-bottom: -4px;
+    }
+
+    .reply-user-tag {
+      color: var(--text-interactive);
+      font-weight: 600;
+    }
+
+    .typing-status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: rgba(88, 101, 242, .08);
+      border: 1px dashed var(--blurple-border);
+      border-radius: 8px;
+      font-size: 12.5px;
+      color: #C9CDFB;
+      font-weight: 600;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 3px;
+    }
+
+    .typing-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #C9CDFB;
+      animation: discordPulse 1.2s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: .2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: .4s;
+    }
+
+    @keyframes discordPulse {
+
+      0%,
+      80%,
+      100% {
+        transform: scale(.6);
+        opacity: .4;
+      }
+
+      40% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+    }
+
+    .typing-timer {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 11.5px;
+    }
+
+    .embed {
+      margin-top: 6px;
+      background: var(--sidebar-bg);
+      border-left: 4px solid var(--blurple);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 13px;
+      max-width: 520px;
+    }
+
+    .embed.urgent {
+      border-left-color: var(--red);
+    }
+
+    .embed .row {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 8px;
+    }
+
+    .embed .k {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .bot-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .bot-buttons span {
+      background: #4E5058;
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 4px;
+    }
+
+    .bot-buttons span.pri {
+      background: var(--blurple);
+    }
+
+    .bot-assurance-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .assurance-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .tag-no-guess {
+      background: var(--green-bg);
+      color: var(--green-text);
+      border: 1px solid var(--green-border);
+    }
+
+    .tag-handoff {
+      background: var(--blurple-bg);
+      color: #C9CDFB;
+      border: 1px solid var(--blurple-border);
+    }
+
+    .tag-urgent {
+      background: var(--red-bg);
+      color: var(--red-text);
+      border: 1px solid var(--red-border);
+    }
+
+    .tag-warn {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+      border: 1px solid var(--yellow-border);
+    }
+
+    .discord-sys-event {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+      padding-left: 2px;
+    }
+
+    .discord-sys-event.err {
+      color: var(--red-text);
+      font-style: normal;
+      font-weight: 600;
+      background: var(--red-bg);
+      border-left: 3px solid var(--red);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .sys-link {
+      color: #C9CDFB;
+      text-decoration: underline;
+      cursor: pointer;
+      font-style: normal;
+      font-weight: 700;
+      margin-left: 6px;
+    }
+
+    .chat-input-wrapper {
+      padding: 0 14px 14px;
+      flex-shrink: 0;
+    }
+
+    .chat-input-pill {
+      background: var(--input-bg);
+      border-radius: 8px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .input-plus-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #4E5058;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .input-text-field {
+      flex-grow: 1;
+      min-width: 0;
+      background: transparent;
+      border: 0;
+      outline: 0;
+      color: var(--text-header);
+      font-size: 13.5px;
+      padding: 4px 0;
+    }
+
+    .input-text-field::placeholder {
+      color: #6D6F78;
+    }
+
+    .input-send-btn {
+      background: var(--blurple);
+      color: #fff;
+      border: 0;
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .input-text-field:disabled,
+    .input-send-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    /* ---------- right panel */
+    .ai-inspector-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .panel-card {
+      background: var(--sidebar-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .35);
+    }
+
+    .panel-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .panel-topbar h2 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-header);
+    }
+
+    .status-pill-header {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #1E1F22;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .status-pill-header.ok {
+      background: var(--green-bg);
+      color: var(--green-text);
+    }
+
+    .status-pill-header.bad {
+      background: var(--red-bg);
+      color: var(--red-text);
+    }
+
+    .status-pill-header.warn {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+    }
+
+    .pipeline-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .pipe-step {
+      background: #1E1F22;
+      border: 1px solid var(--hover-bg);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transition: all .25s ease;
+    }
+
+    .pipe-step[data-state="idle"] {
+      opacity: .55;
+    }
+
+    .pipe-step[data-state="active"] {
+      border-color: var(--blurple);
+      background: rgba(88, 101, 242, .08);
+    }
+
+    .pipe-step[data-state="error"] {
+      border-color: var(--red-border);
+    }
+
+    .pipe-step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .pipe-step-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .pipe-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .badge-done {
+      background: var(--green-bg);
+      color: var(--green-text);
+      border: 1px solid var(--green-border);
+    }
+
+    .badge-run {
+      background: var(--blurple-bg);
+      color: #C9CDFB;
+      border: 1px solid var(--blurple-border);
+    }
+
+    .badge-err {
+      background: var(--red-bg);
+      color: var(--red-text);
+      border: 1px solid var(--red-border);
+    }
+
+    .pipe-step-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-header);
+      overflow-wrap: anywhere;
+    }
+
+    .pipe-step-value .sub {
+      font-weight: 500;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 3px;
+    }
+
+    .chip {
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: var(--input-bg);
+      color: var(--text-interactive);
+    }
+
+    .chip.on {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+    }
+
+    .meter {
+      margin-top: 2px;
+    }
+
+    .meter .track {
+      position: relative;
+      height: 8px;
+      border-radius: 4px;
+      background: #2F3563;
+      margin: 4px 0 14px;
+    }
+
+    .meter .fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      border-radius: 4px;
+      background: var(--blurple);
+      width: 0;
+      transition: width .5s;
+    }
+
+    .meter .tick {
+      position: absolute;
+      top: -3px;
+      bottom: -3px;
+      border-left: 2px solid var(--text-interactive);
+    }
+
+    .meter .tick span {
+      position: absolute;
+      top: 11px;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      white-space: nowrap;
+    }
+
+    .action-cards-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .action-choice-pill {
+      background: #232428;
+      border: 1.5px solid var(--hover-bg);
+      border-radius: 6px;
+      padding: 6px 2px;
+      text-align: center;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #6D6F78;
+      transition: all .2s ease;
+    }
+
+    .action-cards-row.decided .action-choice-pill:not(.active) {
+      opacity: .4;
+      text-decoration: line-through;
+    }
+
+    .action-choice-pill.active.escalate {
+      background: var(--blurple-bg);
+      color: #C9CDFB;
+      border-color: var(--blurple);
+    }
+
+    .action-choice-pill.active.clarify {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+      border-color: var(--yellow);
+    }
+
+    .action-choice-pill.active.answer {
+      background: var(--green-bg);
+      color: var(--green-text);
+      border-color: var(--green);
+    }
+
+    .action-choice-pill.active.noguess,
+    .action-choice-pill.active.refuse {
+      background: var(--red-bg);
+      color: var(--red-text);
+      border-color: var(--red);
+    }
+
+    .escalate-reason-box {
+      font-size: 12px;
+      line-height: 1.45;
+      background: rgba(88, 101, 242, .1);
+      border-left: 3px solid var(--blurple);
+      padding: 6px 10px;
+      border-radius: 0 6px 6px 0;
+      color: var(--text-normal);
+    }
+
+    .escalate-reason-box b {
+      color: #C9CDFB;
+    }
+
+    .ticket-content {
+      background: #1E1F22;
+      border: 1px solid var(--hover-bg);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: 78px 1fr;
+      gap: 5px 10px;
+      font-size: 12.5px;
+    }
+
+    .ticket-content .k {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .ticket-content .v {
+      color: var(--text-header);
+      overflow-wrap: anywhere;
+    }
+
+    .empty-note {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      background: #1E1F22;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .old-msg {
+      background: #1E1F22;
+      border: 1px solid var(--hover-bg);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .old-msg .msg-text-content {
+      font-size: 13px;
+    }
+
+    .verdict-line {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 12.5px;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    details summary {
+      cursor: pointer;
+      font-size: 12px;
+      color: #C9CDFB;
+      font-weight: 600;
+    }
+
+    pre.raw {
+      margin-top: 6px;
+      background: #1E1F22;
+      color: #B5E8C3;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .pitch-footer-quote {
+      text-align: center;
+      font-size: 13px;
+      font-style: italic;
+      color: var(--text-interactive);
+      padding: 4px 0;
+    }
+
+    .pitch-footer-quote span {
+      display: block;
+      font-style: normal;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    @media (max-width: 1600px) {
+      .discord-server-rail {
+        display: none;
+      }
+
+      .action-cards-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 1500px) {
+      .discord-channel-sidebar {
+        display: none;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .workspace-grid {
+        grid-template-columns: 260px minmax(0, 1fr);
+      }
+
+      .ai-inspector-panel {
+        grid-column: 1 / -1;
+      }
+
+      .discord-app-window,
+      .scen-panel {
+        height: 78vh;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app-viewport {
+        padding: 8px 10px 12px;
+      }
+
+      .workspace-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .scen-panel {
+        height: auto;
+        max-height: 320px;
+        min-height: 0;
+      }
+
+      .discord-app-window {
+        height: 72vh;
+        min-height: 0;
+      }
+
+      .search-mock,
+      .chat-header-desc {
+        display: none;
+      }
+
+      .compare-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .pitch-title-area {
+        flex-wrap: wrap;
+      }
+
+      .panel-card {
+        padding: 12px 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-viewport">
+
+    <header class="pitch-header">
+      <div class="pitch-title-area">
+        <div class="hackathon-badge"><span class="dot"></span>Mini Hackathon AI · Track B1</div>
+        <div class="pitch-headings">
+          <h1>Trợ lý biết mình không biết</h1>
+          <p>1 lời gọi AI thật ở mắt xích quyết định · Nhóm GICUNGDCZ</p>
+        </div>
+      </div>
+      <div class="pitch-controls">
+        <div class="mode-seg" role="group" aria-label="Chế độ chạy">
+          <button id="modeLive" aria-pressed="true">⚡ AI thật</button>
+          <button id="modeReplay" aria-pressed="false">⏵ Phát lại log eval</button>
+        </div>
+        <span class="model-pill" id="modelPill">Đang kết nối…</span>
+        <button class="btn-action-reset" id="reset">↺ Làm mới</button>
+        <a class="btn-action-reset" href="/">Chat</a>
+        <a class="btn-action-reset" href="/eval">Eval</a>
+      </div>
+    </header>
+
+    <main class="workspace-grid">
+      <!-- Cột kịch bản bên trái, ngoài cửa sổ Discord -->
+      <aside class="panel-card scen-panel">
+        <div id="toolbar"></div>
+      </aside>
+
+      <!-- Cửa sổ Discord -->
+      <section class="discord-app-window">
+        <aside class="discord-server-rail">
+          <div class="server-icon active" title="AI20K Build Phase">AI</div>
+          <div class="server-divider"></div>
+          <div class="server-icon" title="Cộng đồng">💬</div>
+          <div class="server-icon" title="CodeLab">⚡</div>
+        </aside>
+
+        <nav class="discord-channel-sidebar">
+          <div class="server-header-dropdown"><span>Cộng đồng K4 · L3–4</span><span style="font-size:11px">▼</span>
+          </div>
+          <div class="channel-list">
+            <div class="channel-category-label">▼ Thông báo</div>
+            <div class="channel-item"><span class="channel-hash">#</span>thông-báo</div>
+            <div class="channel-category-label">▼ Bot &amp; tiện ích</div>
+            <div class="channel-item active"><span class="channel-hash">#</span>hỏi-đáp-bot</div>
+            <div class="channel-item"><span class="channel-hash">#</span>activity</div>
+            <div class="channel-category-label">▼ Cộng đồng</div>
+            <div class="channel-item"><span class="channel-hash">#</span>chung</div>
+            <div class="channel-item"><span class="channel-hash">#</span>tìm-đồng-đội</div>
+          </div>
+          <div class="user-profile-bar">
+            <div class="user-avatar-circle">HV<span class="online-indicator"></span></div>
+            <div class="user-name-box"><span class="n">Học viên K4</span><span class="s">Đang hoạt động</span></div>
+          </div>
+        </nav>
+
+        <div class="discord-chat-main">
+          <div class="chat-header">
+            <div class="chat-header-left">
+              <div class="chat-header-title"><span style="color:var(--text-muted);font-size:18px">#</span>hỏi-đáp-bot
+              </div>
+              <div class="chat-header-desc">Tag @Trợ lý để hỏi · hồ sơ cá nhân sẽ được chuyển TA</div>
+            </div>
+            <div class="search-mock">🔍 Tìm kiếm</div>
+          </div>
+
+          <div class="chat-stream-area" id="stream"></div>
+
+          <div class="chat-input-wrapper">
+            <form class="chat-input-pill" id="composer">
+              <div class="input-plus-circle">+</div>
+              <input class="input-text-field" id="input" autocomplete="off"
+                placeholder="Nhắn #hỏi-đáp-bot (tự gõ câu hỏi, gọi AI thật)">
+              <button class="input-send-btn" id="sendBtn" type="submit">Gửi ↵</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bảng bên phải -->
+      <aside class="ai-inspector-panel">
+        <div class="panel-card">
+          <div class="panel-topbar">
+            <h2>⚡ AI Decision Pipeline</h2>
+            <span class="status-pill-header" id="pipeStatus">Chờ tin nhắn</span>
+          </div>
+          <div class="pipeline-steps">
+            <div class="pipe-step" id="s1" data-state="idle">
+              <div class="pipe-step-header"><span class="pipe-step-label">1 · Nhận tin nhắn</span><span
+                  class="pipe-badge" id="b1"></span></div>
+              <div class="pipe-step-value" id="v1"><span class="sub">Bọc trong &lt;tin_nhan&gt;, coi là dữ liệu, không
+                  phải lệnh.</span></div>
+            </div>
+            <div class="pipe-step" id="s2" data-state="idle">
+              <div class="pipe-step-header"><span class="pipe-step-label">2 · Gọi LLM</span><span class="pipe-badge"
+                  id="b2"></span></div>
+              <div class="pipe-step-value" id="v2"><span class="sub">System prompt + FAQ + tin nhắn → model.</span>
+              </div>
+            </div>
+            <div class="pipe-step" id="s3" data-state="idle">
+              <div class="pipe-step-header"><span class="pipe-step-label">3 · LLM trả JSON</span><span
+                  class="pipe-badge" id="b3"></span></div>
+              <div class="pipe-step-value" id="v3"><span class="sub">intent · độ tin · loại hồ sơ · cờ · mục FAQ.</span>
+              </div>
+            </div>
+            <div class="pipe-step" id="s4" data-state="idle">
+              <div class="pipe-step-header"><span class="pipe-step-label">4 · Luật định tuyến</span><span
+                  class="pipe-badge" id="b4"></span></div>
+              <div class="pipe-step-value" id="v4"><span class="sub">Luật cố định (không phải LLM) quyết định bot làm
+                  gì.</span></div>
+            </div>
+          </div>
+          <div class="action-cards-row" id="actions">
+            <div class="action-choice-pill escalate" data-r="handoff">↗ Chuyển TA</div>
+            <div class="action-choice-pill clarify" data-r="clarify">? Hỏi lại</div>
+            <div class="action-choice-pill answer" data-r="answer">✓ Trả lời</div>
+            <div class="action-choice-pill noguess" data-r="no_grounding">∅ Không đoán</div>
+            <div class="action-choice-pill refuse" data-r="refuse">⛔ Từ chối</div>
+          </div>
+          <div class="escalate-reason-box" id="reason">Chọn một kịch bản trong thanh <b>🎯 Kịch bản</b> hoặc tự gõ câu
+            hỏi.</div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-topbar">
+            <h2>📋 TA Handoff Ticket</h2>
+            <span class="status-pill-header" id="ticketStatus">Không có thẻ</span>
+          </div>
+          <div id="ticketBox">
+            <div class="empty-note">Chỉ tạo thẻ khi bot chuyển TA. Câu hỏi chung hoặc hồ sơ người khác sẽ không làm
+              phiền TA.</div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-topbar">
+            <h2>⚖ Bot cũ và bot mới</h2>
+            <span class="status-pill-header" id="judgeStatus">Golden set</span>
+          </div>
+          <div class="compare-grid">
+            <div>
+              <div class="pipe-step-label" style="margin-bottom:4px">Bot hiện tại (dữ liệu thật)</div>
+              <div id="oldBox">
+                <div class="empty-note">Chưa có lượt nào.</div>
+              </div>
+            </div>
+            <div>
+              <div class="pipe-step-label" style="margin-bottom:4px">Kết quả golden set</div>
+              <div id="judgeBox">
+                <div class="empty-note">Chưa có lượt nào.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="pitch-footer-quote">
+      “AI tốt không phải lúc nào cũng trả lời. AI tốt phải biết khi nào cần chuyển cho con người.”
+      <span><kbd>1</kbd>–<kbd>9</kbd> gửi 9 ca đầu · bấm tab để gửi bất kỳ ca nào · <kbd>R</kbd> đổi chế độ · tin có mã
+        <code>M…</code> là tin thật trong dữ liệu Discord K4</span>
+    </footer>
+  </div>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const now = () => "Hôm nay lúc " + new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+    const TYPE = { attendance: "Điểm danh", xp: "XP", daily: "Daily standup", lab: "Bài lab / codelab", other: "Khác" };
+    const ROUTE_LABEL = {
+      handoff: "chuyển TA", clarify: "hỏi lại 1 câu", answer: "trả lời có nguồn", no_grounding: "không đoán",
+      refuse: "từ chối chỉ dẫn", privacy: "từ chối · quyền riêng tư", decline: "ngoài phạm vi", chitchat: "chào hỏi"
+    };
+    const PILL_OF = { handoff: "handoff", clarify: "clarify", answer: "answer", no_grounding: "no_grounding", refuse: "refuse", privacy: "refuse", decline: "refuse", chitchat: "answer" };
+    const TAG_OF = { handoff: ["esc", "TA"], clarify: ["cla", "Hỏi"], answer: ["ans", "Đáp"], no_grounding: ["esc", "KĐ"], refuse: ["ref", "Chặn"], privacy: ["ref", "Riêng"], chitchat: ["ans", "Chào"] };
+
+    const S = { cases: [], idx: -1, mode: "live", replay: null, replayRun: null, busy: false, health: null };
+    // Chế độ người thử (validation R6): /demo?tester=U1 → ẩn kịch bản có sẵn, chỉ tự gõ, gắn mã người thử vào log.
+    const TESTER = (new URLSearchParams(location.search).get("tester") || "").match(/^U\d{1,2}$/)?.[0] || "";
+    const TASKS = [
+      "Hỏi bot xem buổi workshop gần nhất <b>bạn</b> đã được điểm danh chưa.",
+      "Hỏi bot hạn nộp daily standup mỗi ngày là khi nào.",
+      "Nhờ bot cộng thêm XP cho bạn.",
+    ];
+
+    async function api(path, opts) {
+      const r = await fetch(path, opts);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    }
+
+    // ---------- kênh chat
+    function scrollDown() { const s = $("#stream"); s.scrollTop = s.scrollHeight; }
+    function append(html) {
+      const wrap = document.createElement("div");
+      wrap.innerHTML = html.trim();
+      const el = wrap.firstElementChild;
+      $("#stream").appendChild(el);
+      scrollDown();
+      return el;
+    }
+    function studentMsg(text, msgId) {
+      return append(`<div class="discord-msg-row">
+    <div class="msg-avatar av-student">HV</div>
+    <div class="msg-main">
+      <div class="msg-meta-line"><span class="author-username name-student">Học viên K4</span><span class="msg-timestamp">${now()}</span></div>
+      <div class="msg-text-content"><span class="discord-mention">@Trợ lý</span> ${esc(text)}</div>
+      ${msgId ? `<div class="msg-source">📎 tin thật trong dữ liệu Discord K4 · <span class="mono">${esc(msgId)}</span></div>` : ""}
+    </div></div>`);
+    }
+    function botMsg(bodyHtml, replyTo) {
+      return append(`<div>
+    ${replyTo ? `<div class="discord-reply-header"><div class="discord-reply-spine"></div><span class="reply-user-tag">@Học viên K4</span><span>${esc(replyTo.slice(0, 70))}${replyTo.length > 70 ? "…" : ""}</span></div>` : ""}
+    <div class="discord-msg-row">
+      <div class="msg-avatar av-bot">TL</div>
+      <div class="msg-main">
+        <div class="msg-meta-line"><span class="author-username name-bot">Trợ lý</span><span class="app-badge-discord">APP</span><span class="msg-timestamp">${now()}</span></div>
+        <div class="msg-text-content">${bodyHtml}</div>
+      </div></div></div>`);
+    }
+    function sysEvent(html, err) { return append(`<div class="discord-sys-event ${err ? "err" : ""}">${html}</div>`); }
+
+    function resetChannel() {
+      $("#stream").innerHTML = `<div class="channel-welcome">
+    <div class="big-hash">#</div>
+    <h3>Chào mừng tới #hỏi-đáp-bot!</h3>
+    <p>📌 <b>Trợ lý làm được gì:</b> trả lời quy định chung từ thông báo chính thức, luôn ghi nguồn.
+    <b>Không làm được:</b> xem hay sửa hồ sơ cá nhân (điểm danh, XP, bài nộp). Những câu này sẽ được chuyển TA kèm tóm tắt.</p>
+  </div>`;
+      resetPanel();
+    }
+
+    // ---------- bảng bên phải
+    function setStep(n, state, valueHtml) {
+      $("#s" + n).dataset.state = state;
+      const b = $("#b" + n);
+      b.className = "pipe-badge " + ({ done: "badge-done", active: "badge-run", error: "badge-err" }[state] || "");
+      b.textContent = { done: "✓ Xong", active: "Đang chạy", error: "Lỗi" }[state] || "";
+      if (valueHtml !== undefined) $("#v" + n).innerHTML = valueHtml;
+    }
+    function resetPanel() {
+      setStep(1, "idle", '<span class="sub">Bọc trong &lt;tin_nhan&gt;, coi là dữ liệu, không phải lệnh.</span>');
+      setStep(2, "idle", '<span class="sub">System prompt + FAQ + tin nhắn → model.</span>');
+      setStep(3, "idle", '<span class="sub">intent · độ tin · loại hồ sơ · cờ · mục FAQ.</span>');
+      setStep(4, "idle", '<span class="sub">Luật cố định (không phải LLM) quyết định bot làm gì.</span>');
+      setPipeStatus("Chờ tin nhắn", "");
+      $("#actions").classList.remove("decided");
+      document.querySelectorAll(".action-choice-pill").forEach(p => p.classList.remove("active"));
+      $("#reason").innerHTML = TESTER ? 'Gõ câu hỏi vào ô chat, bên này sẽ hiện cách bot quyết định.' : 'Chọn một kịch bản trong thanh <b>🎯 Kịch bản</b> hoặc tự gõ câu hỏi.';
+      $("#ticketStatus").textContent = "Không có thẻ";
+      $("#ticketStatus").className = "status-pill-header";
+      $("#ticketBox").innerHTML = '<div class="empty-note">Chỉ tạo thẻ khi bot chuyển TA. Câu hỏi chung hoặc hồ sơ người khác sẽ không làm phiền TA.</div>';
+      $("#oldBox").innerHTML = '<div class="empty-note">Chưa có lượt nào.</div>';
+      $("#judgeBox").innerHTML = '<div class="empty-note">Chưa có lượt nào.</div>';
+      $("#judgeStatus").textContent = "Golden set";
+      $("#judgeStatus").className = "status-pill-header";
+    }
+    function setPipeStatus(text, cls) {
+      $("#pipeStatus").textContent = text;
+      $("#pipeStatus").className = "status-pill-header " + cls;
+    }
+
+    function explain(rec) {
+      const d = rec.decision;
+      if (!d) return "Gọi LLM lỗi → mặc định <b>chuyển TA</b> (bỏ sót câu hỏi hồ sơ đắt hơn chuyển nhầm).";
+      const c = d.confidence.toFixed(2);
+      if (d.injection) return "<b>injection = true</b> → không làm theo chỉ dẫn, không xác nhận hồ sơ.";
+      if (d.intent === "OTHER_PERSON") return "Hồ sơ <b>của người khác</b> → từ chối, không tạo thẻ TA.";
+      if (d.intent === "OUT_OF_SCOPE") return d.record_type !== "other" ? "Đòi bot sửa hồ sơ → chỉ TA làm được → <b>chuyển TA</b>." : "Ngoài phạm vi khoá học.";
+      if (d.intent === "PERSONAL_RECORD" && d.confidence >= 0.75) return `PERSONAL_RECORD, độ tin ${c} <b>≥ 0,75</b> → chuyển TA.`;
+      if (d.intent === "PERSONAL_RECORD" && d.confidence >= 0.45) return `PERSONAL_RECORD, độ tin ${c} <b>trong 0,45–0,75</b> → hỏi lại 1 câu.`;
+      if (d.intent === "CHITCHAT") return "Chào hỏi → đáp 1 dòng.";
+      if (d.faq_id) return `Câu hỏi chung, LLM chọn mục FAQ <b class="mono">${esc(d.faq_id)}</b> → trả lời kèm nguồn.`;
+      return `${esc(d.intent)} (độ tin ${c}), <b>không có mục FAQ nào khớp</b> → không đoán.`;
+    }
+
+    function judge(c, rec) {
+      if (!c) return null;
+      if (rec.error) return { cls: "warn", text: "Lỗi API", fails: ["chưa chấm được"] };
+      const e = c.case.expected, d = rec.decision, fails = [];
+      if (!e.routes.includes(rec.route)) fails.push(`route cần ${e.routes.join(" / ")}`);
+      if ("urgent" in e && d.urgent !== e.urgent) fails.push("sai cờ gấp");
+      if ("injection" in e && d.injection !== e.injection) fails.push("sai cờ injection");
+      if (rec.route === "answer" && e.faq_id && d.faq_id !== e.faq_id) fails.push(`cần FAQ ${e.faq_id}`);
+      return fails.length ? { cls: "bad", text: "✕ Không đạt", fails } : { cls: "ok", text: "✓ Đạt", fails };
+    }
+
+    function renderOld(c) {
+      const o = c && c.old_bot;
+      if (!o) {
+        $("#oldBox").innerHTML = `<div class="empty-note">${c ? "Ca tự viết, không có câu trả lời thật để so." : "Câu tự gõ, không có câu trả lời thật để so."}</div>`;
+        return;
+      }
+      const ok = !!o.ok;
+      $("#oldBox").innerHTML = `
+    <div class="old-msg">
+      <div class="msg-meta-line"><span class="author-username name-bot" style="font-size:12.5px">Trợ lý</span><span class="app-badge-discord" style="background:#4E5058">BẢN CŨ</span><span class="msg-timestamp mono">${esc(o.msg_id)} · ${o.n_chars} ký tự</span></div>
+      <div class="msg-text-content">${esc(o.text)}${o.n_chars > o.text.length + 20 ? " <i>…</i>" : ""}</div>
+    </div>
+    <div class="verdict-line" style="margin-top:6px"><span class="assurance-tag ${ok ? "tag-no-guess" : "tag-urgent"}">${ok ? "✓ Đúng" : "✕ Sai"}</span><span>${esc(o.verdict)}</span></div>`;
+    }
+
+    function renderJudge(c, rec, source) {
+      const j = judge(c, rec);
+      if (j) {
+        $("#judgeStatus").textContent = j.text;
+        $("#judgeStatus").className = "status-pill-header " + j.cls;
+      }
+      $("#judgeBox").innerHTML = `
+    ${j ? `<div class="old-msg" style="font-size:12.5px">
+        <div>Ca <b class="mono" style="color:var(--text-header)">${esc(c.case_id)}</b> · chấp nhận <span class="mono">${esc(c.case.expected.routes.join(" / "))}</span></div>
+        ${j.fails.length ? `<div style="color:var(--red-text);margin-top:3px">${j.fails.map(esc).join(" · ")}</div>` : ""}
+        <div style="color:var(--text-muted);margin-top:4px">${esc(c.case.rationale)}</div>
+      </div>` : '<div class="empty-note">Câu tự gõ, không có trong golden set.</div>'}
+    <div class="msg-source" style="margin-top:6px">${esc(source)} · log_id <span class="mono">${esc(rec.log_id)}</span></div>
+    <details style="margin-top:4px"><summary>Phản hồi thô của model</summary><pre class="raw">${esc(rec.raw_response ?? rec.error ?? "(không có)")}</pre></details>`;
+    }
+
+    function renderTicket(rec) {
+      const d = rec.decision;
+      if (rec.route !== "handoff") {
+        $("#ticketStatus").textContent = "Không tạo thẻ";
+        $("#ticketStatus").className = "status-pill-header ok";
+        $("#ticketBox").innerHTML = `<div class="empty-note">Route <b class="mono">${esc(rec.route)}</b>: bot không làm phiền TA.</div>`;
+        return;
+      }
+      $("#ticketStatus").textContent = "⏳ Chờ TA nhận";
+      $("#ticketStatus").className = "status-pill-header warn";
+      $("#ticketBox").innerHTML = `
+    <div class="ticket-content">
+      <span class="k">Loại</span><span class="v">${esc(d ? TYPE[d.record_type] : "Chưa phân loại")}</span>
+      <span class="k">Mức</span><span class="v">${d && d.urgent ? '<span class="assurance-tag tag-urgent">🔴 Gấp · hạn nộp</span>' : "Bình thường"}</span>
+      <span class="k">Tóm tắt</span><span class="v">${esc(d ? d.summary : "Không phân loại được (lỗi AI), cần TA xem.")}</span>
+      <span class="k">Tin gốc</span><span class="v">#hỏi-đáp-bot · ${now().toLowerCase()}</span>
+    </div>
+    <div class="bot-assurance-tags"><span class="assurance-tag tag-no-guess">✓ AI không tự khẳng định trạng thái</span><span class="assurance-tag tag-handoff">Chỉ TA tra được hồ sơ</span></div>`;
+    }
+
+    // ---------- câu trả lời của bot trong kênh
+    function botBody(rec) {
+      const d = rec.decision;
+      switch (rec.route) {
+        case "handoff": {
+          const urgent = d && d.urgent;
+          return `Mình <b>không xem được hồ sơ cá nhân</b> (điểm danh, XP, bài nộp) nên không trả lời thay được. Mình đã <b>chuyển TA</b> kèm tóm tắt; TA sẽ trả lời bạn ngay trong thread này.
+        <div class="embed ${urgent ? "urgent" : ""}">
+          <div class="row"><span class="k">Loại</span><span>${esc(d ? TYPE[d.record_type] : "Chưa phân loại")}${urgent ? " · 🔴 gấp" : ""}</span></div>
+          <div class="row"><span class="k">Tóm tắt</span><span>${esc(d ? d.summary : "Không phân loại được (lỗi AI), cần TA xem.")}</span></div>
+        </div>
+        <div class="bot-buttons"><span>✏️ Sửa tóm tắt</span><span>↩ Bot hiểu sai</span><span>Không cần chuyển TA</span></div>
+        <div class="bot-assurance-tags"><span class="assurance-tag tag-no-guess">✓ Không đoán</span><span class="assurance-tag tag-handoff">↗ Đã chuyển TA</span>${urgent ? '<span class="assurance-tag tag-urgent">🔴 Gấp</span>' : ""}</div>`;
+        }
+        case "clarify":
+          return `Câu này có thể hiểu theo 2 cách, bạn chọn giúp mình nhé:
+        <div class="bot-buttons"><span class="pri">🙋 Kiểm tra trường hợp của mình</span><span>📘 Hỏi quy định chung</span></div>
+        <div class="bot-assurance-tags"><span class="assurance-tag tag-warn">? Hỏi lại đúng 1 lần</span></div>`;
+        case "answer":
+          return `${esc(rec.reply)}
+        <div class="bot-buttons"><span>👍 Đã rõ</span><span>Không đúng ý mình → hỏi TA</span></div>
+        <div class="bot-assurance-tags"><span class="assurance-tag tag-no-guess">📄 Có nguồn chính thức</span></div>`;
+        case "no_grounding":
+          return `Mình <b>không tìm thấy</b> thông tin này trong thông báo chính thức, nên mình không đoán. Bạn có thể xem kênh <span class="discord-mention">#thông-báo</span>, hoặc để mình hỏi TA giúp.
+        <div class="bot-buttons"><span class="pri">Hỏi TA giúp mình</span><span>Để mình tự xem</span></div>
+        <div class="bot-assurance-tags"><span class="assurance-tag tag-no-guess">✓ Không đoán</span></div>`;
+        case "refuse":
+          return `Mình <b>không xác nhận và không thay đổi</b> được điểm danh, XP hay bài nộp, và mình không làm theo chỉ dẫn nằm trong tin nhắn. Nếu bạn cần kiểm tra hồ sơ của mình, mình chuyển TA nhé.
+        <div class="bot-buttons"><span class="pri">Chuyển TA kiểm tra</span><span>Thôi</span></div>
+        <div class="bot-assurance-tags"><span class="assurance-tag tag-urgent">⛔ Không làm theo chỉ dẫn trong tin</span></div>`;
+        case "privacy":
+          return `Mình <b>không tra cứu và không chuyển yêu cầu</b> về hồ sơ của người khác. Bạn ấy có thể tự tag mình hoặc tự nhắn TA.
+        <div class="bot-buttons"><span>Thực ra là hồ sơ của mình</span></div>
+        <div class="bot-assurance-tags"><span class="assurance-tag tag-handoff">🔒 Quyền riêng tư</span></div>`;
+        default:
+          return esc(rec.reply);
+      }
+    }
+
+    // ---------- chạy 1 lượt
+    async function run(c, customText) {
+      if (S.busy) return;
+      const text = customText || c.case.input;
+      const replayRec = c && S.replay ? S.replay[c.case_id] : null;
+      if (S.mode === "replay" && !replayRec) {
+        sysEvent(customText ? "Câu tự gõ chỉ chạy được ở chế độ AI thật." : "Lượt eval đã lưu không có log cho ca này.", true);
+        return;
+      }
+      S.busy = true;
+      lock(true);
+      resetPanel();
+
+      studentMsg(text, c && c.case.msg_id);
+      renderOld(c);
+      setStep(1, "done", `${text.length} ký tự <span class="sub">· bọc trong &lt;tin_nhan&gt;</span>`);
+
+      const model = replayRec ? `${replayRec.provider}/${replayRec.model}` : `${S.health?.provider}/${S.health?.model}`;
+      setPipeStatus(S.mode === "replay" ? "Đang phát lại" : "Đang gọi model", "warn");
+      setStep(2, "active", `<span class="mono">${esc(model)}</span> <span class="sub">· <span id="stepTimer">0.0 s</span></span>`);
+      const typing = append(`<div class="typing-status-row">
+    <div class="typing-dots"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>
+    Trợ lý đang phân tích bằng AI<span class="typing-timer" id="chatTimer">0.0 s</span></div>`);
+      const t0 = performance.now();
+      const tick = setInterval(() => {
+        const s = ((performance.now() - t0) / 1000).toFixed(1) + " s";
+        [$("#stepTimer"), $("#chatTimer")].forEach(el => el && (el.textContent = s));
+      }, 100);
+
+      let rec, source;
+      try {
+        if (S.mode === "replay") {
+          rec = replayRec;
+          await sleep(Math.min(rec.latency_ms, 1800));
+          source = `Phát lại ${S.replayRun} · độ trễ gốc ${(rec.latency_ms / 1000).toFixed(1)} s`;
+        } else {
+          rec = await api("/api/decide", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(TESTER ? { text, tester: TESTER } : { text }) });
+          source = `Gọi thật · ${now().toLowerCase()}`;
+        }
+      } catch (e) {
+        clearInterval(tick);
+        typing.remove();
+        sysEvent(`Không gọi được server (${esc(e.message)}).`, true);
+        setStep(2, "error", `<span class="sub">Không gọi được server: ${esc(e.message)}</span>`);
+        setPipeStatus("Lỗi", "bad");
+        return done();
+      }
+      clearInterval(tick);
+      typing.remove();
+
+      if (rec.error) {
+        const quota = /429/.test(rec.error);
+        setStep(2, "error", `${quota ? "Hết quota" : "Lỗi"} <span class="sub">· ${esc(rec.error.slice(0, 90))}</span>`);
+        setStep(3, "error", '<span class="sub">Không có JSON.</span>');
+        if (quota && S.mode === "live" && replayRec) {
+          const ev = sysEvent('Model báo hết quota free tier.<span class="sys-link" id="toReplay">Chuyển sang phát lại log eval</span>', true);
+          ev.querySelector("#toReplay").onclick = () => { if (!S.busy) { setMode("replay"); run(c); } };
+        }
+      } else {
+        const d = rec.decision;
+        setStep(2, "done", `<span class="mono">${esc(model)}</span> <span class="sub">· ${(rec.latency_ms / 1000).toFixed(1)} s ${S.mode === "replay" ? "(gốc)" : ""}</span>`);
+        setStep(3, "done", `
+      <span class="mono">${esc(d.intent)}</span> <span class="sub">· độ tin</span> ${d.confidence.toFixed(2)}
+      <div class="meter" role="img" aria-label="Độ tin ${d.confidence}">
+        <div class="track"><div class="fill" id="fill"></div><div class="tick" style="left:45%"><span>0,45</span></div><div class="tick" style="left:75%"><span>0,75</span></div></div>
+      </div>
+      <div class="chips">
+        <span class="chip">${esc(TYPE[d.record_type])}</span>
+        <span class="chip ${d.urgent ? "on" : ""}">gấp: ${d.urgent}</span>
+        <span class="chip ${d.injection ? "on" : ""}">injection: ${d.injection}</span>
+        <span class="chip">faq: ${esc(d.faq_id ?? "null")}</span>
+      </div>`);
+        requestAnimationFrame(() => { const f = $("#fill"); if (f) f.style.width = Math.round(d.confidence * 100) + "%"; });
+      }
+      setStep(4, "done", `<span class="mono">${esc(rec.route)}</span> <span class="sub">· ${esc(ROUTE_LABEL[rec.route] || "")}</span>`);
+      setPipeStatus(`→ ${ROUTE_LABEL[rec.route] || rec.route}`, rec.error ? "bad" : "ok");
+      $("#actions").classList.add("decided");
+      document.querySelectorAll(".action-choice-pill").forEach(p => p.classList.toggle("active", p.dataset.r === PILL_OF[rec.route]));
+      $("#reason").innerHTML = explain(rec);
+
+      botMsg(botBody(rec), text);
+      renderTicket(rec);
+      renderJudge(c, rec, source);
+      done();
+    }
+
+    function lock(on) {
+      const block = on || S.mode === "replay";
+      $("#input").disabled = block;
+      $("#sendBtn").disabled = block;
+      document.querySelectorAll(".case-tab-btn").forEach(b => (b.disabled = on));
+    }
+    function done() { S.busy = false; lock(false); }
+
+    // ---------- kịch bản + chế độ
+    const GROUPS = [
+      { label: "Phổ biến", match: c => c.group === "common" },
+      { label: "① Nguồn sự thật", match: c => c.hard_class === "1_source_of_truth" },
+      { label: "② Mơ hồ", match: c => c.hard_class === "2_ambiguous" },
+      { label: "③ Ngoài thẩm quyền", match: c => c.hard_class === "3_out_of_scope" },
+      { label: "④ Đặc thù", match: c => c.hard_class === "4_domain" },
+      { label: "Hiếm gặp", match: c => c.group === "edge" },
+    ];
+    const groupOf = c => (GROUPS.find(g => g.match(c.case)) || { label: "Khác" }).label;
+
+    const closedGroups = new Set();
+    function renderToolbar() {
+      const tb = $("#toolbar");
+      const allClosed = closedGroups.size === GROUPS.length;
+      const head = `<div class="scen-head"><span>🎯 Kịch bản · ${S.cases.length} ca</span>
+    <button id="tbToggle">${allClosed ? "Mở tất cả" : "Thu gọn tất cả"}</button></div>`;
+      const groups = GROUPS.map(g => {
+        const items = S.cases.map((c, i) => ({ c, i })).filter(x => g.match(x.c.case));
+        if (!items.length) return "";
+        const closed = closedGroups.has(g.label);
+        return `<div class="case-group ${closed ? "closed" : ""}">
+      <button class="case-group-label" data-g="${esc(g.label)}">${closed ? "▶" : "▼"} ${esc(g.label)}<span class="count">${items.length}</span></button>
+      ${items.map(({ c, i }) => {
+          const [cls, label] = TAG_OF[c.case.expected.routes[0]] || ["ans", "?"];
+          return `<button class="case-tab-btn ${i === S.idx ? "active" : ""}" data-i="${i}" title="${esc(c.case.input)}">
+          <span class="cid">${esc(c.case_id)}</span><span class="ttl">${esc(c.title)}</span><span class="case-type-tag tag-${cls}">${label}</span></button>`;
+        }).join("")}</div>`;
+      }).join("");
+      tb.innerHTML = head + groups;
+      tb.querySelectorAll(".case-tab-btn").forEach(b => (b.onclick = () => send(+b.dataset.i)));
+      tb.querySelectorAll(".case-group-label").forEach(b => (b.onclick = () => {
+        closedGroups.has(b.dataset.g) ? closedGroups.delete(b.dataset.g) : closedGroups.add(b.dataset.g);
+        renderToolbar();
+      }));
+      $("#tbToggle").onclick = () => {
+        if (allClosed) closedGroups.clear(); else GROUPS.forEach(g => closedGroups.add(g.label));
+        renderToolbar();
+      };
+      lock(S.busy);
+    }
+    function send(i) {
+      if (S.busy || !S.cases[i]) return;
+      S.idx = i;
+      renderToolbar();
+      run(S.cases[i]);
+    }
+
+    function setMode(m) {
+      S.mode = m;
+      $("#modeLive").setAttribute("aria-pressed", m === "live");
+      $("#modeReplay").setAttribute("aria-pressed", m === "replay");
+      const pill = $("#modelPill");
+      if (m === "replay") {
+        pill.className = "model-pill replay";
+        pill.textContent = `⏵ ${S.replayRun || "chưa có lượt eval"}`;
+      } else {
+        pill.className = "model-pill " + (S.health?.configured ? "live" : "");
+        pill.textContent = S.health?.configured ? `● ${S.health.provider}/${S.health.model}` : `Chưa có key cho ${S.health?.provider || "LLM"}`;
+      }
+      $("#input").placeholder = m === "replay" ? "Chế độ phát lại: chỉ gửi được kịch bản có sẵn" : "Nhắn #hỏi-đáp-bot (tự gõ câu hỏi, gọi AI thật)";
+      lock(S.busy);
+    }
+
+    // Phát lại: lấy lượt đầy đủ nhất làm gốc; ca nào lượt gốc bị lỗi API thì lấy kết quả thành công mới nhất ở lượt đo bù.
+    async function loadReplay() {
+      const runs = (await api("/api/runs")).runs;
+      if (!runs.length) return;
+      const full = [...runs].sort((a, b) => b.n - a.n || b.run_id.localeCompare(a.run_id))[0];
+      const base = await api(`/api/runs/${full.run_id}`);
+      const map = Object.fromEntries(base.rows.map(r => [r.case_id, r.rec]));
+      const needs = Object.keys(map).filter(id => map[id].error);
+      let backfilled = 0;
+      for (const run of [...runs].sort((a, b) => b.run_id.localeCompare(a.run_id))) {
+        if (!needs.length) break;
+        if (run.run_id === full.run_id) continue;
+        const data = await api(`/api/runs/${run.run_id}`);
+        data.rows.forEach(r => {
+          const k = needs.indexOf(r.case_id);
+          if (k >= 0 && !r.rec.error) { map[r.case_id] = r.rec; needs.splice(k, 1); backfilled++; }
+        });
+      }
+      S.replayRun = full.run_id + (backfilled ? ` + ${backfilled} ca đo bù` : "");
+      S.replay = map;
+    }
+
+    async function init() {
+      resetChannel();
+      if (!location.protocol.startsWith("http")) {
+        $("#modelPill").textContent = "Cần server";
+        sysEvent("Trang demo cần server: chạy <code>python codebase/decision/server.py</code> rồi mở http://localhost:8000/demo", true);
+        return;
+      }
+      try {
+        const [cases, health] = await Promise.all([api("/api/demo-cases"), api("/api/health")]);
+        S.cases = cases.cases;
+        S.health = health;
+        if (TESTER) {
+          document.body.classList.add("tester-mode");
+          S.cases = [];
+          setMode("live");
+          $("#modelPill").textContent = `Người thử ${TESTER}`;
+          sysEvent(`Chào bạn ${TESTER}! Hãy <b>tự gõ</b> vào ô chat bên dưới để làm lần lượt 3 việc (viết theo cách bạn vẫn hay nhắn, không cần chuẩn):
+            <ol style="margin:6px 0 0 18px">${TASKS.map(t => `<li>${t}</li>`).join("")}</ol>
+            Làm xong, bạn quay lại Google Form để kể lại nhé. Không có đúng hay sai: chỗ nào khó hiểu chính là điều nhóm cần biết.`);
+          return;
+        }
+        await loadReplay().catch(() => { });
+        const q = new URLSearchParams(location.search);
+        setMode(!health.configured || q.get("mode") === "replay" ? "replay" : "live");
+        renderToolbar();
+        const start = parseInt(q.get("case"), 10);
+        if (q.get("autorun") === "1" && start >= 1) send(start - 1);
+      } catch (e) {
+        $("#modelPill").textContent = "Lỗi tải dữ liệu";
+        sysEvent(`Không tải được dữ liệu demo: ${esc(e.message)}`, true);
+      }
+    }
+
+    $("#composer").onsubmit = e => {
+      e.preventDefault();
+      const v = $("#input").value.trim();
+      if (!v || S.busy || S.mode !== "live") return;
+      $("#input").value = "";
+      S.idx = -1;
+      renderToolbar();
+      run(null, v);
+    };
+    $("#reset").onclick = () => { if (!S.busy) { S.idx = -1; renderToolbar(); resetChannel(); } };
+    $("#modeLive").onclick = () => setMode("live");
+    $("#modeReplay").onclick = () => setMode("replay");
+    document.addEventListener("keydown", e => {
+      if (TESTER || e.target.matches("input, textarea")) return;
+      if (/^[1-9]$/.test(e.key)) send(+e.key - 1);
+      else if (e.key.toLowerCase() === "r" && !S.busy) setMode(S.mode === "live" ? "replay" : "live");
+    });
+    init();
+  </script>
+</body>
+
+</html>

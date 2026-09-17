@@ -10,6 +10,7 @@ Golden set: [`golden_set.json`](golden_set.json) · Tiêu chí đạt: [`golden-
 |---|---|---|---|---|---|---|---|
 | **1** | 17/09 09:46 | `gemini-3.5-flash` (free tier) · temperature 0 | Bản đầu tiên | 25 | **22** | 3 | **88%** |
 | 1b | 17/09 09:54 | như lượt 1 | Chỉ chạy lại E1, E2 | 2 | 0 | 2 | 0% (vẫn hết quota) |
+| 1c | 17/09 10:05 | như lượt 1 | Chỉ chạy lại E1, E2 | 2 | 0 | 2 | 0% (vẫn hết quota) |
 
 - Log đầy đủ (prompt đầu vào + phản hồi thô của model, mỗi ca 1 dòng JSON): [`runs/run-20260917-094603.jsonl`](runs/run-20260917-094603.jsonl), [`runs/run-20260917-095434.jsonl`](runs/run-20260917-095434.jsonl)
 - Bảng tự sinh từng ca: [`runs/run-20260917-094603.md`](runs/run-20260917-094603.md)

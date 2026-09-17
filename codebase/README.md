@@ -10,6 +10,7 @@ codebase/
 │   └── server.py    ← server demo: phục vụ giao diện + POST /api/decide
 ├── prototype/
 │   ├── index.html   ← giao diện Discord mô phỏng + hàng đợi TA
+│   ├── eval.html    ← trang eval: tỉ lệ đạt theo nhóm, 25 ca, prompt/phản hồi thô, chạy lại 1 ca
 │   └── flow.md      ← sơ đồ luồng
 └── logs/            ← log gọi LLM lúc demo (không commit)
 ```
@@ -31,6 +32,7 @@ cp .env.example .env      # rồi điền GEMINI_API_KEY (lấy tại https://ai
 python codebase/decision/decide.py "mình chưa thấy được điểm danh buổi tối qua"
 
 # giao diện demo gọi AI thật → mở http://localhost:8000
+# trang eval golden set       → mở http://localhost:8000/eval
 python codebase/decision/server.py
 
 # kiểm thử toàn bộ golden set (25 ca) → eval/runs/

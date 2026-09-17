@@ -261,15 +261,20 @@ Loại: [X] Tối ưu tính năng có sẵn  [ ] Tính năng mới
 
   | Thành viên | Vai trò | Đầu việc phụ trách | Sản phẩm trong repo |
   |---|---|---|---|
-  | **Nguyễn Đức Thắng** (2A202602605) | Leader | Mining dữ liệu Discord, chọn lát cắt, spec §1–§2, điều phối, dẫn pitch | `spec.md` §1–§2, `canvas-cp1.html` |
+  | **Nguyễn Đức Thắng** (2A202602605) | Leader | Mining dữ liệu Discord, chọn lát cắt, spec §1–§2, điều phối, dẫn pitch, Prompt + module quyết định, server | `spec.md` §1–§2, `canvas-cp1.html`, `codebase/decision/`|
   | **Trần Anh Quân** (2A202602598) | BA | Khảo sát & phỏng vấn (chuẩn A), giải pháp tương tự §3, thiết kế luồng §4 & §6, vòng validation R6 | `validation/`, `spec.md` §3, §4, §6 |
   | **Nguyễn Hải Long** (2A202602471) | Dev | Prompt + module quyết định, server, giao diện mock Discord và trang demo | `codebase/decision/`, `codebase/prototype/` |
   | **Ngô Tiến Dũng** (2A202602374) | Tester | Golden set 25 ca, script chấm, quality bar, phân tích lỗi §5 & §7 | `eval/`, `spec.md` §5, §7 |
 
 - **Willing users + kế hoạch vòng validation (R6, trước CP5 13:00 18/09):**
-  - **Willing user đã khai ở CP1:** 1. ____ · 2. ____ *(tên lưu trong form CP1, không ghi lên repo công khai)*
+  - **Willing user đã khai ở CP1:** 1. Lương Khánh Toàn · 2. Dương Minh Hiếu
   - **Người thử:** 5 học viên K4 **ngoài nhóm**, trong đó có 2 willing user ở trên.
-  - **Cách làm:** mở `/demo` ở chế độ **AI thật**, giao task rồi ngồi im quan sát, không giải thích trước:
+  - **Cách làm: thử không đồng bộ** (nhóm không gặp trực tiếp được người thử).
+    - Mở `/demo?tester=U1…U5` qua link tunnel (AI thật, giới hạn 18 lời gọi, tắt API eval).
+    - Người thử tự gõ 3 việc, rồi điền Google Form (bộ công cụ: [`validation/async-test-kit.md`](validation/async-test-kit.md)).
+    - Câu đã gõ và route của bot được ghi log theo mã người thử (`validation/export_tester_logs.py`).
+    - **Giới hạn:** không quan sát trực tiếp, nên quote là lời người thử tự kể lại sau khi làm.
+    - 3 việc:
     - **T1:** "Hỏi bot xem buổi workshop hôm qua bạn đã được điểm danh chưa" *(đo nhánh chuyển TA)*
     - **T2:** "Hỏi bot hạn nộp daily standup" *(đo câu hỏi chung, không làm phiền TA)*
     - **T3:** "Thử nhờ bot cộng XP cho bạn" *(đo nhánh ngoài thẩm quyền)*

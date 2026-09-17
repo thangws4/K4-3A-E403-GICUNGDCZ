@@ -33,6 +33,8 @@
   .top h1 { margin: 0; font-size: 18px; color: var(--ink); }
   .top p { margin: 0; font-size: 13px; color: var(--muted); }
   .mockbadge { background: #fff4c2; color: #7a5a00; border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .mockbadge.real { background: #dff3e8; color: #1f7a4d; }
+  .typing { color: var(--chat-muted); font-style: italic; }
 
   .app { display: grid; grid-template-columns: 270px minmax(0,1fr) 340px; height: calc(100vh - 62px); }
   .col { overflow-y: auto; }
@@ -114,9 +116,9 @@
 <div class="top">
   <div>
     <h1>Trợ lý Discord · chuyển TA câu hỏi hồ sơ cá nhân</h1>
-    <p>Prototype CP2 · Nhóm GICUNGDCZ · Track B1. Chọn kịch bản bên trái, hoặc tự gõ câu hỏi.</p>
+    <p>Prototype CP3 · Nhóm GICUNGDCZ · Track B1. Chọn kịch bản bên trái, hoặc tự gõ câu hỏi.</p>
   </div>
-  <span class="mockbadge">MOCK · phân loại bằng luật từ khoá, CP3 thay bằng lời gọi LLM thật</span>
+  <span class="mockbadge" id="modeBadge">MOCK · phân loại bằng luật từ khoá (mở qua server để dùng AI thật)</span>
 </div>
 
 <div class="app">
@@ -124,7 +126,7 @@
     <h2>Kịch bản</h2>
     <div id="scenarios"></div>
     <button class="reset" id="reset">↺ Xoá hội thoại</button>
-    <p class="legend">Nội dung FAQ, tên kênh và câu trả lời của TA đều là <b>dữ liệu giả</b> dùng để minh hoạ luồng.</p>
+    <p class="legend">Chế độ AI thật: mỗi tin nhắn gọi 1 lần LLM qua <code>/api/decide</code>; prompt và phản hồi thô được ghi vào <code>codebase/logs/</code>. FAQ, tên kênh và câu trả lời của TA vẫn là <b>dữ liệu giả</b>.</p>
   </aside>
 
   <section class="chat">
@@ -214,7 +216,39 @@ function route(d) {
   if (d.intent === "PERSONAL" && d.confidence >= THRESH.handoff) return "handoff";
   if (d.intent === "PERSONAL" && d.confidence >= THRESH.clarify) return "lowConfidence";
   if (d.intent === "CHITCHAT") return "chitchat";
+  if (MODE === "real") return d.faq ? "answer" : "noGrounding"; // AI thật: chỉ trả lời khi LLM chọn được mục FAQ
   return FAQ.some(f => f.re.test(d.text.toLowerCase())) ? "answer" : "noGrounding";
+}
+
+// ---- AI thật qua server (python codebase/decision/server.py) ----
+let MODE = "mock";
+const SERVER_ROUTE = { handoff: "handoff", clarify: "lowConfidence", answer: "answer", no_grounding: "noGrounding",
+                       refuse: "outOfScope", privacy: "privacy", decline: "decline", chitchat: "chitchat" };
+async function detectServer() {
+  if (!location.protocol.startsWith("http")) return;
+  try {
+    const h = await (await fetch("/api/health")).json();
+    if (!h.configured) {
+      $("#modeBadge").textContent = `MOCK · server chạy nhưng chưa có key cho ${h.provider}`;
+      return;
+    }
+    MODE = "real";
+    $("#modeBadge").textContent = `AI THẬT · ${h.provider} / ${h.model}`;
+    $("#modeBadge").classList.add("real");
+  } catch { /* không có server → giữ mock */ }
+}
+async function decideReal(text) {
+  const r = await (await fetch("/api/decide", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) })).json();
+  const dec = r.decision || { intent: "PERSONAL", confidence: 0, record_type: "other", urgent: false, injection: false,
+                              summary: "Không phân loại được (lỗi gọi AI), cần TA xem.", reasons: ["lỗi gọi AI → chuyển TA cho an toàn"] };
+  return {
+    ...dec,
+    intent: dec.intent === "PERSONAL_RECORD" ? "PERSONAL" : dec.intent,
+    reasons: dec.reasons && dec.reasons.length ? dec.reasons : ["(model không nêu lý do)"],
+    faq: r.faq ? { text: esc(r.faq.answer), src: r.faq.source } : null,
+    serverRoute: SERVER_ROUTE[r.route],
+    ai: { provider: r.provider, model: r.model, latency_ms: r.latency_ms, log_id: r.log_id, route: r.route, error: r.error },
+  };
 }
 
 // ---- Kịch bản ----
@@ -362,7 +396,7 @@ const PATHS = {
   },
 
   answer(d) {
-    const f = FAQ.find(x => x.re.test(d.text.toLowerCase()));
+    const f = d.faq || FAQ.find(x => x.re.test(d.text.toLowerCase()));
     const el = addMsg("bot", `${f.text}<div class="src">📄 Nguồn: ${esc(f.src)}</div>
       <div class="actions"><button data-act="ok">👍 Đã rõ</button><button data-act="notmine">Không đúng ý mình → hỏi TA</button></div>`);
     bind(el, {
@@ -398,17 +432,32 @@ const PATHS = {
   },
 
   chitchat() { addMsg("bot", "Chào bạn 👋 Cần hỏi gì cứ tag mình nhé."); },
+
+  decline() { addMsg("bot", "Câu này nằm ngoài phạm vi mình hỗ trợ trong khoá học."); },
 };
 
 function respond(d) {
-  d.route = route(d);
+  // Lượt đầu ở chế độ AI thật: dùng route server tính; các lượt sau (học viên/TA sửa) định tuyến lại tại chỗ.
+  d.route = d.serverRoute || route(d);
+  delete d.serverRoute;
   inspect(d);
   PATHS[d.route](d);
 }
-function userSend(text, preset) {
+async function userSend(text, preset) {
   addMsg("user", `<span class="mention">@Trợ lý</span> ${esc(text)}`);
-  const d = { ...(preset || classify(text)), text };
-  later(() => respond(d));
+  if (MODE !== "real") {
+    const d = { ...(preset || classify(text)), text };
+    return later(() => respond(d));
+  }
+  const typing = addMsg("bot", '<span class="typing">Trợ lý đang phân tích bằng AI…</span>');
+  try {
+    const d = { ...(await decideReal(text)), text };
+    typing.remove();
+    respond(d);
+  } catch (e) {
+    typing.querySelector(".content").innerHTML = `<span class="typing">Không gọi được server (${esc(e.message)}), dùng luật mock.</span>`;
+    later(() => respond({ ...classify(text), text }));
+  }
 }
 
 // ---- Khởi tạo ----
@@ -438,6 +487,7 @@ $("#composer").onsubmit = e => {
 };
 $("#reset").onclick = reset;
 reset();
+detectServer();
 </script>
 </body>
 </html>

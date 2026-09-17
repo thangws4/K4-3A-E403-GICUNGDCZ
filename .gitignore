@@ -8,6 +8,9 @@
 vlearn-pack/
 discord-pack/
 
+# Log gọi LLM lúc chạy demo (log của lượt eval nằm ở eval/runs/ và được commit)
+codebase/logs/
+
 # Python
 __pycache__/
 *.pyc

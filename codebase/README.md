@@ -1,30 +1,65 @@
 # Codebase — Prototype
 
-**Mức prototype:** CP2 là **Mock** (luồng bấm được, chưa gọi AI) → CP3 là **Mock + 1 lời gọi AI thật** (phân loại intent).
+**Mức prototype:** Mock + **1 lời gọi AI thật** ở mắt xích quyết định trung tâm (phân loại tin nhắn học viên).
 
-> Luật chung: mức nào cũng bắt buộc **≥1 lời gọi AI chạy thật**; phần này bắt buộc có trước CP3.
+```
+codebase/
+├── decision/
+│   ├── decide.py    ← module quyết định: prompt → gọi LLM → parse JSON → route() → reply, có ghi log
+│   ├── faq.json     ← nguồn chính thức (giả lập)
+│   └── server.py    ← server demo: phục vụ giao diện + POST /api/decide
+├── prototype/
+│   ├── index.html   ← giao diện Discord mô phỏng + hàng đợi TA
+│   └── flow.md      ← sơ đồ luồng
+└── logs/            ← log gọi LLM lúc demo (không commit)
+```
 
-## Chạy thử
+## Cài đặt
 
-Mở [`prototype/index.html`](prototype/index.html) bằng trình duyệt, không cần cài đặt.
+Chỉ cần Python ≥ 3.10, **không cần cài thư viện** (gọi REST API bằng `urllib`).
 
-- Cột trái: 8 kịch bản phủ happy path, ② low-confidence, ① failure, correction, ③ ngoài phạm vi, ④ đặc thù domain.
-- Cột giữa: kênh Discord mô phỏng; có thể tự gõ câu hỏi.
-- Cột phải: hàng đợi TA · JSON quyết định AI · nhật ký sửa sai.
+```bash
+cp .env.example .env      # rồi điền GEMINI_API_KEY (lấy tại https://aistudio.google.com/apikey)
+```
 
-Sơ đồ luồng: [`prototype/flow.md`](prototype/flow.md).
+`.env` đã nằm trong `.gitignore`; **không commit key**. Muốn chạy local không cần key: đặt `LLM_PROVIDER=ollama`.
 
-API key (từ CP3) đặt trong file `.env` (đã có trong `.gitignore`); **không commit key**.
+## Chạy
+
+```bash
+# 1 câu, in JSON quyết định
+python codebase/decision/decide.py "mình chưa thấy được điểm danh buổi tối qua"
+
+# giao diện demo gọi AI thật → mở http://localhost:8000
+python codebase/decision/server.py
+
+# kiểm thử toàn bộ golden set (25 ca) → eval/runs/
+python eval/run_eval.py
+```
+
+Góc phải trên giao diện hiện **AI THẬT · gemini / <model>** khi server có key. Mở thẳng `index.html` bằng trình duyệt (không qua server) thì tự quay về **MOCK** (luật từ khoá).
+
+## Ghi vết (logging)
+
+Mỗi lời gọi ghi 1 dòng JSON gồm: `log_id`, thời điểm, provider/model, `input`, **`prompt.system` + `prompt.user`**, **`raw_response`** (văn bản thô của model), `decision` đã parse, `route`, `reply`, `error`, `latency_ms`.
+- Demo: `codebase/logs/llm_calls.jsonl`
+- Eval: `eval/runs/<run_id>.jsonl` (có commit, để kiểm chứng)
+
+## Quyết định của AI và của luật
+
+| Bước | Ai làm |
+|---|---|
+| Phân loại intent, độ tin, loại hồ sơ, cờ gấp, cờ injection, chọn mục FAQ, tóm tắt | **LLM (thật)** |
+| Chọn route (chuyển TA / hỏi lại / trả lời / không đoán / từ chối) | Luật cố định `route()` theo ngưỡng 0,75 / 0,45 |
+| Lời trả lời học viên | Mẫu câu cố định + nội dung FAQ (LLM không tự viết câu trả lời) |
+| Khi gọi LLM lỗi | Mặc định chuyển TA |
 
 ## Phần nào chạy thật / phần nào mock
 
-| Thành phần | CP2 | CP3 → demo |
-|---|---|---|
-| Giao diện kênh Discord + hàng đợi TA | Mock (HTML tĩnh) | Mock (giữ HTML) |
-| Phân loại intent + độ tin + tóm tắt | Mock (luật từ khoá trong `classify()`) | **Thật: 1 lời gọi LLM trả JSON cùng schema** |
-| Nguồn chính thức (FAQ) | Mock (3 mục giả) | Mock, thay bằng nội dung thông báo thật nhóm thu thập |
-| Tag TA / thông báo cho học viên | Mock (thẻ trong cột TA) | Mock |
-| Câu trả lời của TA | Mock (câu mẫu) | Mock |
-| Nhật ký sửa sai | Mock (hiển thị trên trang) | Xuất JSON để bổ sung `eval/` |
-
-Không dùng dữ liệu trong `data/`: mọi câu hỏi trong kịch bản đều do nhóm tự viết.
+| Thành phần | Trạng thái |
+|---|---|
+| Phân loại tin nhắn | **Thật** (Gemini; hoặc Ollama local) |
+| Giao diện kênh Discord + hàng đợi TA | Mock (HTML tĩnh) |
+| Nguồn chính thức (FAQ) | Mock: tóm từ câu trả lời bot hiện có, chưa được BTC xác nhận |
+| Tag TA, câu trả lời của TA | Mock |
+| Nhật ký sửa sai | Mock (chỉ hiển thị trên trang) |

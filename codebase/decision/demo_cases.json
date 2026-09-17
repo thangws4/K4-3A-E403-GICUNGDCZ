@@ -1,0 +1,44 @@
+{
+  "_note": "Kịch bản cho trang /demo. case_id trỏ về eval/golden_set.json. old_bot = câu trả lời THẬT của bot hiện tại trong data/discord-track (trích ≤2 câu, dẫn msg_id).",
+  "cases": [
+    {
+      "case_id": "C01", "title": "Đặt sai tên Zoom, mất điểm danh", "path": "Happy path",
+      "old_bot": {"msg_id": "M45740", "text": "Tham gia workshop đăng nhập Zoom với đúng email đã đăng ký với chương trình và đặt tên đúng cú pháp sẽ được điểm danh tự động nhé.", "n_chars": 218,
+                  "verdict": "Nhắc lại đúng quy tắc học viên đã lỡ sai, không chuyển ai kiểm tra"}
+    },
+    {
+      "case_id": "C02", "title": "Hỏi bài của mình đã nộp chưa", "path": "Happy path",
+      "old_bot": {"msg_id": "M84993", "text": "Bài Lab trên lớp sẽ được chấm sau khi hết deadline thường là 23:59 cùng ngày nhé", "n_chars": 80,
+                  "verdict": "Không nói gì về bài của học viên, còn đoán deadline \"thường là 23:59\""}
+    },
+    {
+      "case_id": "C03", "title": "Chưa được cộng XP", "path": "Happy path",
+      "old_bot": {"msg_id": "M00499", "text": "Bạn muốn hỏi về việc cộng điểm XP cho hoạt động nào? (kèm menu 3 lựa chọn)", "n_chars": 197,
+                  "verdict": "Bắt chọn menu dù câu hỏi đã rõ, không ca nào được chuyển TA"}
+    },
+    {
+      "case_id": "H1-2", "title": "Nộp lab muộn trừ bao nhiêu điểm", "path": "① Không có nguồn",
+      "old_bot": {"msg_id": "M75012", "text": "Nộp daily muộn hơn 10h sáng vẫn ghi nhận nhưng không tính +XP nhé", "n_chars": 65,
+                  "verdict": "Trả nhầm luật daily standup cho câu hỏi về bài lab"}
+    },
+    {
+      "case_id": "H4-2", "title": "Commit lỗi nên nộp trễ", "path": "④ Sát hạn nộp",
+      "old_bot": {"msg_id": "M40677", "text": "Chào bạn! Về vấn đề nộp bài codelab trên Vlearn bị trễ do lỗi commit, mình không có thông tin cụ thể về quy định châm chước cho trường hợp này trong dữ liệu hiện tại.", "n_chars": 738,
+                  "verdict": "Trả lời 738 ký tự, không chuyển TA, không đánh dấu gấp"}
+    },
+    {
+      "case_id": "H3-1", "title": "Tin nhắn cố điều khiển bot", "path": "③ Ngoài phạm vi",
+      "old_bot": null
+    },
+    {
+      "case_id": "H2-1", "title": "Câu hỏi mơ hồ (ca đang sai)", "path": "② Mơ hồ",
+      "old_bot": {"msg_id": "M55443", "text": "Tham gia workshop đăng nhập Zoom với đúng email đã đăng ký với chương trình và đặt tên đúng cú pháp sẽ được điểm danh tự động nhé.", "n_chars": 218,
+                  "verdict": "Trả quy tắc chung, không hỏi học viên muốn kiểm tra của mình hay hỏi cách làm"}
+    },
+    {
+      "case_id": "C07", "title": "Câu hỏi quy định chung", "path": "Không làm phiền TA",
+      "old_bot": {"msg_id": "M13908", "text": "Khung giờ nộp daily hàng ngày là từ 0h-10h sáng nhé. Nộp muộn vẫn được ghi nhận nhưng không +XP", "n_chars": 95,
+                  "verdict": "Trả lời đúng; bot mới cũng tự trả lời, có ghi nguồn"}
+    }
+  ]
+}

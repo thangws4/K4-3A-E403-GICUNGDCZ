@@ -11,6 +11,7 @@ codebase/
 ├── prototype/
 │   ├── index.html   ← giao diện Discord mô phỏng + hàng đợi TA
 │   ├── eval.html    ← trang eval: tỉ lệ đạt theo nhóm, 25 ca, prompt/phản hồi thô, chạy lại 1 ca
+│   ├── demo.html    ← trang demo thuyết trình: 8 kịch bản, 4 bước bên trong, bot cũ vs bot mới, phát lại log
 │   └── flow.md      ← sơ đồ luồng
 └── logs/            ← log gọi LLM lúc demo (không commit)
 ```
@@ -31,7 +32,8 @@ cp .env.example .env      # rồi điền GEMINI_API_KEY (lấy tại https://ai
 # 1 câu, in JSON quyết định
 python codebase/decision/decide.py "mình chưa thấy được điểm danh buổi tối qua"
 
-# giao diện demo gọi AI thật → mở http://localhost:8000
+# trang demo thuyết trình     → mở http://localhost:8000/demo
+# giao diện chat mô phỏng     → mở http://localhost:8000
 # trang eval golden set       → mở http://localhost:8000/eval
 python codebase/decision/server.py
 

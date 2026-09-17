@@ -3,6 +3,8 @@
 Chạy:  python codebase/decision/server.py      → mở http://localhost:8000
   GET  /                  giao diện chat demo (codebase/prototype/index.html)
   GET  /eval              trang eval golden set (codebase/prototype/eval.html)
+  GET  /demo              trang demo thuyết trình (codebase/prototype/demo.html)
+  GET  /api/demo-cases    kịch bản demo + câu trả lời thật của bot hiện tại
   GET  /api/health        provider, model, đã có key chưa
   GET  /api/faq           danh sách FAQ (nguồn chính thức giả lập)
   POST /api/decide        {"text": "..."} → decision + route + reply (gọi LLM thật, có ghi log)
@@ -19,6 +21,7 @@ import re
 import sys
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import decide as core  # noqa: E402
@@ -66,16 +69,17 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
-        if self.path == "/api/health":
+        path = urlsplit(self.path).path  # bỏ ?query và #hash khi định tuyến
+        if path == "/api/health":
             key_ok = bool(os.environ.get("GEMINI_API_KEY")) if core.PROVIDER == "gemini" else True
             return self._json({"provider": core.PROVIDER, "model": core.MODEL, "configured": key_ok})
-        if self.path == "/api/faq":
+        if path == "/api/faq":
             return self._json({"items": core.FAQ})
-        if self.path == "/api/golden":
+        if path == "/api/golden":
             return self._json({"cases": load_cases()})
-        if self.path == "/api/runs":
+        if path == "/api/runs":
             return self._json({"runs": list_runs()})
-        m = re.fullmatch(r"/api/runs/(run-\d{8}-\d{6})", self.path)
+        m = re.fullmatch(r"/api/runs/(run-\d{8}-\d{6})", path)
         if m:
             if not (RUNS_DIR / f"{m.group(1)}.jsonl").exists():
                 return self._json({"error": "không có lượt này"}, 404)
@@ -83,8 +87,14 @@ class Handler(SimpleHTTPRequestHandler):
             rows = [{"case_id": r["meta"]["case_id"], "rec": r, "fails": run_eval.score(cases[r["meta"]["case_id"]], r)}
                     for r in read_run(m.group(1)) if r["meta"].get("case_id") in cases]
             return self._json({"run_id": m.group(1), "rows": rows})
-        if self.path in ("/eval", "/eval/"):
+        if path == "/api/demo-cases":
+            golden = {c["id"]: c for c in load_cases()}
+            demo = json.loads((Path(__file__).resolve().parent / "demo_cases.json").read_text(encoding="utf-8"))["cases"]
+            return self._json({"cases": [d | {"case": golden[d["case_id"]]} for d in demo if d["case_id"] in golden]})
+        if path in ("/eval", "/eval/"):
             self.path = "/eval.html"
+        if path in ("/demo", "/demo/"):
+            self.path = "/demo.html"
         return super().do_GET()
 
     def _body(self) -> dict:
@@ -112,11 +122,11 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json({"error": "thiếu text"}, 400)
         rec = core.decide(text, meta={"source": "demo-ui"})
         faq = core.FAQ_BY_ID.get((rec["decision"] or {}).get("faq_id"))
-        self._json({k: rec[k] for k in ("log_id", "provider", "model", "decision", "route", "reply", "error", "latency_ms")} | {"faq": faq})
+        self._json({k: rec[k] for k in ("log_id", "ts", "provider", "model", "decision", "route", "reply", "error", "latency_ms", "raw_response")} | {"faq": faq})
 
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
     print(f"Provider: {core.PROVIDER} · model: {core.MODEL}")
-    print(f"Demo chat: http://localhost:{PORT}  ·  Eval: http://localhost:{PORT}/eval  (Ctrl+C để dừng)")
+    print(f"Demo: http://localhost:{PORT}/demo  ·  Chat: http://localhost:{PORT}  ·  Eval: http://localhost:{PORT}/eval  (Ctrl+C để dừng)")
     ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()

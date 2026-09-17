@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo · Trợ lý biết mình không biết</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f6f5f1; --card: #ffffff; --soft: #f3f2ee;
+    --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --line: #e1e0d9; --ring: rgba(11,11,11,0.10);
+    --accent: #2a78d6; --accent-soft: #e3eefb; --accent-ink: #1c5cab; --track: #cde2fb;
+    --good: #0ca30c; --good-ink: #006300; --good-bg: #e6f5e6;
+    --warn: #fab219; --warn-ink: #7a5200; --warn-bg: #fff3d6;
+    --crit: #d03b3b; --crit-ink: #a12a2a; --crit-bg: #fbe7e7;
+    --discord: #313338; --discord-card: #2b2d31; --discord-text: #dbdee1; --blurple: #5865f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --card: #1a1a19; --soft: #222220;
+      --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+      --line: #2c2c2a; --ring: rgba(255,255,255,0.10);
+      --accent: #3987e5; --accent-soft: #1b2a3d; --accent-ink: #86b6ef; --track: #184f95;
+      --good-ink: #0ca30c; --good-bg: #16261a;
+      --warn-ink: #fab219; --warn-bg: #2d2615;
+      --crit-ink: #e66767; --crit-bg: #2e1a1a;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --card: #1a1a19; --soft: #222220;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --line: #2c2c2a; --ring: rgba(255,255,255,0.10);
+    --accent: #3987e5; --accent-soft: #1b2a3d; --accent-ink: #86b6ef; --track: #184f95;
+    --good-ink: #0ca30c; --good-bg: #16261a;
+    --warn-ink: #fab219; --warn-bg: #2d2615;
+    --crit-ink: #e66767; --crit-bg: #2e1a1a;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  button, input, textarea { font: inherit; color: inherit; }
+  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  kbd { font-family: ui-monospace, Consolas, monospace; font-size: 12px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; background: var(--card); color: var(--ink-2); }
+
+  header { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; justify-content: space-between; padding: 14px 24px; background: var(--card); border-bottom: 1px solid var(--line); }
+  header h1 { margin: 0; font-size: 20px; }
+  header p { margin: 0; color: var(--ink-2); font-size: 13.5px; }
+  .hright { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .seg { display: inline-flex; background: var(--soft); border-radius: 10px; padding: 3px; }
+  .seg button { border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; cursor: pointer; color: var(--ink-2); font-size: 14px; }
+  .seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); font-weight: 600; box-shadow: 0 0 0 1px var(--ring); }
+  .pill { font-size: 13px; color: var(--ink-2); border: 1px solid var(--ring); border-radius: 999px; padding: 4px 12px; background: var(--card); white-space: nowrap; }
+  .pill b { color: var(--ink); }
+  .navlink { font-size: 14px; color: var(--accent-ink); text-decoration: none; padding: 5px 8px; }
+
+  .layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 20px; padding: 20px 24px 40px; max-width: 1500px; margin: 0 auto; }
+
+  /* scenarios */
+  aside h2, .stage h2 { margin: 0 0 10px; font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .scen { display: flex; flex-direction: column; gap: 6px; }
+  .scen button { display: grid; grid-template-columns: 26px 1fr; gap: 2px 10px; text-align: left; border: 1px solid var(--ring); background: var(--card); border-radius: 12px; padding: 10px 12px; cursor: pointer; }
+  .scen button:hover { border-color: var(--accent); }
+  .scen button[aria-current="true"] { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); background: var(--accent-soft); }
+  .scen .num { grid-row: span 2; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--soft); color: var(--ink-2); font-size: 13px; font-weight: 700; }
+  .scen button[aria-current="true"] .num { background: var(--accent); color: #fff; }
+  .scen .t { font-weight: 600; font-size: 14.5px; line-height: 1.3; }
+  .scen .p { font-size: 12.5px; color: var(--muted); }
+  .custom { margin-top: 14px; }
+  .custom textarea { width: 100%; min-height: 76px; border: 1px solid var(--ring); background: var(--card); border-radius: 12px; padding: 10px 12px; resize: vertical; }
+  .custom button { margin-top: 6px; width: 100%; }
+  .keys { margin-top: 14px; font-size: 12.5px; color: var(--muted); }
+
+  /* stage */
+  .stage { min-width: 0; }
+  .ask { background: var(--discord); color: var(--discord-text); border-radius: 16px; padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; }
+  .ask .av { flex: 0 0 40px; height: 40px; border-radius: 50%; background: #3ba55d; display: grid; place-items: center; font-weight: 700; color: #fff; }
+  .ask .who { font-size: 13px; color: #949ba4; }
+  .ask .who b { color: #f2f3f5; font-weight: 600; margin-right: 6px; }
+  .ask .msg { font-size: 21px; line-height: 1.45; margin-top: 2px; overflow-wrap: anywhere; }
+  .ask .mention { background: rgba(88,101,242,.3); color: #c9cdfb; border-radius: 4px; padding: 0 3px; }
+  .ask .src { font-size: 12.5px; color: #949ba4; margin-top: 6px; }
+  .runrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0 18px; }
+  .btn { border: 0; background: var(--accent); color: #fff; font-weight: 600; border-radius: 10px; padding: 10px 18px; cursor: pointer; font-size: 15.5px; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .btn.ghost { background: var(--card); color: var(--ink); border: 1px solid var(--ring); font-weight: 500; }
+  .hint { color: var(--muted); font-size: 13px; }
+
+  /* pipeline */
+  .pipe { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
+  .step { background: var(--card); border: 1px solid var(--ring); border-radius: 14px; padding: 12px 14px; min-height: 150px; position: relative; transition: border-color .2s, opacity .2s; }
+  .step .h { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); font-weight: 600; }
+  .step .dot { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; background: var(--soft); color: var(--muted); flex: 0 0 22px; }
+  .step .body { margin-top: 8px; font-size: 14px; color: var(--ink-2); }
+  .step[data-state="idle"] { opacity: .55; }
+  .step[data-state="active"] { border-color: var(--accent); }
+  .step[data-state="active"] .dot { background: var(--accent); color: #fff; animation: pulse 1s infinite; }
+  .step[data-state="done"] .dot { background: var(--good-bg); color: var(--good-ink); }
+  .step[data-state="done"] .dot::after { content: "✓"; }
+  .step[data-state="error"] { border-color: var(--crit); }
+  .step[data-state="error"] .dot { background: var(--crit-bg); color: var(--crit-ink); }
+  .step[data-state="error"] .dot::after { content: "!"; }
+  .step[data-state="done"] .dot span, .step[data-state="error"] .dot span { display: none; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 6px var(--accent-soft); } }
+  .big { font-size: 22px; font-weight: 650; color: var(--ink); line-height: 1.2; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  .chip { font-size: 12px; border-radius: 999px; padding: 1px 8px; background: var(--soft); color: var(--ink-2); white-space: nowrap; }
+  .chip.on { background: var(--warn-bg); color: var(--warn-ink); font-weight: 600; }
+  .chip.on::before { content: "⚑ "; }
+
+  .meter { margin-top: 10px; }
+  .meter .lbl { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+  .meter .track { position: relative; height: 10px; border-radius: 5px; background: var(--track); margin: 4px 0 16px; }
+  .meter .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--accent); width: 0; transition: width .5s; }
+  .meter .tick { position: absolute; top: -3px; bottom: -3px; border-left: 2px solid var(--ink-2); }
+  .meter .tick span { position: absolute; top: 14px; transform: translateX(-50%); font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+  .route { display: inline-block; font-family: ui-monospace, Consolas, monospace; font-weight: 700; font-size: 18px; background: var(--accent-soft); color: var(--accent-ink); border-radius: 8px; padding: 2px 10px; }
+  .rule { margin-top: 8px; font-size: 13.5px; }
+
+  /* compare */
+  .compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .side { background: var(--card); border: 1px solid var(--ring); border-radius: 16px; padding: 16px 18px; }
+  .side h3 { margin: 0 0 10px; font-size: 15px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+  .side .sub { font-size: 12.5px; color: var(--muted); font-weight: 400; }
+  .bubble { background: var(--discord); color: var(--discord-text); border-radius: 12px; padding: 12px 14px; font-size: 15px; overflow-wrap: anywhere; }
+  .bubble .name { font-size: 12.5px; color: #949ba4; margin-bottom: 2px; }
+  .bubble .name b { color: #f2f3f5; }
+  .bubble .tagb { background: var(--blurple); color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: 2px; }
+  .bubble .fakebtns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .bubble .fakebtns span { background: #4e5058; color: #fff; border-radius: 4px; padding: 3px 10px; font-size: 13px; }
+  .bubble .fakebtns span.pri { background: var(--blurple); }
+  .ticket { margin-top: 10px; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--soft); font-size: 14px; }
+  .ticket .th { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-weight: 600; margin-bottom: 4px; }
+  .ticket .k { color: var(--muted); }
+  .verdict { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; font-size: 14px; }
+  .status { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+  .status.good { background: var(--good-bg); color: var(--good-ink); } .status.good::before { content: "✓"; }
+  .status.bad { background: var(--crit-bg); color: var(--crit-ink); } .status.bad::before { content: "✕"; }
+  .status.warn { background: var(--warn-bg); color: var(--warn-ink); } .status.warn::before { content: "⚠"; }
+  .status.info { background: var(--soft); color: var(--ink-2); }
+  .placeholder { color: var(--muted); font-size: 14px; padding: 18px 0; text-align: center; }
+  details { margin-top: 12px; }
+  details summary { cursor: pointer; font-size: 13.5px; color: var(--ink-2); }
+  pre { background: var(--soft); border-radius: 10px; padding: 10px 12px; font-size: 12.5px; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 260px; overflow-y: auto; margin: 6px 0 0; }
+  .notice { margin-bottom: 14px; background: var(--warn-bg); color: var(--warn-ink); border-radius: 12px; padding: 10px 14px; font-size: 14px; }
+
+  @media (max-width: 1100px) {
+    .pipe { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: minmax(0, 1fr); padding: 14px 16px 32px; }
+    header { padding: 12px 16px; }
+    .compare { grid-template-columns: minmax(0, 1fr); }
+    .scen { flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
+    .scen button { flex: 0 0 210px; }
+    .ask .msg { font-size: 18px; }
+  }
+  @media (max-width: 520px) {
+    .pipe { grid-template-columns: minmax(0, 1fr); }
+    .step { min-height: 0; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Trợ lý biết mình không biết</h1>
+    <p>Demo lời gọi AI thật · Nhóm GICUNGDCZ · Track B1</p>
+  </div>
+  <div class="hright">
+    <div class="seg" role="group" aria-label="Chế độ chạy">
+      <button id="modeLive" aria-pressed="true">AI thật</button>
+      <button id="modeReplay" aria-pressed="false">Phát lại log eval</button>
+    </div>
+    <span class="pill" id="modelPill">Đang kết nối…</span>
+    <a class="navlink" href="/">Chat</a>
+    <a class="navlink" href="/eval">Eval</a>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <h2>Kịch bản</h2>
+    <div class="scen" id="scen"></div>
+    <div class="custom">
+      <h2>Hoặc tự gõ câu hỏi</h2>
+      <textarea id="customText" placeholder="Ví dụ: hôm qua mình phát biểu 2 lần mà chưa thấy cộng XP"></textarea>
+      <button class="btn ghost" id="customRun">Gửi câu tự gõ (chỉ chế độ AI thật)</button>
+    </div>
+    <p class="keys"><kbd>1</kbd>–<kbd>8</kbd> chọn kịch bản · <kbd>Enter</kbd> gửi · <kbd>R</kbd> đổi chế độ</p>
+  </aside>
+
+  <main class="stage">
+    <div class="notice" id="notice" hidden></div>
+
+    <div class="ask">
+      <div class="av">HV</div>
+      <div style="min-width:0">
+        <div class="who"><b>Học viên</b>trong # hỏi-đáp-bot</div>
+        <div class="msg" id="askMsg"><span class="mention">@Trợ lý</span> …</div>
+        <div class="src" id="askSrc"></div>
+      </div>
+    </div>
+
+    <div class="runrow">
+      <button class="btn" id="runBtn">▶ Gửi cho Trợ lý</button>
+      <span class="hint" id="runHint"></span>
+    </div>
+
+    <h2>Bên trong: 1 lời gọi LLM + luật định tuyến</h2>
+    <div class="pipe">
+      <div class="step" id="s1" data-state="idle"><div class="h"><span class="dot"><span>1</span></span>Nhận tin nhắn</div><div class="body" id="b1">Tin nhắn được bọc trong thẻ &lt;tin_nhan&gt; và coi là dữ liệu, không phải lệnh.</div></div>
+      <div class="step" id="s2" data-state="idle"><div class="h"><span class="dot"><span>2</span></span>Gọi LLM</div><div class="body" id="b2">System prompt + FAQ + tin nhắn → model.</div></div>
+      <div class="step" id="s3" data-state="idle"><div class="h"><span class="dot"><span>3</span></span>LLM trả JSON</div><div class="body" id="b3">intent · độ tin · loại hồ sơ · cờ gấp / injection · mục FAQ.</div></div>
+      <div class="step" id="s4" data-state="idle"><div class="h"><span class="dot"><span>4</span></span>Luật định tuyến</div><div class="body" id="b4">Luật cố định (không phải LLM) quyết định bot làm gì.</div></div>
+    </div>
+
+    <h2>Bot hiện tại và bot mới</h2>
+    <div class="compare">
+      <section class="side">
+        <h3>Bot hiện tại <span class="sub" id="oldSub"></span></h3>
+        <div id="oldBody"></div>
+      </section>
+      <section class="side">
+        <h3>Bot mới <span id="newStatus"></span></h3>
+        <div id="newBody"><div class="placeholder">Bấm "Gửi cho Trợ lý" để chạy.</div></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const TYPE = { attendance: "Điểm danh", xp: "XP", daily: "Daily standup", lab: "Bài lab / codelab", other: "Khác" };
+const ROUTE_LABEL = { handoff: "chuyển TA", clarify: "hỏi lại 1 câu", answer: "trả lời có nguồn", no_grounding: "không đoán",
+                      refuse: "từ chối chỉ dẫn", privacy: "từ chối (quyền riêng tư)", decline: "ngoài phạm vi", chitchat: "chào hỏi" };
+
+const S = { cases: [], idx: 0, mode: "live", replay: null, replayRun: null, busy: false, health: null };
+
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+// ---------- chọn kịch bản
+function renderScenarios() {
+  $("#scen").innerHTML = S.cases.map((c, i) => `
+    <button data-i="${i}" aria-current="${i === S.idx}">
+      <span class="num">${i + 1}</span><span class="t">${esc(c.title)}</span><span class="p">${esc(c.path)} · ${esc(c.case_id)}</span>
+    </button>`).join("");
+  $("#scen").querySelectorAll("button").forEach(b => (b.onclick = () => pick(+b.dataset.i)));
+}
+
+function pick(i) {
+  if (S.busy) return;
+  S.idx = i;
+  const c = S.cases[i];
+  renderScenarios();
+  $("#askMsg").innerHTML = `<span class="mention">@Trợ lý</span> ${esc(c.case.input)}`;
+  $("#askSrc").textContent = c.case.msg_id ? `Tin nhắn thật trong dữ liệu Discord K4 · ${c.case.msg_id}` : "Câu nhóm tự viết";
+  resetStage();
+  renderOld(c);
+  updateHint();
+}
+
+function resetStage() {
+  ["s1", "s2", "s3", "s4"].forEach(id => ($("#" + id).dataset.state = "idle"));
+  $("#b1").textContent = "Tin nhắn được bọc trong thẻ <tin_nhan> và coi là dữ liệu, không phải lệnh.";
+  $("#b2").textContent = "System prompt + FAQ + tin nhắn → model.";
+  $("#b3").textContent = "intent · độ tin · loại hồ sơ · cờ gấp / injection · mục FAQ.";
+  $("#b4").textContent = "Luật cố định (không phải LLM) quyết định bot làm gì.";
+  $("#newBody").innerHTML = '<div class="placeholder">Bấm "Gửi cho Trợ lý" để chạy.</div>';
+  $("#newStatus").innerHTML = "";
+}
+
+function renderOld(c) {
+  if (!c) {
+    $("#oldSub").textContent = "";
+    $("#oldBody").innerHTML = '<div class="placeholder">Câu tự gõ, không có dữ liệu bot hiện tại để so.</div>';
+    return;
+  }
+  const o = c.old_bot;
+  if (!o) {
+    $("#oldSub").textContent = "";
+    $("#oldBody").innerHTML = '<div class="placeholder">Ca tự viết, không có câu trả lời thật của bot hiện tại để so.</div>';
+    return;
+  }
+  $("#oldSub").textContent = `trả lời thật · ${o.msg_id} · ${o.n_chars} ký tự`;
+  const ok = c.case_id === "C07";
+  $("#oldBody").innerHTML = `
+    <div class="bubble"><div class="name"><b>Trợ lý</b><span class="tagb">BOT</span></div>${esc(o.text)}${o.n_chars > o.text.length + 20 ? " <i>…</i>" : ""}</div>
+    <div class="verdict"><span class="status ${ok ? "good" : "bad"}">${ok ? "Đúng" : "Sai"}</span><span>${esc(o.verdict)}</span></div>`;
+}
+
+function updateHint() {
+  const c = S.cases[S.idx];
+  if (S.mode === "replay") {
+    const has = S.replay && S.replay[c.case_id];
+    $("#runHint").textContent = has ? `Phát lại kết quả thật đã lưu trong ${S.replayRun}` : `Lượt ${S.replayRun || "…"} không có log cho ca này`;
+  } else {
+    $("#runHint").textContent = S.health ? `Gọi thật tới ${S.health.provider}/${S.health.model} · tốn 1 request quota` : "";
+  }
+}
+
+// ---------- chạy
+function setStep(n, state, html) {
+  $("#s" + n).dataset.state = state;
+  if (html !== undefined) $("#b" + n).innerHTML = html;
+}
+
+function explain(rec) {
+  const d = rec.decision;
+  if (!d) return "Gọi LLM lỗi → mặc định <b>chuyển TA</b> (bỏ sót câu hỏi hồ sơ đắt hơn chuyển nhầm).";
+  const c = d.confidence.toFixed(2);
+  if (d.injection) return "<b>injection = true</b> → không làm theo, không xác nhận hồ sơ.";
+  if (d.intent === "OTHER_PERSON") return "Hồ sơ <b>của người khác</b> → từ chối, không tạo thẻ TA.";
+  if (d.intent === "OUT_OF_SCOPE") return d.record_type !== "other" ? "Đòi bot sửa hồ sơ → chỉ TA làm được → <b>chuyển TA</b>." : "Ngoài phạm vi khoá học.";
+  if (d.intent === "PERSONAL_RECORD" && d.confidence >= 0.75) return `PERSONAL_RECORD, độ tin ${c} <b>≥ 0,75</b> → chuyển TA.`;
+  if (d.intent === "PERSONAL_RECORD" && d.confidence >= 0.45) return `PERSONAL_RECORD, độ tin ${c} <b>trong 0,45–0,75</b> → hỏi lại 1 câu.`;
+  if (d.intent === "CHITCHAT") return "Chào hỏi → đáp 1 dòng.";
+  if (d.faq_id) return `Câu hỏi chung, LLM chọn mục FAQ <b class="mono">${esc(d.faq_id)}</b> → trả lời kèm nguồn.`;
+  return `${esc(d.intent)} (độ tin ${c}), <b>không có mục FAQ nào khớp</b> → không đoán.`;
+}
+
+function judge(c, rec) {
+  if (!c) return null;
+  if (rec.error) return { cls: "warn", text: "Lỗi API" };
+  const e = c.case.expected, d = rec.decision, fails = [];
+  if (!e.routes.includes(rec.route)) fails.push(`cần ${e.routes.join(" / ")}`);
+  if ("urgent" in e && d.urgent !== e.urgent) fails.push("sai cờ gấp");
+  if ("injection" in e && d.injection !== e.injection) fails.push("sai cờ injection");
+  if (rec.route === "answer" && e.faq_id && d.faq_id !== e.faq_id) fails.push(`cần FAQ ${e.faq_id}`);
+  return fails.length ? { cls: "bad", text: `Không đạt golden set · ${fails.join(", ")}` } : { cls: "good", text: "Đạt golden set" };
+}
+
+function renderNew(c, rec, source) {
+  const d = rec.decision;
+  const j = judge(c, rec);
+  $("#newStatus").innerHTML = j ? `<span class="status ${j.cls}">${esc(j.text)}</span>` : "";
+  let extra = "";
+  if (rec.route === "clarify") extra = '<div class="fakebtns"><span class="pri">🙋 Kiểm tra trường hợp của mình</span><span>📘 Hỏi quy định chung</span></div>';
+  if (rec.route === "no_grounding") extra = '<div class="fakebtns"><span class="pri">Hỏi TA giúp mình</span><span>Để mình tự xem</span></div>';
+  if (rec.route === "refuse") extra = '<div class="fakebtns"><span class="pri">Chuyển TA kiểm tra</span><span>Thôi</span></div>';
+  if (rec.route === "handoff") extra = '<div class="fakebtns"><span>✏️ Sửa tóm tắt</span><span>↩ Bot hiểu sai</span><span>Không cần chuyển TA</span></div>';
+  const ticket = rec.route === "handoff" ? `
+    <div class="ticket">
+      <div class="th">Thẻ trong hàng đợi TA ${d && d.urgent ? '<span class="status bad" style="font-size:12px">Gấp · hạn nộp</span>' : ""}</div>
+      <div><span class="k">Loại:</span> ${esc(d ? TYPE[d.record_type] : "Chưa phân loại")}</div>
+      <div><span class="k">Tóm tắt:</span> ${esc(d ? d.summary : "Không phân loại được (lỗi AI), cần TA xem.")}</div>
+    </div>` : "";
+  $("#newBody").innerHTML = `
+    <div class="bubble"><div class="name"><b>Trợ lý</b><span class="tagb">BOT</span></div>${esc(rec.reply)}${extra}</div>
+    ${ticket}
+    <div class="verdict"><span class="status info">${esc(rec.reply.length)} ký tự</span><span class="hint">${esc(source)}</span></div>
+    <details><summary>Phản hồi thô của model · log_id ${esc(rec.log_id)}</summary><pre>${esc(rec.raw_response ?? rec.error ?? "(không có)")}</pre></details>`;
+}
+
+async function run(customText) {
+  if (S.busy) return;
+  const c = customText ? null : S.cases[S.idx];
+  const text = customText || c.case.input;
+  if (S.mode === "replay" && (customText || !S.replay || !S.replay[c.case_id])) {
+    $("#notice").hidden = false;
+    $("#notice").textContent = customText ? "Câu tự gõ chỉ chạy được ở chế độ AI thật." : "Lượt eval đã lưu không có log cho ca này.";
+    return;
+  }
+  $("#notice").hidden = true;
+  S.busy = true;
+  $("#runBtn").disabled = $("#customRun").disabled = true;
+  resetStage();
+  if (customText) {
+    $("#askMsg").innerHTML = `<span class="mention">@Trợ lý</span> ${esc(text)}`;
+    $("#askSrc").textContent = "Câu tự gõ";
+    renderOld(null);
+  }
+
+  setStep(1, "active");
+  await sleep(350);
+  setStep(1, "done", `<div class="big">${text.length} ký tự</div>Bọc trong <span class="mono">&lt;tin_nhan&gt;</span>, coi là dữ liệu.`);
+
+  const model = S.mode === "replay" ? `${S.replay[c.case_id].provider}/${S.replay[c.case_id].model}` : `${S.health?.provider}/${S.health?.model}`;
+  setStep(2, "active", `<div class="mono" style="font-size:13px">${esc(model)}</div><div class="big" id="timer">0.0 s</div>${S.mode === "replay" ? "phát lại từ log" : "đang chờ model…"}`);
+  const t0 = performance.now();
+  const tick = setInterval(() => { const el = $("#timer"); if (el) el.textContent = ((performance.now() - t0) / 1000).toFixed(1) + " s"; }, 100);
+
+  let rec, source;
+  try {
+    if (S.mode === "replay") {
+      rec = S.replay[c.case_id];
+      await sleep(Math.min(rec.latency_ms, 1800));
+      source = `Phát lại · ${S.replayRun} · độ trễ gốc ${(rec.latency_ms / 1000).toFixed(1)} s`;
+    } else {
+      rec = await api("/api/decide", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) });
+      source = `Gọi thật lúc ${new Date().toLocaleTimeString("vi-VN")}`;
+    }
+  } catch (e) {
+    clearInterval(tick);
+    setStep(2, "error", `Không gọi được server: ${esc(e.message)}`);
+    return done();
+  }
+  clearInterval(tick);
+
+  if (rec.error) {
+    const quota = /429/.test(rec.error);
+    setStep(2, "error", `<div class="big">${quota ? "Hết quota" : "Lỗi"}</div>${esc(rec.error.slice(0, 120))}`);
+    if (quota && S.mode === "live" && c && S.replay && S.replay[c.case_id]) {
+      $("#notice").hidden = false;
+      $("#notice").innerHTML = 'Model báo hết quota. <button class="btn ghost" id="toReplay" style="padding:4px 10px;font-size:13px">Chuyển sang phát lại log eval</button>';
+      $("#toReplay").onclick = () => { setMode("replay"); run(); };
+    }
+    setStep(3, "error", "Không có JSON.");
+  } else {
+    setStep(2, "done", `<div class="mono" style="font-size:13px">${esc(model)}</div><div class="big">${(rec.latency_ms / 1000).toFixed(1)} s</div>độ trễ ${S.mode === "replay" ? "gốc" : "thật"}`);
+    setStep(3, "active");
+    await sleep(300);
+    const d = rec.decision;
+    const pct = Math.round(d.confidence * 100);
+    setStep(3, "done", `
+      <div class="big mono" style="font-size:17px">${esc(d.intent)}</div>
+      <div class="meter" role="img" aria-label="Độ tin ${d.confidence}">
+        <div class="lbl"><span>độ tin</span><b style="color:var(--ink)">${d.confidence.toFixed(2)}</b></div>
+        <div class="track"><div class="fill" id="fill"></div><div class="tick" style="left:45%"><span>0,45</span></div><div class="tick" style="left:75%"><span>0,75</span></div></div>
+      </div>
+      <div class="chips">
+        <span class="chip">${esc(TYPE[d.record_type])}</span>
+        <span class="chip ${d.urgent ? "on" : ""}">gấp: ${d.urgent}</span>
+        <span class="chip ${d.injection ? "on" : ""}">injection: ${d.injection}</span>
+        <span class="chip">faq: ${esc(d.faq_id ?? "null")}</span>
+      </div>`);
+    requestAnimationFrame(() => { const f = $("#fill"); if (f) f.style.width = pct + "%"; });
+  }
+
+  setStep(4, "active");
+  await sleep(350);
+  setStep(4, "done", `<span class="route">${esc(rec.route)}</span> <span class="hint">${esc(ROUTE_LABEL[rec.route] || "")}</span><div class="rule">${explain(rec)}</div>`);
+  renderNew(c, rec, source);
+  done();
+}
+
+function done() {
+  S.busy = false;
+  $("#runBtn").disabled = $("#customRun").disabled = false;
+}
+
+// ---------- chế độ
+function setMode(m) {
+  S.mode = m;
+  $("#modeLive").setAttribute("aria-pressed", m === "live");
+  $("#modeReplay").setAttribute("aria-pressed", m === "replay");
+  $("#customRun").disabled = m === "replay";
+  $("#notice").hidden = true;
+  updateHint();
+}
+
+async function loadReplay() {
+  const runs = (await api("/api/runs")).runs;
+  if (!runs.length) return;
+  const full = [...runs].sort((a, b) => b.n - a.n || b.run_id.localeCompare(a.run_id))[0];
+  const data = await api(`/api/runs/${full.run_id}`);
+  S.replayRun = full.run_id;
+  S.replay = Object.fromEntries(data.rows.map(r => [r.case_id, r.rec]));
+}
+
+async function init() {
+  if (!location.protocol.startsWith("http")) {
+    $("#notice").hidden = false;
+    $("#notice").innerHTML = "Trang demo cần server: chạy <span class='mono'>python codebase/decision/server.py</span> rồi mở <b>http://localhost:8000/demo</b>.";
+    return;
+  }
+  try {
+    const [cases, health] = await Promise.all([api("/api/demo-cases"), api("/api/health")]);
+    S.cases = cases.cases;
+    S.health = health;
+    $("#modelPill").innerHTML = health.configured ? `Model: <b>${esc(health.provider)}/${esc(health.model)}</b>` : `Chưa có key cho <b>${esc(health.provider)}</b>`;
+    await loadReplay().catch(() => {});
+    const q = new URLSearchParams(location.search);
+    if (!health.configured || q.get("mode") === "replay") setMode("replay");
+    const start = Math.max(0, Math.min(S.cases.length - 1, (parseInt(q.get("case"), 10) || 1) - 1));
+    pick(start);
+    if (q.get("autorun") === "1") run();
+  } catch (e) {
+    $("#notice").hidden = false;
+    $("#notice").textContent = `Không tải được dữ liệu demo: ${e.message}`;
+  }
+}
+
+$("#runBtn").onclick = () => run();
+$("#customRun").onclick = () => { const t = $("#customText").value.trim(); if (t) run(t); };
+$("#modeLive").onclick = () => setMode("live");
+$("#modeReplay").onclick = () => setMode("replay");
+document.addEventListener("keydown", e => {
+  if (e.target.matches("textarea, input")) return;
+  if (/^[1-8]$/.test(e.key) && S.cases[+e.key - 1]) pick(+e.key - 1);
+  else if (e.key === "Enter") { e.preventDefault(); run(); }
+  else if (e.key.toLowerCase() === "r") setMode(S.mode === "live" ? "replay" : "live");
+});
+init();
+</script>
+</body>
+</html>

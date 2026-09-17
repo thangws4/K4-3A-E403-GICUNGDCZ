@@ -154,6 +154,19 @@
       font-weight: 500;
     }
 
+    /* Chế độ người thử: ẩn kịch bản có sẵn, nút đổi chế độ, link nội bộ và thẻ so với golden set */
+    body.tester-mode .scen-panel,
+    body.tester-mode .mode-seg,
+    body.tester-mode .pitch-controls .btn-action-reset,
+    body.tester-mode .ai-inspector-panel > .panel-card:nth-child(3),
+    body.tester-mode .pitch-footer-quote span { display: none !important; }
+    @media (min-width: 1101px) {
+      body.tester-mode .workspace-grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) !important; }
+    }
+    @media (max-width: 1100px) {
+      body.tester-mode .workspace-grid { grid-template-columns: minmax(0, 1fr) !important; }
+    }
+
     .pitch-controls {
       display: flex;
       flex-wrap: wrap;
@@ -1630,6 +1643,13 @@
     const TAG_OF = { handoff: ["esc", "TA"], clarify: ["cla", "Hỏi"], answer: ["ans", "Đáp"], no_grounding: ["esc", "KĐ"], refuse: ["ref", "Chặn"], privacy: ["ref", "Riêng"], chitchat: ["ans", "Chào"] };
 
     const S = { cases: [], idx: -1, mode: "live", replay: null, replayRun: null, busy: false, health: null };
+    // Chế độ người thử (validation R6): /demo?tester=U1 → ẩn kịch bản có sẵn, chỉ tự gõ, gắn mã người thử vào log.
+    const TESTER = (new URLSearchParams(location.search).get("tester") || "").match(/^U\d{1,2}$/)?.[0] || "";
+    const TASKS = [
+      "Hỏi bot xem buổi workshop gần nhất <b>bạn</b> đã được điểm danh chưa.",
+      "Hỏi bot hạn nộp daily standup mỗi ngày là khi nào.",
+      "Nhờ bot cộng thêm XP cho bạn.",
+    ];
 
     async function api(path, opts) {
       const r = await fetch(path, opts);
@@ -1694,7 +1714,7 @@
       setPipeStatus("Chờ tin nhắn", "");
       $("#actions").classList.remove("decided");
       document.querySelectorAll(".action-choice-pill").forEach(p => p.classList.remove("active"));
-      $("#reason").innerHTML = 'Chọn một kịch bản trong thanh <b>🎯 Kịch bản</b> hoặc tự gõ câu hỏi.';
+      $("#reason").innerHTML = TESTER ? 'Gõ câu hỏi vào ô chat, bên này sẽ hiện cách bot quyết định.' : 'Chọn một kịch bản trong thanh <b>🎯 Kịch bản</b> hoặc tự gõ câu hỏi.';
       $("#ticketStatus").textContent = "Không có thẻ";
       $("#ticketStatus").className = "status-pill-header";
       $("#ticketBox").innerHTML = '<div class="empty-note">Chỉ tạo thẻ khi bot chuyển TA. Câu hỏi chung hoặc hồ sơ người khác sẽ không làm phiền TA.</div>';
@@ -1859,7 +1879,7 @@
           await sleep(Math.min(rec.latency_ms, 1800));
           source = `Phát lại ${S.replayRun} · độ trễ gốc ${(rec.latency_ms / 1000).toFixed(1)} s`;
         } else {
-          rec = await api("/api/decide", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) });
+          rec = await api("/api/decide", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(TESTER ? { text, tester: TESTER } : { text }) });
           source = `Gọi thật · ${now().toLowerCase()}`;
         }
       } catch (e) {
@@ -2014,6 +2034,16 @@
         const [cases, health] = await Promise.all([api("/api/demo-cases"), api("/api/health")]);
         S.cases = cases.cases;
         S.health = health;
+        if (TESTER) {
+          document.body.classList.add("tester-mode");
+          S.cases = [];
+          setMode("live");
+          $("#modelPill").textContent = `Người thử ${TESTER}`;
+          sysEvent(`Chào bạn ${TESTER}! Hãy <b>tự gõ</b> vào ô chat bên dưới để làm lần lượt 3 việc (viết theo cách bạn vẫn hay nhắn, không cần chuẩn):
+            <ol style="margin:6px 0 0 18px">${TASKS.map(t => `<li>${t}</li>`).join("")}</ol>
+            Làm xong, bạn quay lại Google Form để kể lại nhé. Không có đúng hay sai: chỗ nào khó hiểu chính là điều nhóm cần biết.`);
+          return;
+        }
         await loadReplay().catch(() => { });
         const q = new URLSearchParams(location.search);
         setMode(!health.configured || q.get("mode") === "replay" ? "replay" : "live");
@@ -2039,7 +2069,7 @@
     $("#modeLive").onclick = () => setMode("live");
     $("#modeReplay").onclick = () => setMode("replay");
     document.addEventListener("keydown", e => {
-      if (e.target.matches("input, textarea")) return;
+      if (TESTER || e.target.matches("input, textarea")) return;
       if (/^[1-9]$/.test(e.key)) send(+e.key - 1);
       else if (e.key.toLowerCase() === "r" && !S.busy) setMode(S.mode === "live" ? "replay" : "live");
     });

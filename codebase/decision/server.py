@@ -19,6 +19,7 @@ import json
 import os
 import re
 import sys
+import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -33,6 +34,11 @@ PROTOTYPE_DIR = core.ROOT / "codebase" / "prototype"
 GOLDEN = core.ROOT / "eval" / "golden_set.json"
 RUNS_DIR = core.ROOT / "eval" / "runs"
 PORT = int(os.environ.get("PORT", "8000"))
+# Khi mở link công khai cho người thử (validation R6): tắt /api/eval-case, giới hạn số lời gọi AI.
+PUBLIC_MODE = os.environ.get("PUBLIC_MODE") == "1"
+MAX_DECIDE_CALLS = int(os.environ.get("MAX_DECIDE_CALLS", "0"))
+decide_calls = 0
+calls_lock = threading.Lock()
 
 
 def load_cases() -> list[dict]:
@@ -102,6 +108,8 @@ class Handler(SimpleHTTPRequestHandler):
         return json.loads(self.rfile.read(length) or b"{}")
 
     def do_POST(self):
+        if self.path == "/api/eval-case" and PUBLIC_MODE:
+            return self._json({"error": "tắt khi mở link công khai cho người thử"}, 403)
         if self.path == "/api/eval-case":
             try:
                 case_id = str(self._body().get("case_id", ""))
@@ -115,12 +123,22 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path != "/api/decide":
             return self._json({"error": "not found"}, 404)
         try:
-            text = str(self._body().get("text", "")).strip()[:2000]
+            body = self._body()
+            text = str(body.get("text", "")).strip()[:500 if PUBLIC_MODE else 2000]
+            tester = str(body.get("tester", ""))
         except (ValueError, json.JSONDecodeError):
             return self._json({"error": "body phải là JSON {\"text\": ...}"}, 400)
         if not text:
             return self._json({"error": "thiếu text"}, 400)
-        rec = core.decide(text, meta={"source": "demo-ui"})
+        global decide_calls
+        with calls_lock:
+            if MAX_DECIDE_CALLS and decide_calls >= MAX_DECIDE_CALLS:
+                return self._json({"error": "Buổi thử đã dùng hết số lượt gọi AI cho hôm nay. Cảm ơn bạn!"}, 429)
+            decide_calls += 1
+        meta = {"source": "tester" if re.fullmatch(r"U\d{1,2}", tester) else "demo-ui"}
+        if meta["source"] == "tester":
+            meta["tester"] = tester
+        rec = core.decide(text, meta=meta)
         faq = core.FAQ_BY_ID.get((rec["decision"] or {}).get("faq_id"))
         self._json({k: rec[k] for k in ("log_id", "ts", "provider", "model", "decision", "route", "reply", "error", "latency_ms", "raw_response")} | {"faq": faq})
 
@@ -128,5 +146,7 @@ class Handler(SimpleHTTPRequestHandler):
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
     print(f"Provider: {core.PROVIDER} · model: {core.MODEL}")
+    if PUBLIC_MODE:
+        print(f"PUBLIC_MODE: tắt /api/eval-case · giới hạn {MAX_DECIDE_CALLS or 'không giới hạn'} lời gọi AI")
     print(f"Demo: http://localhost:{PORT}/demo  ·  Chat: http://localhost:{PORT}  ·  Eval: http://localhost:{PORT}/eval  (Ctrl+C để dừng)")
     ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()

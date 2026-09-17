@@ -4,6 +4,15 @@ Golden set: [`golden_set.json`](golden_set.json) · Tiêu chí đạt: [`golden-
 
 > **Tỉ lệ đạt = số ca đạt / tổng số ca.** Ca bị lỗi gọi API **vẫn tính là không đạt**; con số "chỉ tính ca đo được" chỉ ghi để tham khảo.
 
+## Số đo CP3 (một câu)
+
+> **Thử 25 câu (18 câu là tin nhắn thật của học viên K4), 24 câu đạt chuẩn, 1 câu sai.** Câu sai là "check điểm danh như nào" (M55443). Model đã nhận ra câu hỏi mơ hồ (độ tin 0,6) nhưng xếp vào "câu hỏi chung", và luật định tuyến của nhóm không hỏi lại với loại này, nên bot nói "không tìm thấy" thay vì hỏi học viên muốn kiểm tra trường hợp của mình hay hỏi cách làm.
+
+**Cách tính:**
+- 23 ca lấy từ lượt 1. 2 ca E1, E2 được đo bù ở lượt 1d, 1e, vì lượt 1 hết quota ở 2 ca này.
+- Code quyết định (`decide.py`), FAQ, golden set và model **không đổi** giữa các lượt này (kiểm bằng `git log`: chỉ có commit `d2b7aa2`).
+- Nếu **không** ghép phần đo bù, kết quả lượt 1 đơn lẻ vẫn là **22/25 (88%)**.
+
 ## Tổng hợp các lượt chạy
 
 | Lượt | Thời điểm | Model | Thay đổi so với lượt trước | Số ca | Đạt | Không đạt | Tỉ lệ đạt |
@@ -11,8 +20,11 @@ Golden set: [`golden_set.json`](golden_set.json) · Tiêu chí đạt: [`golden-
 | **1** | 17/09 09:46 | `gemini-3.5-flash` (free tier) · temperature 0 | Bản đầu tiên | 25 | **22** | 3 | **88%** |
 | 1b | 17/09 09:54 | như lượt 1 | Chỉ chạy lại E1, E2 | 2 | 0 | 2 | 0% (vẫn hết quota) |
 | 1c | 17/09 10:05 | như lượt 1 | Chỉ chạy lại E1, E2 | 2 | 0 | 2 | 0% (vẫn hết quota) |
+| 1d | 17/09 11:29 | như lượt 1 | Đo bù E1 (quota đã hồi) | 1 | 1 | 0 | 100% |
+| 1e | 17/09 11:29 | như lượt 1 | Đo bù E2 | 1 | 1 | 0 | 100% |
+| **1 + đo bù** | | như lượt 1 | 23 ca lượt 1 + E1 (1d) + E2 (1e) | **25** | **24** | **1** | **96%** |
 
-- Log đầy đủ (prompt đầu vào + phản hồi thô của model, mỗi ca 1 dòng JSON): [`runs/run-20260917-094603.jsonl`](runs/run-20260917-094603.jsonl), [`runs/run-20260917-095434.jsonl`](runs/run-20260917-095434.jsonl)
+- Log đầy đủ (prompt đầu vào + phản hồi thô của model, mỗi ca 1 dòng JSON): [`runs/run-20260917-094603.jsonl`](runs/run-20260917-094603.jsonl), [`runs/run-20260917-095434.jsonl`](runs/run-20260917-095434.jsonl), [`runs/run-20260917-100517.jsonl`](runs/run-20260917-100517.jsonl), [`runs/run-20260917-112926.jsonl`](runs/run-20260917-112926.jsonl) (E1), [`runs/run-20260917-112944.jsonl`](runs/run-20260917-112944.jsonl) (E2)
 - Bảng tự sinh từng ca: [`runs/run-20260917-094603.md`](runs/run-20260917-094603.md)
 
 ## Lượt 1 · chi tiết
@@ -58,8 +70,8 @@ Golden set: [`golden_set.json`](golden_set.json) · Tiêu chí đạt: [`golden-
 | H4-1 (M98666) | handoff · urgent | handoff · urgent | PERSONAL_RECORD · 0,90 | ✅ |
 | H4-2 (M40677) | handoff · urgent | handoff · urgent | PERSONAL_RECORD · 0,90 | ✅ |
 | H4-3 | privacy | privacy | OTHER_PERSON · 0,90 | ✅ |
-| **E1** | handoff | *(không có, lỗi HTTP 429)* | — | ❌ chưa đo |
-| **E2 (M02078)** | handoff / clarify | *(không có, lỗi HTTP 429)* | — | ❌ chưa đo |
+| **E1** | handoff | *(lượt 1: lỗi HTTP 429)* → **handoff** ở lượt 1d | PERSONAL_RECORD · 0,90 | ❌ lượt 1 · ✅ đo bù |
+| **E2 (M02078)** | handoff / clarify | *(lượt 1: lỗi HTTP 429)* → **clarify** ở lượt 1e | PERSONAL_RECORD · 0,70 | ❌ lượt 1 · ✅ đo bù |
 | E3 | chitchat | chitchat | CHITCHAT · 1,00 | ✅ |
 
 ## Phân tích nguyên nhân các ca không đạt
@@ -75,9 +87,12 @@ Golden set: [`golden_set.json`](golden_set.json) · Tiêu chí đạt: [`golden-
   2. Ghi rõ trong prompt: độ tin thấp vì phân vân *của mình / chung* thì chọn `PERSONAL_RECORD`, vì bỏ sót câu hỏi hồ sơ đắt hơn (cost-of-error ở §4).
   3. Chạy lại **toàn bộ 25 ca** sau khi sửa, để kiểm tra không làm hỏng C07–C09 (câu hỏi chung có FAQ) và H1-1..3.
 
-### ❌ E1, E2: không đo được do **hết quota free tier**, chưa biết model đúng hay sai
+### ❌ → ✅ E1, E2: lượt 1 không đo được do **hết quota free tier**; đã đo bù lúc 11:29, cả 2 đạt
 
-- **Lỗi:** `HTTP 429 RESOURCE_EXHAUSTED · generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash`. Free tier của model này chỉ cho **20 request/ngày**. Hôm đó đã dùng 1 request thử + 22 request eval, nên 2 ca cuối bị từ chối. Chạy lại lúc 09:54 (lượt 1b) vẫn lỗi.
+- **Kết quả đo bù** (cùng code, FAQ, golden set, model):
+  - **E1** (không dấu *"minh chua duoc diem danh buoi workshop toi qua…"*): `PERSONAL_RECORD` · 0,90 → `handoff` ✅. Model đọc đúng tiếng Việt không dấu; tóm tắt *"Học viên nhờ kiểm tra việc chưa được điểm danh buổi workshop tối qua"* không khẳng định trạng thái.
+  - **E2** (tin kép M02078): `PERSONAL_RECORD` · 0,70 → `clarify` ✅. Model bắt được **cả 2 ý** (reasons: "Hỏi cách check XP cá nhân", "Hỏi cách xác nhận trạng thái điểm danh workshop của bản thân") và không chỉ trả `/rank` như bot cũ. Lưu ý: `record_type = other` vì tin có 2 loại hồ sơ, và độ tin 0,70 dẫn tới hỏi lại thay vì chuyển TA; cả hai cách đều được chấp nhận.
+- **Lỗi ở lượt 1:** `HTTP 429 RESOURCE_EXHAUSTED · generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash`. Free tier của model này chỉ cho **20 request/ngày**. Hôm đó đã dùng 1 request thử + 22 request eval, nên 2 ca cuối bị từ chối. Chạy lại lúc 09:54 (lượt 1b) và 10:05 (lượt 1c) vẫn lỗi.
 - **Hệ thống xử lý an toàn:** khi gọi lỗi, `decide()` mặc định `handoff`. Route ghi trong log vẫn là `handoff`, trùng với kỳ vọng. Tuy vậy **nhóm không tính là đạt**, vì model chưa hề phân loại.
 - **Hai ca này quan trọng:**
   - E1 kiểm tra **tiếng Việt không dấu**.
@@ -100,7 +115,7 @@ Golden set: [`golden_set.json`](golden_set.json) · Tiêu chí đạt: [`golden-
 
 | # | Việc | Trước |
 |---|---|---|
-| 1 | Chạy lại E1, E2 khi quota reset | 16:00 · 17/09 (CP3) |
+| 1 | ~~Chạy lại E1, E2 khi quota reset~~ **Xong 11:29, cả 2 đạt** | 16:00 · 17/09 (CP3) |
 | 2 | Sửa luật `route()` cho `GENERAL` độ tin thấp + chỉnh prompt (xem H2-1) → lượt 2 chạy đủ 25 ca | CP4 |
 | 3 | Thêm kiểm tra tự động "summary không khẳng định trạng thái" vào `run_eval.py` | CP4 |
 | 4 | Chốt quality bar trong `spec.md` §7 **trước** khi chạy lượt 2 | 21:00 · 17/09 (CP4) |

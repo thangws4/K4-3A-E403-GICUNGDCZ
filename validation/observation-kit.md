@@ -7,9 +7,9 @@ Kết quả ghi vào [`README.md`](README.md). Câu người thử gõ và route
 ## 1 · Chuẩn bị (5 phút, trước người đầu tiên)
 
 - [ ] Kiểm tra `.env` có key còn dùng được. Key cũ đã lộ trên GitHub, nên thay key mới trước.
-- [ ] Chạy `powershell -ExecutionPolicy Bypass -File validation/start-local-test.ps1 -Tester U1`. Script gọi thử 1 lần: nếu thấy `"error"` có `429` thì hết quota, phải đổi key trước khi mời người.
+- [ ] Chạy `powershell -ExecutionPolicy Bypass -File test\start-local-test.ps1 -Tester U1`. Script gọi thử 1 lần: nếu thấy `"error"` có `429` thì hết quota, phải đổi key trước khi mời người.
 - [ ] Trình duyệt mở `http://127.0.0.1:8000/demo?tester=U1`, góc trên hiện **"Người thử U1"**. Phóng to 110–125% cho dễ đọc.
-- [ ] In hoặc mở sẵn phiếu quan sát (mục 4) cho người quan sát.
+- [ ] In hoặc mở sẵn phiếu quan sát (mục 4), hoặc thẻ kịch bản riêng từng người trong `test/kich-ban/` (thư mục `test/` chỉ nằm trên máy nhóm, không có trong repo).
 - [ ] Chuẩn bị đồng hồ bấm giờ (điện thoại).
 
 **Gán mã:** U1, U2 = 2 willing user đã khai ở CP1 · U3–U5 = học viên K4 ngoài nhóm. Bảng mã ↔ tên **chỉ lưu ngoài repo**.

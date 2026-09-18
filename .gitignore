@@ -11,6 +11,9 @@ discord-pack/
 # Log gọi LLM lúc chạy demo (log của lượt eval nằm ở eval/runs/ và được commit)
 codebase/logs/
 
+# Bộ thử local với người dùng thật: chỉ dùng trên máy nhóm, không đẩy lên repo
+/test/
+
 # Python
 __pycache__/
 *.pyc

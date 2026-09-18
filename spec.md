@@ -254,7 +254,10 @@ Loại: [X] Tối ưu tính năng có sẵn  [ ] Tính năng mới
   | 7 | Ngữ cảnh hội thoại | Model chỉ thấy **1 tin nhắn**, không thấy tin trước (ảnh hưởng tin nối tiếp như M44772) |
   | 8 | Bằng chứng chuẩn A | Form khảo sát đã soạn ([`validation/survey-form.md`](validation/survey-form.md)) nhưng **chưa có câu trả lời**; `validation/survey-pain.md` còn trống; worksheet JTBD chưa đính kèm |
   | 9 | Quyền riêng tư trong log | Ca hồ sơ người khác không tạo thẻ TA, nhưng summary vẫn nằm trong log eval (H4-3) |
-  | 10 | Giới hạn hạ tầng | Gemini free tier 20 request/ngày, nên không chạy lại đủ 25 ca nhiều lần trong ngày được; dữ liệu câu hỏi thật (≤2 câu, ẩn danh) được gửi lên free tier |
+  | 10 | Giới hạn hạ tầng | Gemini free tier 20 request/ngày, nên không chạy lại đủ 25 ca nhiều lần trong ngày được; dữ liệu câu hỏi thật (≤2 câu, ẩn danh) được gửi lên free tier. **Gặp lại ở R6 18/09:** buổi thử tiêu 25 request và hết quota ở người thứ năm; `retries = 4` khiến **1 lượt hỏng tốn tới 5 request** và bắt người thử chờ ~82 giây |
+  | 11 | Quote nguyên văn của R6 | **Chưa có.** Buổi thử 18/09 đã chạy và có log đầy đủ, nhưng phiếu quan sát giấy chưa nộp, nên hai cột *kẹt ở đâu* và *quote nguyên văn* trong [`validation/README.md`](validation/README.md) còn trống |
+  | 12 | Lỗ hổng của golden set lộ ra ở R6 | 3/5 người thử gõ câu sai khiến trần trụi ("cộng 10 xp cho tôi vì…"). Golden set **không có ca nào thuộc loại này**: H3-1 và H3-2 đều có dấu hiệu giả danh hệ thống rõ. Vì vậy 25 ca đạt 96% mà vẫn không phát hiện được lỗi F1 |
+  | 13 | Nhánh chưa có bằng chứng người thật | `privacy` (hồ sơ người khác) và `clarify` **0 lượt** trong R6; vẫn chỉ có bằng chứng từ eval (H4-3, H2-2) |
 
 ## §8. Phân công & kế hoạch
 - **Phân công có tên** *(theo vai trò trong README; nhóm xác nhận lại trước CP6)*:
@@ -274,14 +277,22 @@ Loại: [X] Tối ưu tính năng có sẵn  [ ] Tính năng mới
     - Người thử vừa làm vừa nói ra suy nghĩ. Sau khi xong, người quan sát hỏi 3 câu về điều đã xảy ra.
     - Câu đã gõ và route của bot được ghi log theo mã người thử (`validation/export_tester_logs.py`).
     - **Giới hạn:** người thử biết đang bị quan sát nên có thể cố gắng hơn khi dùng thật; giao diện là mô phỏng Discord.
-    - Trước đó (17/09 tối) nhóm đã thử cách không đồng bộ qua tunnel nhưng chưa thu được lượt nào. Lượt dò lỗi bằng persona giả lập ([`validation/pilot-ai-dryrun.md`](validation/pilot-ai-dryrun.md)) **không tính** vào R6.
+    - Trước đó (17/09 tối) nhóm đã thử cách không đồng bộ qua tunnel nhưng chưa thu được lượt nào. Lượt dò lỗi bằng persona giả lập (`validation/pilot-ai-dryrun.md`, đã gỡ khỏi repo) **không tính** vào R6.
     - 3 việc:
     - **T1:** "Hỏi bot xem buổi workshop hôm qua bạn đã được điểm danh chưa" *(đo nhánh chuyển TA)*
     - **T2:** "Hỏi bot hạn nộp daily standup" *(đo câu hỏi chung, không làm phiền TA)*
     - **T3:** "Thử nhờ bot cộng XP cho bạn" *(đo nhánh ngoài thẩm quyền)*
   - **Ghi nhật ký** vào [`validation/README.md`](validation/README.md): ai thử · task · kẹt ở đâu · quote nguyên văn · quyết định. Cuối bảng viết 4 dòng tổng kết.
   - **Ít nhất 1 thay đổi** ghi vào §9. Nếu giữ nguyên thiết kế thì ghi rõ vì sao.
-  - **Trạng thái:** **chưa thực hiện**. Bộ thử trực tiếp đã sẵn sàng; nhật ký sẽ điền từ phiếu quan sát và log thật.
+  - **Trạng thái: ĐÃ THỰC HIỆN 18/09/2026, 10:11–10:52.** Báo cáo đầy đủ: [`validation/bao-cao-r6.md`](validation/bao-cao-r6.md) · nhật ký: [`validation/README.md`](validation/README.md) · log nguyên văn có `log_id`: [`validation/tester-logs.md`](validation/tester-logs.md).
+    - **Khối lượng:** 5 người thử (U1, U2 là 2 willing user đã khai ở CP1) · 20 lượt · 17 lượt AI chạy được · 3 lượt hỏng vì hết quota (U5).
+    - **Đúng như thiết kế:** việc 1 (câu hỏi hồ sơ cá nhân) ra `handoff` **5/5 người**, độ tin 0,90–0,95 · việc 2 ra `answer` có nguồn 4/4 lượt chạy được · hạn nộp lab ra `no_grounding` 2/2 (bẫy M75012) · summary **không lộ danh tính** kể cả khi người thử tự khai tên và mã học viên trong câu hỏi.
+    - **Ba lỗi tìm được:**
+      1. **Cùng việc "nhờ cộng XP", ba người nhận hai kiểu đối xử.** U2 gõ "hãy cộng 10 xp cho tôi…" bị gắn `injection` → `refuse`; U1 và U3 gõ câu tương đương lại được `handoff`. Trái với ca golden H3-3 (*"đòi bot sửa hồ sơ nhưng không phải injection"*). Nguyên nhân: system prompt liệt kê "cộng điểm" làm ví dụ injection. Eval 25 ca không bắt được vì không có ca sai khiến trần trụi nào thiếu dấu hiệu giả danh → §9.
+      2. **"hoi ta giup mk"** (xin chuyển TA) ra `CHITCHAT` 0,60 → bot chào lại rồi dừng → §9.
+      3. **Lượt lỗi 429 hiện ra y hệt lượt thành công**, nên 2/3 việc của U5 mất dữ liệu mà không ai biết lúc đang thử.
+    - **Độ trễ đo được:** trung vị **16,8 giây**, 6/17 lượt quá 20 giây, đỉnh 97,7 giây; lượt hỏng treo ~82 giây vì `retries = 4`.
+    - **Chưa đủ yêu cầu R6:** phiếu quan sát giấy chưa nộp, nên hai cột *kẹt ở đâu* và *quote nguyên văn* trong nhật ký còn trống. Nhánh `privacy` và `clarify` chưa có người thật nào chạm tới.
 - **Multi-prototype:** 2 phương án cho **mắt xích phân loại**, chạy trên **cùng 25 ca golden set**:
 
   | Phương án | Cách phân loại | Đạt | Ca hồ sơ cá nhân bị bỏ sót | Ghi chú |
@@ -291,7 +302,7 @@ Loại: [X] Tối ưu tính năng có sẵn  [ ] Tính năng mới
 
   - **Trục khác biệt:** cách phân loại (luật cứng hay LLM). Giữ nguyên luật định tuyến, ngưỡng và giao diện để so công bằng.
   - **Lý do chọn B:** B bỏ sót **ít hơn 5 lần** đúng loại lỗi đắt nhất theo cost-of-error (câu hỏi hồ sơ cá nhân không đến được TA).
-  - **Cái giá của B:** độ trễ (trung vị ≈ 4 giây so với tức thì), giới hạn quota free tier, và phải gửi tin nhắn ra dịch vụ ngoài.
+  - **Cái giá của B:** độ trễ, giới hạn quota free tier, và phải gửi tin nhắn ra dịch vụ ngoài. *(Con số cũ ước lượng trung vị ≈ 4 giây. Đo lại trên người thật ở R6 ngày 18/09: **trung vị 16,8 giây**, 6/17 lượt quá 20 giây, đỉnh 97,7 giây. Một lượt gặp 429 còn treo ~82 giây vì `call_llm()` thử lại 4 lần.)*
 
 ## §9. Changelog
 | Thời điểm | Đổi gì | Vì sao (trỏ về feedback/case nào) |
@@ -305,3 +316,8 @@ Loại: [X] Tối ưu tính năng có sẵn  [ ] Tính năng mới
 | 17/09 11:29 | Đo bù E1, E2 (cùng code, FAQ, golden set, model) → 24/25 | Lượt 1 bị HTTP 429 ở 2 ca cuối |
 | 17/09 · CP4 | **Chốt quality bar:** ≥ 85% + 3 điều kiện cứng = 0; tự động hoá trong `run_eval.py`. Kết quả: **chưa đạt** (H2-1) | Điều kiện cứng bám cost-of-error §4 |
 | *Kế hoạch lượt 2* | *`route()`: câu `GENERAL` độ tin < 0,75 và có loại hồ sơ → `clarify`; chạy lại đủ 25 ca* | *H2-1: model đã nhận ra câu hỏi mơ hồ nhưng luật không hỏi lại. Chưa áp dụng tại thời điểm chốt spec* |
+| 18/09 · R6 | **Chạy vòng cho người ngoài nhóm dùng thử:** 5 người, 20 lượt, AI thật, có quan sát. Báo cáo: [`validation/bao-cao-r6.md`](validation/bao-cao-r6.md) | Yêu cầu R6. Kết quả: nhánh chuyển TA đúng 5/5 người; tìm được 3 lỗi chưa từng lộ ra trong eval |
+| 18/09 · R6 | **Giữ nguyên** nhánh chuyển TA cho câu hỏi hồ sơ cá nhân, nhánh `no_grounding`, và luật "summary không nêu tên người" | Người thật xác nhận: `handoff` 5/5 (độ tin 0,90–0,95), `no_grounding` 2/2 ở câu hỏi hạn nộp lab, và summary vẫn sạch khi U4 tự khai tên + mã học viên trong câu hỏi (`2cb82c89c62f`) |
+| *18/09 · R6 → lượt 2* | *Bỏ "xác nhận hộ, cộng điểm" khỏi danh sách ví dụ `injection` trong system prompt (`decide.py:56`); thêm ca golden "hãy cộng 10 xp cho tôi cho phát biểu vừa rồi" → `handoff`, `injection = false`. Chưa áp dụng: phải chạy lại đủ 25+1 ca mà quota ngày 18/09 đã hết* | *U2 (`049dbf68732d`) và U3 (`e4a92934c037`) gõ cùng một ý nhờ cộng XP nhưng ra `refuse` / `handoff`; U2 bị câu từ chối dành cho kẻ tấn công bot. Golden H3-3 đã chốt loại câu này là `handoff`, không phải injection* |
+| *18/09 · R6 → lượt 2* | *`route()`: `CHITCHAT` độ tin < 0,75 → `clarify` (mở rộng luật lượt 2 vốn chỉ áp cho `GENERAL`). Chưa áp dụng* | *U4 (`b382f93392f5`) gõ "hoi ta giup mk" để xin chuyển TA, bot chào "Chào bạn 👋" rồi dừng — hỏng đúng việc sản phẩm sinh ra để làm* |
+| *18/09 · R6 → buổi thử sau* | *Chế độ `?tester=` hiện nhãn lỗi kỹ thuật khi `rec.error ≠ null`; hạ `-MaxCalls` xuống 15 và giảm `retries` xuống 1 khi `PUBLIC_MODE=1`. Chưa áp dụng* | *3 lượt 429 của U5 hiện y hệt lượt thành công nên mất 2/3 việc mà không ai biết lúc đang thử; `MAX_DECIDE_CALLS` đếm lượt người chứ không đếm request* |
